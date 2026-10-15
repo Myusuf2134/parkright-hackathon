@@ -73,7 +73,7 @@ test('empty deck → frame, park A1 → frame: pixels change, truth goes separat
     // 9: exactly two parts; metadata is exactly the canonical five fields.
     expect(f.parts.map((p) => p.name)).toEqual(['metadata', 'image']);
     expect(Object.keys(f.metadata)).toEqual(['session_id', 'camera_id', 'seq', 'sim_time_ms', 'captured_at']);
-    expect(f.metadataText).not.toMatch(/occupied|empty|truth|vehicle|A1|B\d/i);
+    expect(f.metadataText).not.toMatch(/occupied|empty|truth|vehicle|\b[AB][1-6]\b/i);
     expect(f.imagePart.filename).toBe('frame.jpg');
     expect(f.imagePart.contentType).toBe('image/jpeg');
     // A real JPEG with no comment (FFFE) or EXIF/APP1 (FFE1) segments that could carry data.
@@ -89,7 +89,10 @@ test('empty deck → frame, park A1 → frame: pixels change, truth goes separat
     expect(new URL(w.url).pathname).toBe('/api/v1/cameras/cam-01/frames');
     expect(new URL(w.url).search).toBe('');
     expect(Object.keys(w.headers).filter((h) => h.startsWith('x-'))).toEqual([]);
-    expect(JSON.stringify(w.headers)).not.toMatch(/occupied|truth|A1/i);
+    // The browser's random multipart boundary is the only variable part of content-type.
+    expect(w.headers['content-type']).toMatch(/^multipart\/form-data; boundary=-+WebKitFormBoundary[A-Za-z0-9]+$/);
+    const { 'content-type': _, ...otherHeaders } = w.headers;
+    expect(JSON.stringify(otherHeaders)).not.toMatch(/\b(occupied|empty|truth|ground)\b|\b[AB][1-6]\b/i);
     expect(w.headers.authorization).toBeUndefined(); // the token is added server-side by the proxy
   }
   // Same session, consecutive seq, non-decreasing sim time.
