@@ -73,15 +73,13 @@ PyTorch call. Frame ordering and timeout behavior remain owned by the existing A
 
 ## Install and run
 
-From this worktree root (Python 3.12):
+From the repository root (Python 3.12 via uv). Everything resolves from the workspace
+`uv.lock`; the optional `ssd` extra of `parkright-perception` adds torch/torchvision.
 
 ```sh
-uv venv /tmp/parkright-a0-env
-uv pip install --python /tmp/parkright-a0-env/bin/python \
-  'torch>=2.6,<3' 'torchvision>=0.21,<1' 'numpy>=2,<3' 'pillow>=12,<13' \
-  'shapely>=2,<3' pydantic pydantic-settings fastapi python-multipart uvicorn \
-  pytest httpx websockets ruff mypy
-export A0_PYTHON=/tmp/parkright-a0-env/bin/python
+uv sync --frozen --all-packages --all-extras      # includes torch 2.14.1 / torchvision 0.29.1
+# Plain `uv sync` / `uv run` without --all-extras removes torch again; use the flags below for A0.
+A0="uv run --frozen --all-packages --all-extras"
 
 git clone https://github.com/NVIDIA/DeepLearningExamples.git /tmp/parkright-nvidia-ssd
 git -C /tmp/parkright-nvidia-ssd checkout a6c678ef0323cdaae053e9eed34dce94488ad313
@@ -90,16 +88,13 @@ curl -L --fail https://api.ngc.nvidia.com/v2/models/nvidia/ssd_pyt_ckpt_amp/vers
 export PARKRIGHT_A0_SOURCE=/tmp/parkright-nvidia-ssd
 export PARKRIGHT_A0_WEIGHTS=/tmp/parkright-nvidia-ssd.pt
 export PARKRIGHT_A0_DEVICE=cpu
-export PARKRIGHT_PERCEPTION_PROVIDER=a0
-experiments/a0-baseline/run.sh -m parkright_api
+PARKRIGHT_PERCEPTION_PROVIDER=a0 $A0 python -m parkright_api
 ```
 
-Use a compatible CUDA PyTorch installation and `PARKRIGHT_A0_DEVICE=cuda` on Nebius;
-no deployment or GPU performance is claimed. Source packages are exposed by run.sh
-without changing the shared workspace lock. The perception package declares its
-runtime dependencies and optional `ssd` extra. Root `uv.lock` is intentionally not
-edited within this ownership scope; the integration owner should regenerate it
-when combining branches. Exact locally measured versions are in `environment.txt`.
+Use a CUDA build of torch and `PARKRIGHT_A0_DEVICE=cuda` on Nebius; no deployment or GPU
+performance is claimed. Without the `ssd` extra the package still imports and every
+non-model test runs; selecting `a0` without artifacts fails at startup (never a stub).
+Exact locally measured versions are in `environment.txt`.
 
 The supplied facility watches A1–A6/B1–B6 but has **no calibrated camera polygons**.
 Provide a production facility JSON through `PARKRIGHT_FACILITY_FIXTURES='["/absolute/facility.json"]'`.
@@ -110,20 +105,15 @@ Populate `cameras[].polygons` with normalized camera-image coordinates. Never co
 ## Tests, benchmark, evaluation
 
 ```sh
-experiments/a0-baseline/run.sh -m pytest
-PYTHONPATH=experiments/a0-baseline "$A0_PYTHON" -m pytest experiments/a0-baseline/test_score.py
-PARKRIGHT_A0_REAL_SMOKE=1 experiments/a0-baseline/run.sh -m pytest services/perception/tests/test_a0.py -k real_model
-"$(dirname "$A0_PYTHON")/ruff" check services/perception/src/parkright_perception/a0 services/perception/tests/test_a0.py experiments/a0-baseline
-experiments/a0-baseline/run.sh -m mypy --ignore-missing-imports services/perception/src/parkright_perception/a0
-npm ci --ignore-scripts
-npm run typecheck
-npm run build -w @parkright/web
+uv run --frozen pytest                                            # whole workspace, no torch needed
+$A0 pytest experiments/a0-baseline/test_score.py                  # offline scoring
+PARKRIGHT_A0_REAL_SMOKE=1 $A0 pytest services/perception/tests/test_a0.py -k real_model
 
-# Supply a legally usable camera JPEG, or temporary public smoke image:
+# Supply a legally usable camera JPEG, or a temporary public smoke image:
 curl -L --fail https://raw.githubusercontent.com/ultralytics/ultralytics/main/ultralytics/assets/bus.jpg -o /tmp/a0-bus.jpg
-experiments/a0-baseline/run.sh experiments/a0-baseline/benchmark.py /tmp/a0-bus.jpg \
+$A0 python experiments/a0-baseline/benchmark.py /tmp/a0-bus.jpg \
   --facility experiments/a0-baseline/geometry-test-only.json --runs 10
-experiments/a0-baseline/run.sh experiments/a0-baseline/score.py /path/to/offline-export.json
+$A0 python experiments/a0-baseline/score.py /path/to/offline-export.json
 ```
 
 Normal tests require no weights/network. Real smoke explicitly requires artifacts;
@@ -158,13 +148,28 @@ darkness and glare can defeat SSD. Quality heuristics cannot prove visibility.
 OPEN background evidence needs evaluation before deployment. Neither geometry-test
 outputs nor neutral-image tests are accuracy evidence. No A1–A3 work is included.
 
-Final measured CPU run (10 warm frames): mean decode 5.95 ms, inference 180.46 ms,
-ROI postprocessing 17.01 ms, total 203.43 ms; total p95 275.45 ms. Cold frame 2.965 s.
-This is approximately 4.9 FPS sequential warm throughput on this sample, not a
-sustained 5 FPS service guarantee. Download/startup validation and HTTP queueing
-are outside frame timings; lazy model loading is included in the cold frame.
+CPU timing (10 warm frames, macOS arm64, same image, same model identity, identical
+outputs in both runs; timing varies with machine load):
 
-Validation: 135 backend tests passed with real-model smoke enabled; 2 separate
-scoring tests passed. A0 Ruff lint, Python mypy check, frontend typecheck, generated
-contract drift check and web production build passed. No files in simulator,
-contracts, or API were changed relative to the original foundation commit.
+| Run | decode | inference | postprocess | total mean | total p95 | cold |
+| --- | --- | --- | --- | --- | --- | --- |
+| first (Oct 14) | 5.95 ms | 180.46 ms | 17.01 ms | 203.43 ms | 275.45 ms | 2.965 s |
+| re-run via uv.lock (Oct 15, in `benchmark-cpu.json`) | 4.2 ms | 100.4 ms | 11.6 ms | 116.1 ms | 141.3 ms | 2.098 s |
+
+So roughly 5–9 FPS sequential warm throughput on this sample: not a sustained 5 FPS
+service guarantee. Download/startup validation and HTTP queueing are outside frame
+timings; lazy model loading is included in the cold frame. A live API run with
+`PARKRIGHT_PERCEPTION_PROVIDER=a0` accepted the image (HTTP 202, cold) and returned
+12 observations, 6 OCCUPIED / 6 UNCERTAIN, none OPEN.
+
+The bus covering six artificial ROIs shows a known A0 property: a detection is
+scored against each space independently, so one large box can mark several bays
+OCCUPIED. That never produces OPEN, but it can hide free bays next to large
+vehicles once real calibration exists.
+
+Validation (Oct 15, uv environment): workspace `uv run --frozen pytest` 134 passed
+and 1 skipped without torch; 135 passed with the real model; 2 scoring tests passed.
+The original commit also reports Ruff, mypy, frontend typecheck and web build passing;
+those were not re-run here. No simulator, contracts or API files changed relative to
+the foundation commit. The workspace `uv.lock` now includes this package's
+dependencies (additive only).
