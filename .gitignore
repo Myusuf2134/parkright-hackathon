@@ -24,3 +24,6 @@ experiments/**/runs/
 experiments/**/datasets/
 # OS
 .DS_Store
+# Playwright
+test-results/
+playwright-report/

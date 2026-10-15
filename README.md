@@ -23,9 +23,12 @@ Needs [uv](https://docs.astral.sh/uv/) (Python 3.12 is fetched automatically) an
 uv sync && npm install
 cp .env.example .env                 # set PARKRIGHT_INGEST_TOKEN
 npm run dev:api                      # API  http://127.0.0.1:8400  (OpenAPI: /api/v1/docs)
-npm run dev:web                      # web  http://localhost:5180
-npm run test:camera                  # sends test-pattern frames until the simulator is connected
+npm run dev:web                      # driver web app  http://localhost:5180
+npm run dev:sim                      # PARKRIGHT VISION LAB (simulator + cam-01)  http://127.0.0.1:5181
+npm run test:camera                  # optional: test-pattern frames without the simulator
 npm test                             # Python tests + generated-contract drift check
+npm run test:sim                     # simulator unit tests (determinism, isolation)
+npm run test:sim:e2e                 # simulator + real API in Chromium (starts both itself)
 npm run typecheck
 ```
 
@@ -36,4 +39,5 @@ flow end to end, and nothing is claimed that no model produced.
 
 - [docs/frame-contract.md](docs/frame-contract.md) — the camera contract, ordering, occupancy semantics, ground truth
 - [docs/architecture.md](docs/architecture.md) — layout and decisions
+- [docs/simulator.md](docs/simulator.md) — Vision Lab: scene, cam-01, determinism, streaming, ground-truth isolation
 - [experiments/](experiments/README.md) — detector arms A0–A3

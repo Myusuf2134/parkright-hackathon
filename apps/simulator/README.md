@@ -1,24 +1,27 @@
-# apps/simulator — virtual parking environment
+# apps/simulator — PARKRIGHT VISION LAB
 
-Owned by the simulator workstream. The backend does not depend on anything in this directory.
+The virtual parking environment and its fixed infrastructure camera, **cam-01**. It renders a
+12-bay rooftop deck (`garage-01`, level `L1`, A1–A6 / B1–B6) in three.js, captures cam-01's pixels as
+JPEG and streams them to the API through the canonical frame contract.
 
-## Its only obligation to the backend
-
-Render the 12-space facility, capture what the virtual camera sees as a JPEG, and send it:
-
-```
-POST /api/v1/cameras/{camera_id}/frames
-Authorization: Bearer $PARKRIGHT_INGEST_TOKEN
-multipart/form-data:  metadata = FrameMetadata JSON,  image = JPEG (image/jpeg)
+```bash
+npm run dev:sim            # http://127.0.0.1:5181 — needs the API on :8400 (npm run dev:api)
+npm run test:sim           # unit tests
+npm run test:sim:e2e       # Chromium + real API + real simulator (starts both on spare ports)
 ```
 
-See [docs/frame-contract.md](../../docs/frame-contract.md). Facility geometry (space ids, plan layout,
-camera id) is in [packages/shared/fixtures/mvp-facility.json](../../packages/shared/fixtures/mvp-facility.json).
+The dev server proxies `/api` to `PARKRIGHT_API_URL` (default `http://127.0.0.1:8400`) and adds
+`Authorization: Bearer $PARKRIGHT_INGEST_TOKEN` on the server side (from the environment or the repo
+`.env`). The token never reaches the browser.
 
-Ground truth (which spaces the simulator filled) goes **only** to `POST /api/v1/evaluation/ground-truth`,
-never with a frame.
+Full description: [docs/simulator.md](../../docs/simulator.md).
 
-## Suggested stack (not binding)
-
-Vite + TypeScript + Canvas 2D, a seeded PRNG for deterministic scenes, `canvas.toBlob(cb, 'image/jpeg', q)`
-for capture. Types: `@parkright/contracts` (packages/contracts/ts).
+| Path | |
+| --- | --- |
+| `src/sim/` | Pure TS world: seeded PRNG, facility geometry from the fixture, vehicles, presets, scene spec, time, ground truth |
+| `src/scene/` | three.js builders: deck, lighting, vehicles, operator-only overlays, effect hook |
+| `src/camera/` | cam-01 pose and `VirtualCamera` (own renderer + canvas → JPEG) |
+| `src/lab.ts` | Engine: world + scene + cam-01; `captureFrame()` |
+| `src/stream/` | Frame upload (contracts only), streamer, session ids, backend view |
+| `src/evaluation/` | Ground truth → `POST /api/v1/evaluation/ground-truth` |
+| `src/ui/` | Operator UI (React + React Three Fiber) |
