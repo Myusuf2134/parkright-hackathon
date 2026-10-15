@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+# Local config and data
+.env
+.env.local
+*.sqlite
+*.sqlite3
+data/
+# Model weights and generated media stay out of git
+*.onnx
+*.engine
+*.pt
+*.safetensors
+experiments/**/runs/
+experiments/**/datasets/
+# OS
+.DS_Store
