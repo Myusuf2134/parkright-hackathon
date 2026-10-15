@@ -793,7 +793,7 @@
     },
     "OccupancyUpdateMessage": {
       "additionalProperties": false,
-      "description": "Realtime: sent after every accepted frame (changes may be empty) and when evidence goes stale.",
+      "description": "Realtime: sent after every accepted frame (changes may be empty) and when evidence goes stale.\nCarries every space, so a client replaces its state instead of merging.",
       "properties": {
         "changes": {
           "items": {
@@ -823,6 +823,12 @@
           "format": "date-time",
           "type": "string"
         },
+        "spaces": {
+          "items": {
+            "$ref": "#/$defs/ParkingSpace"
+          },
+          "type": "array"
+        },
         "type": {
           "const": "occupancy_update",
           "default": "occupancy_update",
@@ -833,6 +839,7 @@
         "facility_id",
         "changes",
         "counts",
+        "spaces",
         "frame",
         "published_at"
       ],

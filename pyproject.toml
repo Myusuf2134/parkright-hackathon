@@ -32,3 +32,5 @@ parkright-api = { workspace = true }
 [tool.pytest.ini_options]
 testpaths = ["packages/contracts/tests", "services/perception/tests", "evaluation/tests", "services/api/tests", "tests"]
 addopts = "--import-mode=importlib -q"
+# Starlette prefers httpx2 for its TestClient; httpx still works. Revisit when adopting httpx2.
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]

@@ -370,6 +370,7 @@ export interface OccupancyChange {
 }
 /**
  * Realtime: sent after every accepted frame (changes may be empty) and when evidence goes stale.
+ * Carries every space, so a client replaces its state instead of merging.
  *
  * This interface was referenced by `ParkRightContracts`'s JSON-Schema
  * via the `definition` "OccupancyUpdateMessage".
@@ -383,6 +384,7 @@ export interface OccupancyUpdateMessage {
    */
   frame: FrameRef | null;
   published_at: string;
+  spaces: ParkingSpace[];
   type?: 'occupancy_update';
 }
 /**

@@ -126,11 +126,13 @@ class FrameRef(_Strict):
 
 
 class OccupancyUpdateMessage(_Strict):
-    """Realtime: sent after every accepted frame (changes may be empty) and when evidence goes stale."""
+    """Realtime: sent after every accepted frame (changes may be empty) and when evidence goes stale.
+    Carries every space, so a client replaces its state instead of merging."""
 
     type: Literal["occupancy_update"] = "occupancy_update"
     facility_id: FacilityId
     changes: list[OccupancyChange]
     counts: OccupancyCounts
+    spaces: list[ParkingSpace]
     frame: FrameRef | None = Field(description="The frame that caused this update; null for staleness.")
     published_at: Timestamp
