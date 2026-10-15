@@ -1,4 +1,12 @@
-from score import score
+import importlib.util
+from pathlib import Path
+
+# Load the sibling script by path: works under the repo's --import-mode=importlib.
+_spec = importlib.util.spec_from_file_location("a0_score", Path(__file__).with_name("score.py"))
+assert _spec and _spec.loader
+_module = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_module)
+score = _module.score
 
 
 def test_false_open_missing_and_exact_frame_join():
