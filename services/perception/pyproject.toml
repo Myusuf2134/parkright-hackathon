@@ -3,7 +3,10 @@ name = "parkright-perception"
 version = "0.1.0"
 description = "Frame -> PerceptionProvider -> occupancy. Never sees ground truth."
 requires-python = ">=3.12"
-dependencies = ["parkright-contracts"]
+dependencies = ["parkright-contracts", "pillow>=12,<13", "numpy>=2,<3", "shapely>=2,<3"]
+
+[project.optional-dependencies]
+ssd = ["torch>=2.6,<3", "torchvision>=0.21,<1"]
 
 [build-system]
 requires = ["hatchling"]

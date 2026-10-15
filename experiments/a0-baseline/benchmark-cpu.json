@@ -1,0 +1,112 @@
+{
+  "mode": "REAL MODEL",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "identity": "nvidia-ssd300:20.06.0:a6c678ef0323cdaae053e9eed34dce94488ad313:8167ab3781fde764796931c661629b166dd192eac81fcb846b0f4b474c8cc616:torch-2.14.1-cpu",
+  "model": {
+    "provider": "a0-nvidia-ssd300",
+    "version": "1-efba7ad9807f9b744e09c5317925b2bb"
+  },
+  "thresholds": {
+    "detector_min_score": 0.01,
+    "detector_nms_iou": 0.5,
+    "occupied_confidence": 0.65,
+    "occupied_coverage": 0.45,
+    "ambiguity_confidence": 0.05,
+    "ambiguity_coverage": 0.02,
+    "open_background_confidence": 0.995,
+    "min_background_anchors": 16,
+    "allow_open": false,
+    "min_dimension": 64,
+    "max_pixels": 16000000,
+    "min_roi_pixels": 256,
+    "min_brightness": 18.0,
+    "max_brightness": 240.0,
+    "min_contrast": 5.0
+  },
+  "cold": {
+    "decode_ms": 14.928583004802931,
+    "inference_ms": 2066.942499994184,
+    "postprocess_ms": 16.617207998933736,
+    "total_ms": 2098.4951670034206
+  },
+  "warm": {
+    "decode_ms": {
+      "mean": 4.1669875994557515,
+      "p95": 4.863318748903111
+    },
+    "inference_ms": {
+      "mean": 100.37850000007893,
+      "p95": 125.6397935987479
+    },
+    "postprocess_ms": {
+      "mean": 11.581099999602884,
+      "p95": 12.105820948272594
+    },
+    "total_ms": {
+      "mean": 116.128920900519,
+      "p95": 141.30456645070805
+    }
+  },
+  "states": [
+    {
+      "space_id": "A1",
+      "state": "OCCUPIED",
+      "confidence": 0.97408127784729
+    },
+    {
+      "space_id": "A2",
+      "state": "OCCUPIED",
+      "confidence": 0.97408127784729
+    },
+    {
+      "space_id": "A3",
+      "state": "OCCUPIED",
+      "confidence": 0.97408127784729
+    },
+    {
+      "space_id": "A4",
+      "state": "OCCUPIED",
+      "confidence": 0.97408127784729
+    },
+    {
+      "space_id": "A5",
+      "state": "OCCUPIED",
+      "confidence": 0.97408127784729
+    },
+    {
+      "space_id": "A6",
+      "state": "OCCUPIED",
+      "confidence": 0.97408127784729
+    },
+    {
+      "space_id": "B1",
+      "state": "UNCERTAIN",
+      "confidence": null
+    },
+    {
+      "space_id": "B2",
+      "state": "UNCERTAIN",
+      "confidence": null
+    },
+    {
+      "space_id": "B3",
+      "state": "UNCERTAIN",
+      "confidence": null
+    },
+    {
+      "space_id": "B4",
+      "state": "UNCERTAIN",
+      "confidence": null
+    },
+    {
+      "space_id": "B5",
+      "state": "UNCERTAIN",
+      "confidence": null
+    },
+    {
+      "space_id": "B6",
+      "state": "UNCERTAIN",
+      "confidence": null
+    }
+  ]
+}
