@@ -334,6 +334,7 @@
         }
       },
       "required": [
+        "type",
         "facility",
         "spaces"
       ],
@@ -836,6 +837,7 @@
         }
       },
       "required": [
+        "type",
         "facility_id",
         "changes",
         "counts",
@@ -910,6 +912,10 @@
             }
           ]
         },
+        "plan": {
+          "$ref": "#/$defs/Rect",
+          "description": "Where the space sits on its level plan (normalised, origin top-left)."
+        },
         "source_camera_id": {
           "anyOf": [
             {
@@ -935,6 +941,7 @@
         "facility_id",
         "level_id",
         "designation",
+        "plan",
         "current_state",
         "confidence",
         "last_observed_at",
@@ -948,6 +955,7 @@
     },
     "Point": {
       "additionalProperties": false,
+      "description": "Normalised 0\u20261, origin top-left.",
       "properties": {
         "x": {
           "type": "number"

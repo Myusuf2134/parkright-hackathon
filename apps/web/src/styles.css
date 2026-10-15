@@ -1,0 +1,33 @@
+:root {
+  --bg: #f6f7f9; --fg: #15181d; --muted: #5d6673; --card: #fff; --line: #d9dde3;
+  --open: #1f9d55; --occupied: #c8323b; --uncertain: #8a94a3; --accent: #2563eb;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--fg); background: var(--bg);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101317; --fg: #e8ebef; --muted: #98a2b0; --card: #181c22; --line: #2b313a; --uncertain: #6b7482; }
+}
+body { margin: 0; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+header { display: flex; align-items: baseline; gap: 12px; }
+h1 { margin: 0; font-size: 24px; }
+.tagline, .muted { color: var(--muted); }
+.small { font-size: 13px; }
+.notice { background: #fde8e8; color: #7f1d1d; padding: 10px 12px; border-radius: 8px; }
+.badge { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #fff4d6; color: #7a5300; margin: 4px 0; }
+.facilities { list-style: none; padding: 0; }
+.facilities button { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 6px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: inherit; cursor: pointer; font: inherit; }
+.counts { display: inline-flex; gap: 12px; font-size: 14px; }
+.counts .open { color: var(--open); } .counts .occupied { color: var(--occupied); } .counts .uncertain { color: var(--uncertain); }
+.status { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.conn { font-size: 13px; } .conn.live { color: var(--open); } .conn.reconnecting { color: var(--occupied); }
+.link { background: none; border: none; color: var(--accent); padding: 0; cursor: pointer; font: inherit; }
+.plan { width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+.space rect { stroke: var(--bg); stroke-width: 0.6; }
+.space.open rect { fill: var(--open); } .space.occupied rect { fill: var(--occupied); }
+.space.uncertain rect { fill: var(--uncertain); opacity: 0.55; }
+.space text { font-size: 4px; fill: #fff; text-anchor: middle; dominant-baseline: middle; pointer-events: none; font-weight: 600; }
+.space text.q { font-size: 5px; }
+.space.selectable { cursor: pointer; } .space.chosen rect { stroke: var(--accent); stroke-width: 1.4; }
+.choice { margin-top: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.choice button { margin-left: auto; }

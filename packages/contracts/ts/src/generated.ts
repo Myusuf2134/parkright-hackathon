@@ -84,6 +84,8 @@ export interface CameraConfig {
   watches: [string, ...string[]];
 }
 /**
+ * Normalised 0…1, origin top-left.
+ *
  * This interface was referenced by `ParkRightContracts`'s JSON-Schema
  * via the `definition` "Point".
  */
@@ -224,6 +226,7 @@ export interface ParkingSpace {
   last_observed_at: string | null;
   level_id: string;
   model: ModelRef | null;
+  plan: Rect1;
   source_camera_id: string | null;
   space_id: string;
   /**
@@ -242,6 +245,15 @@ export interface ModelRef {
   version: string;
 }
 /**
+ * Where the space sits on its level plan (normalised, origin top-left).
+ */
+export interface Rect1 {
+  h: number;
+  w: number;
+  x: number;
+  y: number;
+}
+/**
  * Sent once on connect: the whole current state, so clients never start from partial data.
  *
  * This interface was referenced by `ParkRightContracts`'s JSON-Schema
@@ -250,7 +262,7 @@ export interface ModelRef {
 export interface FacilitySnapshotMessage {
   facility: Facility;
   spaces: ParkingSpace[];
-  type?: 'facility_snapshot';
+  type: 'facility_snapshot';
 }
 /**
  * This interface was referenced by `ParkRightContracts`'s JSON-Schema
@@ -385,7 +397,7 @@ export interface OccupancyUpdateMessage {
   frame: FrameRef | null;
   published_at: string;
   spaces: ParkingSpace[];
-  type?: 'occupancy_update';
+  type: 'occupancy_update';
 }
 /**
  * Normalised 0…1, origin top-left.
@@ -393,7 +405,7 @@ export interface OccupancyUpdateMessage {
  * This interface was referenced by `ParkRightContracts`'s JSON-Schema
  * via the `definition` "Rect".
  */
-export interface Rect1 {
+export interface Rect2 {
   h: number;
   w: number;
   x: number;

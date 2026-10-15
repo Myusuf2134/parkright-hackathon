@@ -22,7 +22,7 @@ def test_valid_frame_is_accepted_and_updates_state(client, provider):
     o = occupancy(client)
     assert o["counts"] == {"total": 12, "open": 1, "occupied": 11, "uncertain": 0}
     assert state_of(o, "A1") | {"last_observed_at": None} == {
-        "space_id": "A1", "facility_id": "garage-01", "level_id": "L1", "designation": "standard", "current_state": "OPEN",
+        "space_id": "A1", "facility_id": "garage-01", "level_id": "L1", "designation": "standard", "plan": {"x": 0.05, "y": 0.08, "w": 0.13, "h": 0.3}, "current_state": "OPEN",
         "confidence": 0.88, "last_observed_at": None, "source_camera_id": CAMERA, "stale": False, "frame_seq": 0,
         "model": {"provider": "test-arm", "version": "1"},
     }

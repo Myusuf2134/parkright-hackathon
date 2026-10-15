@@ -11,7 +11,7 @@ from .occupancy import OccupancyUpdateMessage, ParkingSpace
 class FacilitySnapshotMessage(BaseModel):
     """Sent once on connect: the whole current state, so clients never start from partial data."""
 
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="forbid", frozen=True, json_schema_serialization_defaults_required=True)
 
     type: Literal["facility_snapshot"] = "facility_snapshot"
     facility: Facility

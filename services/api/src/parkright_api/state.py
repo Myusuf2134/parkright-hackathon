@@ -71,6 +71,7 @@ class FacilityState:
             facility_id=self.facility_id,
             level_id=cfg.level_id,
             designation=cfg.designation,
+            plan=cfg.plan,
             current_state=b.state if live else OccupancyState.UNCERTAIN,
             confidence=b.confidence if live else None,
             last_observed_at=b.observed_at if b else None,

@@ -9,10 +9,9 @@ from .facility import (
     FacilityOccupancy,
     Level,
     LevelConfig,
-    Point,
-    Rect,
     SpaceConfig,
 )
+from .geometry import Point, Rect
 from .frame import (
     FRAME_CONTENT_TYPE,
     FRAME_CONTRACT_VERSION,

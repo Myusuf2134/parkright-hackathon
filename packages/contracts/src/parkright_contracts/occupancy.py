@@ -5,6 +5,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from .geometry import Rect
 from .ids import CameraId, FacilityId, LevelId, SessionId, SpaceId, Timestamp
 
 
@@ -28,7 +29,8 @@ Confidence = float
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    # Outputs always carry every field, so defaulted fields (e.g. message `type`) are required in the schema.
+    model_config = ConfigDict(extra="forbid", frozen=True, json_schema_serialization_defaults_required=True)
 
 
 class ModelRef(_Strict):
@@ -83,6 +85,7 @@ class ParkingSpace(_Strict):
     facility_id: FacilityId
     level_id: LevelId
     designation: SpaceDesignation
+    plan: Rect = Field(description="Where the space sits on its level plan (normalised, origin top-left).")
     current_state: OccupancyState = Field(description="UNCERTAIN whenever evidence is missing, weak or stale.")
     confidence: Confidence | None = Field(ge=0, le=1)
     last_observed_at: Timestamp | None = Field(description="Server time of the last frame that observed this space. Null = never observed.")

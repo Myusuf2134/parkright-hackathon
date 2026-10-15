@@ -4,26 +4,13 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from .geometry import Point, Rect
 from .ids import CameraId, FacilityId, LevelId, SpaceId, Timestamp
 from .occupancy import OccupancyCounts, ParkingSpace, SpaceDesignation
 
 
 class _Model(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
-
-
-class Point(_Model):
-    x: float
-    y: float
-
-
-class Rect(_Model):
-    """Normalised 0…1, origin top-left."""
-
-    x: float
-    y: float
-    w: float = Field(gt=0)
-    h: float = Field(gt=0)
 
 
 class Level(_Model):
