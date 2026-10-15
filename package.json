@@ -10,9 +10,11 @@
     "node": ">=22"
   },
   "scripts": {
-    "contracts:generate": "uv run python packages/contracts/scripts/export_schema.py && npm run generate -w @parkright/contracts",
+    "dev:api": "uv run python -m parkright_api",
     "dev:web": "npm run dev -w @parkright/web",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test:camera": "uv run python scripts/test_camera.py",
+    "contracts:generate": "uv run python packages/contracts/scripts/export_schema.py && npm run generate -w @parkright/contracts",
+    "test": "uv run pytest && npm run check -w @parkright/contracts",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   }
 }

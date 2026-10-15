@@ -15,4 +15,25 @@ virtual parking environment ─▶ virtual camera ─▶ JPEG frame
 **Simulator ground truth never enters that path.** It goes to `/api/v1/evaluation/ground-truth` and
 is used only to score perception.
 
-Status: backend foundation. See [docs/](docs/).
+## Run it locally
+
+Needs [uv](https://docs.astral.sh/uv/) (Python 3.12 is fetched automatically) and Node ≥ 22.
+
+```bash
+uv sync && npm install
+cp .env.example .env                 # set PARKRIGHT_INGEST_TOKEN
+npm run dev:api                      # API  http://127.0.0.1:8400  (OpenAPI: /api/v1/docs)
+npm run dev:web                      # web  http://localhost:5180
+npm run test:camera                  # sends test-pattern frames until the simulator is connected
+npm test                             # Python tests + generated-contract drift check
+npm run typecheck
+```
+
+With no detector connected every space is **UNCERTAIN**. That is the expected first milestone: frames
+flow end to end, and nothing is claimed that no model produced.
+
+## Docs
+
+- [docs/frame-contract.md](docs/frame-contract.md) — the camera contract, ordering, occupancy semantics, ground truth
+- [docs/architecture.md](docs/architecture.md) — layout and decisions
+- [experiments/](experiments/README.md) — detector arms A0–A3
