@@ -1,0 +1,18 @@
+{
+  "name": "parkright-hackathon",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/contracts/ts"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "contracts:generate": "uv run python packages/contracts/scripts/export_schema.py && npm run generate -w @parkright/contracts",
+    "dev:web": "npm run dev -w @parkright/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  }
+}

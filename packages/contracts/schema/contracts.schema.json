@@ -1,0 +1,1028 @@
+{
+  "$defs": {
+    "Camera": {
+      "additionalProperties": false,
+      "properties": {
+        "camera_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "facility_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "virtual",
+            "physical"
+          ],
+          "type": "string"
+        },
+        "last_frame_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "level_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "online": {
+          "description": "A frame arrived within the staleness window.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "camera_id",
+        "facility_id",
+        "level_id",
+        "name",
+        "kind",
+        "online",
+        "last_frame_at"
+      ],
+      "title": "Camera",
+      "type": "object"
+    },
+    "CameraConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "camera_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "virtual",
+            "physical"
+          ],
+          "type": "string"
+        },
+        "level_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "polygons": {
+          "description": "Space outlines in this camera's image (calibration). Empty until the view is fixed.",
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$": {
+              "items": {
+                "$ref": "#/$defs/Point"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "watches": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "camera_id",
+        "level_id",
+        "name",
+        "kind",
+        "watches"
+      ],
+      "title": "CameraConfig",
+      "type": "object"
+    },
+    "EnvironmentPreset": {
+      "additionalProperties": false,
+      "properties": {
+        "intensity": {
+          "description": "0 = none, 1 = the most severe the simulator renders.",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "lighting": {
+          "enum": [
+            "day",
+            "dusk",
+            "night"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "preset_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "weather": {
+          "enum": [
+            "clear",
+            "overcast",
+            "rain",
+            "fog",
+            "snow"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "preset_id",
+        "name",
+        "lighting",
+        "weather",
+        "intensity"
+      ],
+      "title": "EnvironmentPreset",
+      "type": "object"
+    },
+    "Facility": {
+      "additionalProperties": false,
+      "properties": {
+        "address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cameras": {
+          "items": {
+            "$ref": "#/$defs/Camera"
+          },
+          "type": "array"
+        },
+        "counts": {
+          "$ref": "#/$defs/OccupancyCounts"
+        },
+        "facility_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "is_simulated": {
+          "description": "True for a virtual environment. Always label it as such.",
+          "type": "boolean"
+        },
+        "levels": {
+          "items": {
+            "$ref": "#/$defs/Level"
+          },
+          "type": "array"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Point"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Only set for a real, surveyed location (x=longitude, y=latitude)."
+        },
+        "name": {
+          "type": "string"
+        },
+        "updated_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "facility_id",
+        "name",
+        "address",
+        "location",
+        "is_simulated",
+        "levels",
+        "cameras",
+        "counts",
+        "updated_at"
+      ],
+      "title": "Facility",
+      "type": "object"
+    },
+    "FacilityConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cameras": {
+          "items": {
+            "$ref": "#/$defs/CameraConfig"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "facility_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "is_simulated": {
+          "type": "boolean"
+        },
+        "levels": {
+          "items": {
+            "$ref": "#/$defs/LevelConfig"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "spaces": {
+          "items": {
+            "$ref": "#/$defs/SpaceConfig"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "facility_id",
+        "name",
+        "is_simulated",
+        "levels",
+        "spaces",
+        "cameras"
+      ],
+      "title": "FacilityConfig",
+      "type": "object"
+    },
+    "FacilityOccupancy": {
+      "additionalProperties": false,
+      "properties": {
+        "counts": {
+          "$ref": "#/$defs/OccupancyCounts"
+        },
+        "facility_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "generated_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "spaces": {
+          "items": {
+            "$ref": "#/$defs/ParkingSpace"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "facility_id",
+        "counts",
+        "spaces",
+        "generated_at"
+      ],
+      "title": "FacilityOccupancy",
+      "type": "object"
+    },
+    "FacilitySnapshotMessage": {
+      "additionalProperties": false,
+      "description": "Sent once on connect: the whole current state, so clients never start from partial data.",
+      "properties": {
+        "facility": {
+          "$ref": "#/$defs/Facility"
+        },
+        "spaces": {
+          "items": {
+            "$ref": "#/$defs/ParkingSpace"
+          },
+          "type": "array"
+        },
+        "type": {
+          "const": "facility_snapshot",
+          "default": "facility_snapshot",
+          "type": "string"
+        }
+      },
+      "required": [
+        "facility",
+        "spaces"
+      ],
+      "title": "FacilitySnapshotMessage",
+      "type": "object"
+    },
+    "FrameIngestResult": {
+      "additionalProperties": false,
+      "properties": {
+        "camera_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "changed": {
+          "description": "Spaces whose driver-visible state changed.",
+          "type": "integer"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gap": {
+          "description": "seq values skipped since the previous processed frame.",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observations": {
+          "description": "Empty unless outcome is accepted.",
+          "items": {
+            "$ref": "#/$defs/OccupancyObservation"
+          },
+          "type": "array"
+        },
+        "outcome": {
+          "$ref": "#/$defs/FrameOutcome"
+        },
+        "seq": {
+          "type": "integer"
+        },
+        "session_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "outcome",
+        "camera_id",
+        "session_id",
+        "seq",
+        "observations",
+        "model",
+        "changed",
+        "gap",
+        "detail"
+      ],
+      "title": "FrameIngestResult",
+      "type": "object"
+    },
+    "FrameMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "camera_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "captured_at": {
+          "description": "Wall-clock capture time. Used only for staleness, never for ordering.",
+          "format": "date-time",
+          "type": "string"
+        },
+        "seq": {
+          "description": "Strictly increasing within (camera_id, session_id). Gaps allowed.",
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "session_id": {
+          "description": "One run of this camera's stream. Change it whenever seq restarts.",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "sim_time_ms": {
+          "description": "Simulation clock, ms. Non-decreasing within a session.",
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "session_id",
+        "camera_id",
+        "seq",
+        "sim_time_ms",
+        "captured_at"
+      ],
+      "title": "FrameMetadata",
+      "type": "object"
+    },
+    "FrameOutcome": {
+      "description": "accepted: new frame; perception ran; parking state updated.\nduplicate: same (camera, session, seq) already processed. Nothing done; safe to retry.\nout_of_order: seq lower than one already processed in this session. Dropped.\nstale: in order, but captured too long ago. seq recorded; state untouched.\nsuperseded_session: from a session this camera has since replaced. Dropped.",
+      "enum": [
+        "accepted",
+        "duplicate",
+        "out_of_order",
+        "stale",
+        "superseded_session"
+      ],
+      "title": "FrameOutcome",
+      "type": "string"
+    },
+    "FrameRef": {
+      "additionalProperties": false,
+      "properties": {
+        "camera_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "received_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "seq": {
+          "type": "integer"
+        },
+        "session_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "camera_id",
+        "session_id",
+        "seq",
+        "received_at"
+      ],
+      "title": "FrameRef",
+      "type": "object"
+    },
+    "GroundTruthLabel": {
+      "enum": [
+        "occupied",
+        "empty"
+      ],
+      "title": "GroundTruthLabel",
+      "type": "string"
+    },
+    "GroundTruthRecord": {
+      "additionalProperties": false,
+      "description": "What the simulator knows was true when it rendered frame ``seq``.",
+      "properties": {
+        "camera_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "environment_preset": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "session_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "sim_time_ms": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "spaces": {
+          "items": {
+            "$ref": "#/$defs/GroundTruthSpace"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "session_id",
+        "camera_id",
+        "seq",
+        "sim_time_ms",
+        "environment_preset",
+        "spaces"
+      ],
+      "title": "GroundTruthRecord",
+      "type": "object"
+    },
+    "GroundTruthSpace": {
+      "additionalProperties": false,
+      "properties": {
+        "space_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "truth": {
+          "$ref": "#/$defs/GroundTruthLabel"
+        }
+      },
+      "required": [
+        "space_id",
+        "truth"
+      ],
+      "title": "GroundTruthSpace",
+      "type": "object"
+    },
+    "Level": {
+      "additionalProperties": false,
+      "properties": {
+        "facility_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "level_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "ordinal": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "level_id",
+        "facility_id",
+        "name",
+        "ordinal"
+      ],
+      "title": "Level",
+      "type": "object"
+    },
+    "LevelConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "level_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "ordinal": {
+          "default": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "level_id",
+        "name"
+      ],
+      "title": "LevelConfig",
+      "type": "object"
+    },
+    "ModelRef": {
+      "additionalProperties": false,
+      "description": "Which perception implementation produced an observation (e.g. A0 baseline, A3 Cosmos).",
+      "properties": {
+        "provider": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "version"
+      ],
+      "title": "ModelRef",
+      "type": "object"
+    },
+    "OccupancyChange": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "level_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "previous_state": {
+          "$ref": "#/$defs/OccupancyState"
+        },
+        "reason": {
+          "enum": [
+            "observation",
+            "stale"
+          ],
+          "type": "string"
+        },
+        "source_camera_id": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "space_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/OccupancyState"
+        }
+      },
+      "required": [
+        "space_id",
+        "level_id",
+        "state",
+        "previous_state",
+        "confidence",
+        "source_camera_id",
+        "reason"
+      ],
+      "title": "OccupancyChange",
+      "type": "object"
+    },
+    "OccupancyCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "occupied": {
+          "type": "integer"
+        },
+        "open": {
+          "type": "integer"
+        },
+        "total": {
+          "type": "integer"
+        },
+        "uncertain": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total",
+        "open",
+        "occupied",
+        "uncertain"
+      ],
+      "title": "OccupancyCounts",
+      "type": "object"
+    },
+    "OccupancyObservation": {
+      "additionalProperties": false,
+      "description": "One space, as inferred from one camera frame. Produced only by the perception pipeline.",
+      "properties": {
+        "camera_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The model's score for `state`, or null when no model scored it."
+        },
+        "frame_seq": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "model": {
+          "$ref": "#/$defs/ModelRef"
+        },
+        "session_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "sim_time_ms": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "space_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/OccupancyState"
+        }
+      },
+      "required": [
+        "space_id",
+        "state",
+        "confidence",
+        "camera_id",
+        "session_id",
+        "frame_seq",
+        "sim_time_ms",
+        "captured_at",
+        "model"
+      ],
+      "title": "OccupancyObservation",
+      "type": "object"
+    },
+    "OccupancyState": {
+      "description": "OPEN: the camera saw the space and it is empty.\nOCCUPIED: the camera saw a vehicle in the space.\nUNCERTAIN: anything else \u2014 no model, weak evidence, obstruction, stale data,\ncamera silent. UNCERTAIN is never presented as availability.",
+      "enum": [
+        "OPEN",
+        "OCCUPIED",
+        "UNCERTAIN"
+      ],
+      "title": "OccupancyState",
+      "type": "string"
+    },
+    "OccupancyUpdateMessage": {
+      "additionalProperties": false,
+      "description": "Realtime: sent after every accepted frame (changes may be empty) and when evidence goes stale.",
+      "properties": {
+        "changes": {
+          "items": {
+            "$ref": "#/$defs/OccupancyChange"
+          },
+          "type": "array"
+        },
+        "counts": {
+          "$ref": "#/$defs/OccupancyCounts"
+        },
+        "facility_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "frame": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FrameRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The frame that caused this update; null for staleness."
+        },
+        "published_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "occupancy_update",
+          "default": "occupancy_update",
+          "type": "string"
+        }
+      },
+      "required": [
+        "facility_id",
+        "changes",
+        "counts",
+        "frame",
+        "published_at"
+      ],
+      "title": "OccupancyUpdateMessage",
+      "type": "object"
+    },
+    "ParkingSpace": {
+      "additionalProperties": false,
+      "description": "Current belief about one space, as served to clients.",
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current_state": {
+          "$ref": "#/$defs/OccupancyState",
+          "description": "UNCERTAIN whenever evidence is missing, weak or stale."
+        },
+        "designation": {
+          "$ref": "#/$defs/SpaceDesignation"
+        },
+        "facility_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "frame_seq": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Server time of the last frame that observed this space. Null = never observed."
+        },
+        "level_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_camera_id": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "space_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "stale": {
+          "description": "True when current_state is UNCERTAIN only because the evidence is too old.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "space_id",
+        "facility_id",
+        "level_id",
+        "designation",
+        "current_state",
+        "confidence",
+        "last_observed_at",
+        "source_camera_id",
+        "stale",
+        "frame_seq",
+        "model"
+      ],
+      "title": "ParkingSpace",
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Normalised 0\u20261, origin top-left.",
+      "properties": {
+        "h": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "w": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "title": "Rect",
+      "type": "object"
+    },
+    "SpaceConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "designation": {
+          "$ref": "#/$defs/SpaceDesignation",
+          "default": "standard"
+        },
+        "level_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        },
+        "plan": {
+          "$ref": "#/$defs/Rect",
+          "description": "Where the space sits on the level plan."
+        },
+        "space_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "space_id",
+        "level_id",
+        "plan"
+      ],
+      "title": "SpaceConfig",
+      "type": "object"
+    },
+    "SpaceDesignation": {
+      "description": "Who may legally park in a space. Drivers are only offered spaces they may use.",
+      "enum": [
+        "standard",
+        "accessible",
+        "ev",
+        "reserved"
+      ],
+      "title": "SpaceDesignation",
+      "type": "string"
+    }
+  },
+  "title": "ParkRight contracts"
+}

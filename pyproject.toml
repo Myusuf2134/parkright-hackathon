@@ -1,0 +1,34 @@
+[project]
+name = "parkright-hackathon"
+version = "0.1.0"
+description = "ParkRight — NVIDIA × Nebius Global AI Hackathon (workspace root)"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "parkright-contracts",
+    "parkright-perception",
+    "parkright-evaluation",
+    "parkright-api",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0",
+    "httpx>=0.28",
+    "pillow>=12.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/contracts", "services/perception", "services/api", "evaluation"]
+
+[tool.uv.sources]
+parkright-contracts = { workspace = true }
+parkright-perception = { workspace = true }
+parkright-evaluation = { workspace = true }
+parkright-api = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["packages/contracts/tests", "services/perception/tests", "evaluation/tests", "services/api/tests", "tests"]
+addopts = "--import-mode=importlib -q"

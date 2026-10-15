@@ -1,0 +1,170 @@
+{
+  "facility_id": "garage-01",
+  "name": "ParkRight Virtual Garage",
+  "address": null,
+  "is_simulated": true,
+  "levels": [
+    {
+      "level_id": "L1",
+      "name": "Level 1",
+      "ordinal": 0
+    }
+  ],
+  "spaces": [
+    {
+      "space_id": "A1",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.05,
+        "y": 0.08,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "A2",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.2,
+        "y": 0.08,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "A3",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.35,
+        "y": 0.08,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "A4",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.5,
+        "y": 0.08,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "A5",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.65,
+        "y": 0.08,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "A6",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.8,
+        "y": 0.08,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "B1",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.05,
+        "y": 0.62,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "B2",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.2,
+        "y": 0.62,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "B3",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.35,
+        "y": 0.62,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "B4",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.5,
+        "y": 0.62,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "B5",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.65,
+        "y": 0.62,
+        "w": 0.13,
+        "h": 0.3
+      }
+    },
+    {
+      "space_id": "B6",
+      "level_id": "L1",
+      "designation": "standard",
+      "plan": {
+        "x": 0.8,
+        "y": 0.62,
+        "w": 0.13,
+        "h": 0.3
+      }
+    }
+  ],
+  "cameras": [
+    {
+      "camera_id": "cam-01",
+      "level_id": "L1",
+      "name": "Virtual camera 1",
+      "kind": "virtual",
+      "watches": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6"
+      ],
+      "polygons": {}
+    }
+  ]
+}
