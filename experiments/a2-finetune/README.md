@@ -65,9 +65,15 @@ ARTIFACTS="$HOME/.cache/parkright/models/a2-fasterrcnn"
   --manifest "$DATASET/manifest.jsonl" --checkpoint "$ARTIFACTS/best.pt" \
   --split test --test-unlock "$ARTIFACTS/frozen.json" \
   --output "$ARTIFACTS/test.json"
+
+# The same frozen TEST split, using the untouched A0 implementation/configuration.
+.venv/bin/python experiments/a2-finetune/evaluate_a0.py \
+  --manifest "$DATASET/manifest.jsonl" --test-unlock "$ARTIFACTS/frozen.json" \
+  --source "$HOME/.cache/parkright/nvidia-ssd" \
+  --weights "$HOME/.cache/parkright/nvidia-ssd.pt" \
+  --output "$ARTIFACTS/test-a0.json"
 ```
 
 Model binaries and prediction collections stay under `~/.cache/parkright` and
 are never committed. Small final summaries and exact checksums are published in
 this directory after the held-out run.
-
