@@ -1,0 +1,104 @@
+{
+  "name": "a2-sim-smoke",
+  "dataset_seed": 7,
+  "seed_groups": {
+    "train": 2,
+    "validation": 1,
+    "test": 1,
+    "robustness": 1
+  },
+  "density_ranges": {
+    "sparse": [
+      1,
+      3
+    ],
+    "medium": [
+      4,
+      7
+    ],
+    "dense": [
+      8,
+      11
+    ],
+    "full": [
+      12,
+      12
+    ]
+  },
+  "settled": {
+    "layouts": {
+      "sparse": 1,
+      "medium": 1,
+      "dense": 1,
+      "full": 1
+    },
+    "presets": [
+      "clear_day",
+      "overcast",
+      "dusk",
+      "night"
+    ]
+  },
+  "occlusion": {
+    "layouts": 1,
+    "presets": [
+      "clear_day",
+      "dusk"
+    ]
+  },
+  "transitions": {
+    "arrivals": 1,
+    "departures": 1,
+    "progress": [
+      0.35,
+      0.7
+    ],
+    "presets": [
+      "clear_day",
+      "night"
+    ]
+  },
+  "static_empty": {
+    "split": "test",
+    "presets": [
+      "clear_day",
+      "overcast",
+      "dusk",
+      "night"
+    ]
+  },
+  "robustness": {
+    "pillar_occlusion": {
+      "layouts": 1,
+      "presets": [
+        "clear_day",
+        "dusk",
+        "night"
+      ]
+    },
+    "large_vehicles": {
+      "layouts": 1,
+      "kinds": [
+        "pickup",
+        "van"
+      ],
+      "presets": [
+        "clear_day",
+        "overcast",
+        "dusk",
+        "night"
+      ]
+    },
+    "row_patterns": {
+      "patterns": [
+        "row_a_only",
+        "row_b_only",
+        "checkerboard"
+      ],
+      "presets": [
+        "overcast",
+        "night"
+      ]
+    }
+  }
+}
