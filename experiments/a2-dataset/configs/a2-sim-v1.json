@@ -1,0 +1,18 @@
+{
+  "name": "a2-sim-v1",
+  "dataset_seed": 2026101901,
+  "seed_groups": { "train": 20, "validation": 5, "test": 5, "robustness": 4 },
+  "density_ranges": { "sparse": [1, 3], "medium": [4, 7], "dense": [8, 11], "full": [12, 12] },
+  "settled": {
+    "layouts": { "sparse": 2, "medium": 2, "dense": 2, "full": 1 },
+    "presets": ["clear_day", "overcast", "dusk", "night"]
+  },
+  "occlusion": { "layouts": 2, "presets": ["clear_day", "dusk"] },
+  "transitions": { "arrivals": 1, "departures": 1, "progress": [0.35, 0.7], "presets": ["clear_day", "night"] },
+  "static_empty": { "split": "test", "presets": ["clear_day", "overcast", "dusk", "night"] },
+  "robustness": {
+    "pillar_occlusion": { "layouts": 2, "presets": ["clear_day", "dusk", "night"] },
+    "large_vehicles": { "layouts": 2, "kinds": ["pickup", "van"], "presets": ["clear_day", "overcast", "dusk", "night"] },
+    "row_patterns": { "patterns": ["row_a_only", "row_b_only", "checkerboard"], "presets": ["overcast", "night"] }
+  }
+}
