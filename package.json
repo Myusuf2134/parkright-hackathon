@@ -18,6 +18,11 @@
     "test": "uv run pytest && npm run check -w @parkright/contracts",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test:sim": "npm run test -w @parkright/simulator",
-    "test:sim:e2e": "npm run test:e2e -w @parkright/simulator"
+    "test:sim:e2e": "npm run test:e2e -w @parkright/simulator",
+    "calibration:check": "node scripts/generate-calibration.mjs --check",
+    "dev:a0": "scripts/integration/api.sh",
+    "test:integration:stub": "PARKRIGHT_SUITE=stub playwright test -c scripts/integration/playwright.config.ts",
+    "test:integration:real": "playwright test -c scripts/integration/playwright.config.ts",
+    "lint": "uvx --from ruff==0.17.0 ruff check --isolated --select E4,E7,E9,F --ignore E741 services tests experiments"
   }
 }
