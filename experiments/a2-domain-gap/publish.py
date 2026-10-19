@@ -3,7 +3,6 @@
 import argparse
 import csv
 import json
-import shutil
 from pathlib import Path
 
 
@@ -13,7 +12,7 @@ def write_json(path, value):
 
 def write_csv(path, rows):
     with path.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -117,7 +116,8 @@ def main():
             for result in alternatives
         ],
     )
-    shutil.copyfile(args.input / "object-scale.csv", args.output / "object-scale.csv")
+    with (args.input / "object-scale.csv").open(newline="") as handle:
+        write_csv(args.output / "object-scale.csv", list(csv.DictReader(handle)))
 
 
 if __name__ == "__main__":
