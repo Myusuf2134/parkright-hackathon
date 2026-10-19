@@ -81,12 +81,18 @@ uv sync --frozen --all-packages --all-extras      # includes torch 2.14.1 / torc
 # Plain `uv sync` / `uv run` without --all-extras removes torch again; use the flags below for A0.
 A0="uv run --frozen --all-packages --all-extras"
 
-git clone https://github.com/NVIDIA/DeepLearningExamples.git /tmp/parkright-nvidia-ssd
-git -C /tmp/parkright-nvidia-ssd checkout a6c678ef0323cdaae053e9eed34dce94488ad313
-curl -L --fail https://api.ngc.nvidia.com/v2/models/nvidia/ssd_pyt_ckpt_amp/versions/20.06.0/files/nvidia_ssdpyt_amp_200703.pt \
-  -o /tmp/parkright-nvidia-ssd.pt
-export PARKRIGHT_A0_SOURCE=/tmp/parkright-nvidia-ssd
-export PARKRIGHT_A0_WEIGHTS=/tmp/parkright-nvidia-ssd.pt
+# Durable cache outside /tmp (macOS deletes /tmp files not accessed for ~3 days).
+# Existing artifacts are reused; the loader enforces the source revision and SHA-256.
+CACHE="$HOME/.cache/parkright"; mkdir -p "$CACHE"
+[ -d "$CACHE/nvidia-ssd/.git" ] || {
+  git clone --filter=blob:none --no-checkout https://github.com/NVIDIA/DeepLearningExamples.git "$CACHE/nvidia-ssd"
+  git -C "$CACHE/nvidia-ssd" checkout a6c678ef0323cdaae053e9eed34dce94488ad313
+}
+[ -f "$CACHE/nvidia-ssd.pt" ] || curl -L --fail \
+  https://api.ngc.nvidia.com/v2/models/nvidia/ssd_pyt_ckpt_amp/versions/20.06.0/files/nvidia_ssdpyt_amp_200703.pt \
+  -o "$CACHE/nvidia-ssd.pt"
+export PARKRIGHT_A0_SOURCE="$CACHE/nvidia-ssd"
+export PARKRIGHT_A0_WEIGHTS="$CACHE/nvidia-ssd.pt"
 export PARKRIGHT_A0_DEVICE=cpu
 PARKRIGHT_PERCEPTION_PROVIDER=a0 $A0 python -m parkright_api
 ```

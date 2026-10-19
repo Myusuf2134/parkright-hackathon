@@ -7,7 +7,7 @@ No threshold was lowered and experimental OPEN remains disabled.
 
 ## Branch and baseline
 
-Worktree: `/private/tmp/parkright-integration`; branch `integration/a0-vertical-slice`.
+Worktree: `~/Desktop/parkright-worktrees/integration-a0-vertical-slice` (moved out of /tmp); branch `integration/a0-vertical-slice`.
 Base `e5cd87d`; simulator `a9e0a61` merged as `4493351`; A0 `620b060` merged as `2dbec2e`.
 All four original local branch tips matched the reviewed values before implementation.
 Existing feature branches and main remain unchanged. No push or deployment performed.
@@ -79,22 +79,27 @@ The measured workstation used Node 25.9.0; Vitest warned about that unsupported 
 although all its tests passed. GPU execution is not validated.
 
 ```sh
-cd /private/tmp/parkright-integration
+cd ~/Desktop/parkright-worktrees/integration-a0-vertical-slice
 uv sync --frozen --all-packages --all-extras
 npm ci --ignore-scripts
 npx playwright install chromium
 npm run calibration:check
 
-# If these artifacts already exist, reuse the verified checkout and checkpoint.
-git clone https://github.com/NVIDIA/DeepLearningExamples.git /tmp/parkright-nvidia-ssd
-git -C /tmp/parkright-nvidia-ssd checkout a6c678ef0323cdaae053e9eed34dce94488ad313
-curl -L --fail https://api.ngc.nvidia.com/v2/models/nvidia/ssd_pyt_ckpt_amp/versions/20.06.0/files/nvidia_ssdpyt_amp_200703.pt \
-  -o /tmp/parkright-nvidia-ssd.pt
-export PARKRIGHT_A0_SOURCE=/tmp/parkright-nvidia-ssd
-export PARKRIGHT_A0_WEIGHTS=/tmp/parkright-nvidia-ssd.pt
+# Durable cache outside /tmp (macOS deletes /tmp files not accessed for ~3 days).
+# Existing artifacts are reused; the loader enforces the source revision and SHA-256.
+CACHE="$HOME/.cache/parkright"; mkdir -p "$CACHE"
+[ -d "$CACHE/nvidia-ssd/.git" ] || {
+  git clone --filter=blob:none --no-checkout https://github.com/NVIDIA/DeepLearningExamples.git "$CACHE/nvidia-ssd"
+  git -C "$CACHE/nvidia-ssd" checkout a6c678ef0323cdaae053e9eed34dce94488ad313
+}
+[ -f "$CACHE/nvidia-ssd.pt" ] || curl -L --fail \
+  https://api.ngc.nvidia.com/v2/models/nvidia/ssd_pyt_ckpt_amp/versions/20.06.0/files/nvidia_ssdpyt_amp_200703.pt \
+  -o "$CACHE/nvidia-ssd.pt"
+export PARKRIGHT_A0_SOURCE="$CACHE/nvidia-ssd"
+export PARKRIGHT_A0_WEIGHTS="$CACHE/nvidia-ssd.pt"
 export PARKRIGHT_A0_DEVICE=cpu
 export PARKRIGHT_INGEST_TOKEN=local-demo-only-change-me
-npm run dev:a0
+npm run dev:a0      # these two paths are also the launcher defaults; env vars override
 ```
 
 In another terminal in the same worktree:
