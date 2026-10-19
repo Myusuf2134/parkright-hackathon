@@ -9,6 +9,7 @@ import threading
 from dataclasses import asdict
 from pathlib import Path
 from time import perf_counter
+from datetime import UTC, datetime
 
 import numpy as np
 from parkright_contracts import ModelRef, OccupancyState
@@ -43,13 +44,84 @@ class A0Provider:
         self.last_error = None
         # Protect model init/inference, including requests continuing after API timeout.
         self._lock = threading.Lock()
+        self._active: asyncio.Task[list[SpaceInference]] | None = None
+        self._phase = "cold"
+        self._warm = False
+        self._loaded = False
+        self._snapshot: dict = {}
+        self.last_detections: list[dict] = []
+        self._startup_ms: float | None = None
+
+    def diagnostics(self):
+        return {
+            "phase": self._phase,
+            "weights_available": getattr(self.detector, "artifacts_available", True),
+            "model_loaded": self._loaded,
+            "warmup_successful": self._warm,
+            "inference_ready": self._phase in ("ready", "degraded")
+            and self._warm
+            and not (self._active and not self._active.done()),
+            "startup_ms": self._startup_ms,
+            "identity": self.detector.identity,
+            "artifact_error": getattr(self.detector, "reason", None),
+            "thresholds": asdict(self.config),
+            **self._snapshot,
+        }
+
+    async def warmup(self):
+        self._phase = "warming"
+        start = perf_counter()
+        try:
+            await asyncio.to_thread(self._warmup_locked)
+            self._loaded = self._warm = True
+            self._phase = "ready"
+        except Exception as exc:
+            self._phase = "unavailable"
+            self._snapshot = {"error": type(exc).__name__}
+            log.exception("NVIDIA warm-up failed")
+        self._startup_ms = (perf_counter() - start) * 1000
+
+    def _warmup_locked(self):
+        with self._lock:
+            self.detector.detect(Image.new("RGB", (300, 300), (100, 100, 100)))
 
     @property
     def model(self):
         return self._model
 
     async def infer(self, frame: Frame, view: CameraView) -> list[SpaceInference]:
-        return await asyncio.to_thread(self._infer_locked, frame, view)
+        if self._phase in ("warming", "unavailable") or (
+            self._active and not self._active.done()
+        ):
+            raise TimeoutError("perception busy or unavailable")
+        self._active = asyncio.create_task(
+            asyncio.to_thread(self._infer_locked, frame, view)
+        )
+        try:
+            output = await asyncio.shield(self._active)
+        except asyncio.CancelledError:
+            self._phase = "degraded"
+            self._snapshot = {
+                "error": "timeout; worker output discarded",
+                "frame_seq": frame.metadata.seq,
+            }
+            raise
+        self._phase = "degraded" if self.last_error else "ready"
+        self._loaded = self._loaded or (
+            bool(self.last_timings.get("inference_ms")) and not self.last_error
+        )
+        self._snapshot = {
+            "error": self.last_error,
+            "frame_seq": frame.metadata.seq,
+            "session_id": frame.metadata.session_id,
+            "last_frame_at": frame.metadata.captured_at.isoformat(),
+            "last_inference_at": datetime.now(UTC).isoformat(),
+            "timings": self.last_timings.copy(),
+            "detections": self.last_detections,
+            "detection_count": len(self.last_detections),
+            "uncertain_count": sum(r.state is OccupancyState.UNCERTAIN for r in output),
+        }
+        return output
 
     def _infer_locked(self, frame, view):
         with self._lock:
@@ -71,6 +143,7 @@ class A0Provider:
             for s in view.spaces
         ]
         self.last_error = None
+        self.last_detections = []
         stage = "decode_ms"
         stage_start = started
         try:
@@ -93,6 +166,11 @@ class A0Provider:
             times[stage] = (perf_counter() - stage_start) * 1000
             stage, stage_start = "inference_ms", perf_counter()
             result = self.detector.detect(image)
+            self.last_detections = [
+                asdict(d)
+                for d in result.detections
+                if d.confidence >= self.config.ambiguity_confidence
+            ]
             times[stage] = (perf_counter() - stage_start) * 1000
             stage, stage_start = "postprocess_ms", perf_counter()
             # Invalid detector output makes the entire frame untrustworthy.
@@ -204,8 +282,10 @@ def from_environment():
     source = os.environ.get("PARKRIGHT_A0_SOURCE")
     weights = os.environ.get("PARKRIGHT_A0_WEIGHTS")
     if not source or not weights:
-        raise ValueError(
-            "a0 requires PARKRIGHT_A0_SOURCE and PARKRIGHT_A0_WEIGHTS; use none without artifacts"
+        return A0Provider(
+            UnavailableDetector(
+                "PARKRIGHT_A0_SOURCE and PARKRIGHT_A0_WEIGHTS are required"
+            )
         )
     config_path = os.environ.get("PARKRIGHT_A0_CONFIG")
     config = (
@@ -213,12 +293,27 @@ def from_environment():
         if config_path
         else A0Config()
     )
-    return A0Provider(
-        NvidiaSSD(
+    detector: Detector
+    try:
+        detector = NvidiaSSD(
             Path(source),
             Path(weights),
             os.environ.get("PARKRIGHT_A0_DEVICE", "cpu"),
             config,
-        ),
-        config,
-    )
+        )
+    except Exception as exc:
+        detector = UnavailableDetector(type(exc).__name__ + ": " + str(exc))
+    return A0Provider(detector, config)
+
+
+class UnavailableDetector:
+    """Failure state only. Never returns detections or substitutes model output."""
+
+    identity = "nvidia-ssd300-artifacts-unavailable"
+    artifacts_available = False
+
+    def __init__(self, reason):
+        self.reason = reason
+
+    def detect(self, image):
+        raise RuntimeError(self.reason)

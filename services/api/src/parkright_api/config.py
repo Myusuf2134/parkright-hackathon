@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     port: int = 8400
 
     facility_fixtures: list[Path] = Field(default_factory=lambda: [MVP_FIXTURE])
+    calibration_file: Path | None = None
     perception_provider: str = "none"
     perception_timeout_s: float = Field(default=10.0, gt=0)
 
