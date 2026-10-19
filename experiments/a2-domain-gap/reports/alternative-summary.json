@@ -1,0 +1,70 @@
+[
+  {
+    "model": "ssdlite320-mobilenet-v3-large",
+    "weights": "SSDLite320_MobileNet_V3_Large_Weights.COCO_V1",
+    "runtime": "PyTorch/torchvision CPU; CUDA-compatible without application integration",
+    "frames": 18,
+    "positive_frames": 13,
+    "positive_frames_with_vehicle": 1,
+    "all_frames_with_vehicle": 2,
+    "highest_vehicle_score": 0.0863354429602623,
+    "space_overlap_proxy": {
+      "note": "Any intersection with a calibrated ROI; not an IoU-qualified final occupancy metric.",
+      "occupied_spaces": 116,
+      "occupied_spaces_with_vehicle_overlap": 4,
+      "occupied_space_recall": 0.034482758620689655,
+      "empty_spaces": 100,
+      "empty_spaces_with_vehicle_overlap": 3,
+      "empty_space_overlap_rate": 0.03,
+      "median_matched_confidence": 0.07366004213690758
+    },
+    "a0_gate_proxy": {
+      "note": "Alternative-model boxes evaluated with A0 occupied confidence 0.65 and polygon coverage 0.45; diagnostic only.",
+      "occupied_spaces": 116,
+      "occupied_spaces_passing_gate": 0,
+      "occupied_space_recall": 0.0,
+      "empty_spaces": 100,
+      "empty_spaces_passing_gate": 0,
+      "empty_space_false_occupied_rate": 0.0
+    },
+    "inference_ms": {
+      "mean": 78.438,
+      "median": 78.133,
+      "p95": 85.012
+    }
+  },
+  {
+    "model": "fasterrcnn-resnet50-fpn-v2",
+    "weights": "FasterRCNN_ResNet50_FPN_V2_Weights.COCO_V1",
+    "runtime": "PyTorch/torchvision CPU; CUDA-compatible without application integration",
+    "frames": 18,
+    "positive_frames": 13,
+    "positive_frames_with_vehicle": 13,
+    "all_frames_with_vehicle": 14,
+    "highest_vehicle_score": 0.9386016726493835,
+    "space_overlap_proxy": {
+      "note": "Any intersection with a calibrated ROI; not an IoU-qualified final occupancy metric.",
+      "occupied_spaces": 116,
+      "occupied_spaces_with_vehicle_overlap": 116,
+      "occupied_space_recall": 1.0,
+      "empty_spaces": 100,
+      "empty_spaces_with_vehicle_overlap": 6,
+      "empty_space_overlap_rate": 0.06,
+      "median_matched_confidence": 0.6313788294792175
+    },
+    "a0_gate_proxy": {
+      "note": "Alternative-model boxes evaluated with A0 occupied confidence 0.65 and polygon coverage 0.45; diagnostic only.",
+      "occupied_spaces": 116,
+      "occupied_spaces_passing_gate": 37,
+      "occupied_space_recall": 0.31896551724137934,
+      "empty_spaces": 100,
+      "empty_spaces_passing_gate": 0,
+      "empty_space_false_occupied_rate": 0.0
+    },
+    "inference_ms": {
+      "mean": 3065.569,
+      "median": 3059.744,
+      "p95": 3917.277
+    }
+  }
+]
