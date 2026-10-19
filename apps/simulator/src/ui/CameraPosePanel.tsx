@@ -13,11 +13,14 @@ const SLIDERS: [string, (p: CameraPose) => number, (p: CameraPose, v: number) =>
 ];
 
 export function CameraPosePanel() {
-  const { lab } = useLab();
+  const { lab, streamer } = useLab();
+  useVersion(streamer);
   useVersion(lab.world);
   const pose = lab.world.spec.camera;
   return (
     <Panel title="CAM-01 MOUNT" tag={<span className="muted">fixed infrastructure camera</span>}>
+      {streamer.health?.calibration && <p>Calibrated inference locks this mount. Restore the default pose if a scene link changed it.</p>}
+      <fieldset disabled={!!streamer.health?.calibration}>
       {SLIDERS.map(([label, get, set, min, max, step]) => (
         <label key={label} className="slider">
           <span>{label}</span>
@@ -41,6 +44,9 @@ export function CameraPosePanel() {
             </option>
           ))}
         </select>
+        </div>
+        </fieldset>
+        <div className="row">
         <button className="ghost" onClick={() => lab.world.setCamera({ ...DEFAULT_POSE, position: [...DEFAULT_POSE.position] })}>
           Default mount
         </button>

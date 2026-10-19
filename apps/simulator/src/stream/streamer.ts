@@ -10,6 +10,7 @@
  * when the next tick fires, that tick is skipped rather than queued.
  */
 import type { FrameMetadata, FrameOutcome, ModelRef } from '@parkright/contracts';
+import { DatasetExport } from '../evaluation/export.ts';
 import { postGroundTruth, toGroundTruthRecord } from '../evaluation/groundTruth.ts';
 import type { Lab } from '../lab.ts';
 import { CAMERA_ID } from '../sim/facility.ts';
@@ -41,6 +42,8 @@ export interface ApiHealth {
   frame_contract_version: number;
   perception: ModelRef;
   evaluation_enabled: boolean;
+  calibration?: {version: string; pose: unknown; polygons: Record<string,{x:number;y:number}[]>};
+  inference?: {phase:string; frame_seq?:number; session_id?:string; inference_ready:boolean; model_loaded:boolean; startup_ms:number; detection_count?:number; uncertain_count?:number; last_frame_at?:string; last_inference_at?:string; timings?:Record<string,number>; detections?:{label:string;confidence:number;box:number[]}[]};
 }
 
 export type ApiState = 'unknown' | 'connected' | 'disconnected';
@@ -48,6 +51,7 @@ export type ApiState = 'unknown' | 'connected' | 'disconnected';
 type Listener = () => void;
 
 export class FrameStreamer {
+  readonly dataset = new DatasetExport();
   rate: StreamRate = 0;
   sessionId = newSessionId();
   nextSeq = 0;
@@ -121,9 +125,17 @@ export class FrameStreamer {
   /** Captures one frame and sends it. Returns null if a frame is already in flight. */
   async captureAndSend(): Promise<FrameLogEntry | null> {
     if (this.inFlight) return null;
+    const captureStarted = performance.now();
     this.inFlight = true;
     this.changed();
     try {
+      const calibration = this.health?.calibration;
+      if (calibration) {
+        if (JSON.stringify(this.lab.world.spec.camera) !== JSON.stringify(calibration.pose))
+          throw new Error('CALIBRATION MISMATCH: restore the canonical mount before capture');
+
+      }
+      const scenario = structuredClone(this.lab.world.spec);
       const frame = await this.lab.captureFrame();
       if (frame.simTimeMs < this.lastSimTimeMs) this.newSession();
       this.lastSimTimeMs = frame.simTimeMs;
@@ -137,6 +149,14 @@ export class FrameStreamer {
       if (this.lastFrameUrl) URL.revokeObjectURL(this.lastFrameUrl);
       this.lastFrameUrl = URL.createObjectURL(frame.jpeg);
 
+      if (calibration) {
+        const binding = await fetch(`${this.apiBase}/api/v1/cameras/${CAMERA_ID}/calibration`, {
+          method:'POST', headers:{'content-type':'application/json'},
+          body:JSON.stringify({session_id:this.sessionId,version:calibration.version,pose:this.lab.world.spec.camera}),
+          signal:AbortSignal.timeout(3000),
+        });
+        if (!binding.ok) throw new Error('calibration binding rejected');
+      }
       const started = performance.now();
       const upload = await uploadFrame(this.apiBase, metadata, frame.jpeg);
       const entry: FrameLogEntry = {
@@ -163,6 +183,11 @@ export class FrameStreamer {
         entry.groundTruthDetail = gt.ok ? null : gt.message;
       }
 
+      if (upload.kind === 'response' && upload.result.outcome === 'accepted') {
+        const diagnostics = await fetch(`${this.apiBase}/api/v1/perception/status`, {signal:AbortSignal.timeout(3000)}).then(r=>r.json()).catch(()=>null);
+        if (this.health && diagnostics) this.health = {...this.health, inference:diagnostics};
+        await this.dataset.add(frame, metadata, upload.result, scenario, diagnostics, performance.now()-captureStarted);
+      }
       this.log = [entry, ...this.log].slice(0, 40);
       return entry;
     } catch (e) {

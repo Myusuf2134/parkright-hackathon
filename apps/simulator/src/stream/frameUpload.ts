@@ -60,7 +60,7 @@ export type UploadOutcome =
   | { kind: 'error'; status: number; code: string; message: string }
   | { kind: 'network'; message: string };
 
-export async function uploadFrame(apiBase: string, metadata: FrameMetadata, jpeg: Blob, timeoutMs = 8000): Promise<UploadOutcome> {
+export async function uploadFrame(apiBase: string, metadata: FrameMetadata, jpeg: Blob, timeoutMs = 15000): Promise<UploadOutcome> {
   const form = buildFrameForm(metadata, jpeg);
   const url = `${apiBase}/api/v1/cameras/${encodeURIComponent(metadata.camera_id)}/frames`;
   let res: Response;

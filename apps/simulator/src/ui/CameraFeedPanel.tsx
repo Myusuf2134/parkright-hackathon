@@ -51,7 +51,7 @@ export function CameraFeedPanel() {
             </button>
           ))}
         </div>
-        <button className="primary" onClick={() => void streamer.captureAndSend()} disabled={streamer.inFlight} data-testid="send-frame">
+        <button className="primary" onClick={() => void streamer.captureAndSend()} disabled={streamer.inFlight || (!!streamer.health?.calibration && !streamer.health?.inference?.inference_ready)} data-testid="send-frame">
           Capture &amp; send
         </button>
       </div>
