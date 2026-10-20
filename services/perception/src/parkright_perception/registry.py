@@ -10,8 +10,15 @@ from collections.abc import Callable
 from .provider import PerceptionProvider
 from .providers.uncertain import UncertainProvider
 
+def _a0() -> PerceptionProvider:
+    from .a0.provider import from_environment
+
+    return from_environment()
+
+
 _PROVIDERS: dict[str, Callable[[], PerceptionProvider]] = {
     "none": UncertainProvider,
+    "a0": _a0,
 }
 
 

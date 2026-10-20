@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PerceptionPanel } from './PerceptionPanel.tsx';
 import { CameraFeedPanel } from './CameraFeedPanel.tsx';
 import { CameraPosePanel } from './CameraPosePanel.tsx';
 import { useLab, useVersion } from './context.ts';
@@ -95,6 +96,7 @@ export function App() {
 
         <aside className="sidebar">
           <CameraFeedPanel />
+          <PerceptionPanel />
           <SimulationPanel />
           <OccupancyPanel />
           <GroundTruthPanel />

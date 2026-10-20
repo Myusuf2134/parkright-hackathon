@@ -128,6 +128,19 @@ async def ingest_frame(request: Request, camera_id: Annotated[CameraId, Path()])
     if metadata.camera_id != camera_id:
         raise _bad("camera_mismatch", f'metadata.camera_id "{metadata.camera_id}" does not match the URL')
 
+    calibration = request.app.state.calibration
+    if calibration and camera_id == calibration.data['camera_id']:
+        if metadata.session_id not in calibration.sessions:
+            raise ApiError(409, 'calibration_required', 'Bind this session to the canonical camera calibration before uploading')
+        import io
+        from PIL import Image, UnidentifiedImageError
+        try:
+            with Image.open(io.BytesIO(jpeg)) as decoded:
+                if decoded.size != (calibration.data['pose']['width'], calibration.data['pose']['height']):
+                    raise ApiError(409, 'calibration_mismatch', 'JPEG dimensions differ from calibration')
+        except (UnidentifiedImageError, OSError) as exc:
+            raise ApiError(415, 'invalid_jpeg', 'JPEG cannot be decoded') from exc
+
     tracker = request.app.state.tracker
     provider: PerceptionProvider = request.app.state.perception
     base = {"camera_id": camera_id, "session_id": metadata.session_id, "seq": metadata.seq, "observations": [], "model": None, "changed": 0}

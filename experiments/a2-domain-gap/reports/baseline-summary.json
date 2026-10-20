@@ -1,0 +1,359 @@
+{
+  "schema": "parkright-a2-domain-gap-report-v1",
+  "source_schema": "parkright-evaluation-v1",
+  "source_sha256": "5d48c474a26b134b54aeb2783519dc6ed3f93dc6c51623c2fe1c6e22321e0c49",
+  "model_identity": "nvidia-ssd300:20.06.0:a6c678ef0323cdaae053e9eed34dce94488ad313:8167ab3781fde764796931c661629b166dd192eac81fcb846b0f4b474c8cc616:torch-2.14.1-cpu",
+  "baseline": {
+    "frames": 18,
+    "positive_frames": 13,
+    "total_detections_at_existing_0.01_floor": 12940,
+    "vehicle_detections_at_existing_0.01_floor": 128,
+    "frames_with_any_vehicle_detection": 14,
+    "frames_with_vehicle_at_or_above_0.65": 0,
+    "highest_vehicle_score": 0.43547794222831726,
+    "vehicle_confidence_histogram": [
+      {
+        "from_inclusive": 0.0,
+        "to_exclusive": 0.01,
+        "count": 0
+      },
+      {
+        "from_inclusive": 0.01,
+        "to_exclusive": 0.02,
+        "count": 105
+      },
+      {
+        "from_inclusive": 0.02,
+        "to_exclusive": 0.05,
+        "count": 21
+      },
+      {
+        "from_inclusive": 0.05,
+        "to_exclusive": 0.1,
+        "count": 1
+      },
+      {
+        "from_inclusive": 0.1,
+        "to_exclusive": 0.2,
+        "count": 0
+      },
+      {
+        "from_inclusive": 0.2,
+        "to_exclusive": 0.4,
+        "count": 0
+      },
+      {
+        "from_inclusive": 0.4,
+        "to_exclusive": 0.65,
+        "count": 1
+      },
+      {
+        "from_inclusive": 0.65,
+        "to_exclusive": 1.000001,
+        "count": 0
+      }
+    ],
+    "occupied_roi_top_class_confusion": {
+      "keyboard": 56,
+      "chair": 33,
+      "cell phone": 13,
+      "book": 11,
+      "traffic light": 2,
+      "bed": 1
+    },
+    "inference_ms": {
+      "mean": 90.256,
+      "median": 89.21,
+      "p95": 118.092
+    }
+  },
+  "object_scale": {
+    "samples": 116,
+    "ssd_min_anchor_scale_px": 21,
+    "all": {
+      "count": 116,
+      "source_width_px_median": 174.5,
+      "source_height_px_median": 123.0,
+      "ssd_width_px_median": 40.898,
+      "ssd_height_px_median": 51.25,
+      "ssd_width_below_21_count": 0,
+      "area_percent_median": 1.90088
+    },
+    "far": {
+      "count": 70,
+      "source_width_px_median": 161.0,
+      "source_height_px_median": 93.0,
+      "ssd_width_px_median": 37.734,
+      "ssd_height_px_median": 38.75,
+      "ssd_width_below_21_count": 0,
+      "area_percent_median": 1.66992
+    },
+    "near": {
+      "count": 46,
+      "source_width_px_median": 329.0,
+      "source_height_px_median": 231.0,
+      "ssd_width_px_median": 77.109,
+      "ssd_height_px_median": 96.25,
+      "ssd_width_below_21_count": 0,
+      "area_percent_median": 8.19667
+    }
+  },
+  "scale_confidence": {
+    "method": "Pearson correlation of difference-derived SSD-width and top raw vehicle score within each occupied ROI; missing vehicle candidates score zero",
+    "objects": 116,
+    "pearson_ssd_width_vs_vehicle_confidence": 0.004263157550453343,
+    "groups": {
+      "far": {
+        "objects": 70,
+        "vehicle_candidate_present": 46,
+        "maximum_vehicle_confidence": 0.02317122556269169,
+        "median_vehicle_confidence_including_zero": 0.013026343658566475
+      },
+      "near": {
+        "objects": 46,
+        "vehicle_candidate_present": 14,
+        "maximum_vehicle_confidence": 0.0532500296831131,
+        "median_vehicle_confidence_including_zero": 0.0
+      }
+    }
+  },
+  "preprocessing_audit": {
+    "decoded_mode_observed": [
+      "RGB"
+    ],
+    "decoded_dimensions_observed": [
+      [
+        1280,
+        720
+      ]
+    ],
+    "jpeg_decoder": "Pillow Image.open; decoded image explicitly converted to RGB by research audit",
+    "production_decode": "Pillow Image.open(...).convert('RGB') in A0 provider",
+    "model_resize": "Pillow resize to 300x300, bilinear; full-frame stretch, no letterbox",
+    "model_array": "HWC RGB numpy.float32",
+    "normalization": "uint8 [0,255] /255 *2 -1 => float32 [-1,1]",
+    "tensor_layout": "NCHW RGB",
+    "alpha": "discarded by explicit RGB conversion",
+    "exif": "Pillow decode only; no ImageOps.exif_transpose in production",
+    "aspect_effect": "1280x720 becomes 300x300: y is magnified 1.7778x relative to x",
+    "ssd_input": [
+      300,
+      300
+    ],
+    "ssd_feature_maps": [
+      38,
+      19,
+      10,
+      5,
+      3,
+      1
+    ],
+    "ssd_anchor_scales_px": [
+      21,
+      45,
+      99,
+      153,
+      207,
+      261,
+      315
+    ]
+  },
+  "synthetic_image_metrics": {
+    "luminance_mean": {
+      "mean": 70.25956,
+      "min": 37.7407,
+      "max": 97.6839
+    },
+    "luminance_std": {
+      "mean": 43.76862,
+      "min": 32.8891,
+      "max": 55.5329
+    },
+    "mean_saturation": {
+      "mean": 74.17627,
+      "min": 18.2236,
+      "max": 139.7906
+    },
+    "mean_edge_strength": {
+      "mean": 7.86356,
+      "min": 6.6539,
+      "max": 9.1985
+    },
+    "edge_density_gt_20": {
+      "mean": 0.09319,
+      "min": 0.07943,
+      "max": 0.11001
+    }
+  },
+  "real_control": {
+    "sha256": "c02019c4979c191eb739ddd944445ef408dad5679acab6fd520ef9d434bfbc63",
+    "image_metrics": {
+      "width": 810,
+      "height": 1080,
+      "mode": "RGB",
+      "source_dtype": "uint8",
+      "source_range": [
+        0,
+        255
+      ],
+      "channel_mean_rgb": [
+        117.344,
+        115.6105,
+        118.3434
+      ],
+      "luminance_mean": 116.4296,
+      "luminance_std": 68.0048,
+      "mean_saturation": 71.2351,
+      "mean_edge_strength": 26.7435,
+      "edge_density_gt_20": 0.402307,
+      "exif_orientation": null,
+      "has_alpha": false
+    },
+    "inference_ms": 100.492,
+    "top_detections": [
+      {
+        "class_id": 1,
+        "label": "person",
+        "confidence": 0.9996570348739624,
+        "box": [
+          0.05584258,
+          0.37801325,
+          0.28027195,
+          0.83336735
+        ],
+        "box_width_300": 67.329,
+        "box_height_300": 136.606
+      },
+      {
+        "class_id": 6,
+        "label": "bus",
+        "confidence": 0.97408127784729,
+        "box": [
+          0.03130859,
+          0.20883605,
+          0.98131913,
+          0.72004473
+        ],
+        "box_width_300": 285.003,
+        "box_height_300": 153.363
+      },
+      {
+        "class_id": 1,
+        "label": "person",
+        "confidence": 0.9322985410690308,
+        "box": [
+          0.27595285,
+          0.37578684,
+          0.40953717,
+          0.80131882
+        ],
+        "box_width_300": 40.075,
+        "box_height_300": 127.66
+      },
+      {
+        "class_id": 1,
+        "label": "person",
+        "confidence": 0.7688958644866943,
+        "box": [
+          0.84854877,
+          0.3548097,
+          1.0,
+          0.80540496
+        ],
+        "box_width_300": 45.435,
+        "box_height_300": 135.179
+      },
+      {
+        "class_id": 1,
+        "label": "person",
+        "confidence": 0.11740251630544662,
+        "box": [
+          0.89320815,
+          0.39479575,
+          0.99876022,
+          0.66032982
+        ],
+        "box_width_300": 31.666,
+        "box_height_300": 79.66
+      },
+      {
+        "class_id": 1,
+        "label": "person",
+        "confidence": 0.11208284646272659,
+        "box": [
+          0.93431687,
+          0.3712433,
+          0.99763632,
+          0.73427361
+        ],
+        "box_width_300": 18.996,
+        "box_height_300": 108.909
+      },
+      {
+        "class_id": 1,
+        "label": "person",
+        "confidence": 0.10545290261507034,
+        "box": [
+          0.92276752,
+          0.40490884,
+          0.96929824,
+          0.48449212
+        ],
+        "box_width_300": 13.959,
+        "box_height_300": 23.875
+      },
+      {
+        "class_id": 1,
+        "label": "person",
+        "confidence": 0.1033438965678215,
+        "box": [
+          0.9096595,
+          0.38574001,
+          0.98894656,
+          0.50222355
+        ],
+        "box_width_300": 23.786,
+        "box_height_300": 34.945
+      },
+      {
+        "class_id": 59,
+        "label": "potted plant",
+        "confidence": 0.1030295118689537,
+        "box": [
+          0.81695962,
+          0.12887889,
+          0.99250269,
+          0.27582592
+        ],
+        "box_width_300": 52.663,
+        "box_height_300": 44.084
+      },
+      {
+        "class_id": 68,
+        "label": "cell phone",
+        "confidence": 0.09281449764966965,
+        "box": [
+          0.1509338,
+          0.41007173,
+          0.17014128,
+          0.43241012
+        ],
+        "box_width_300": 5.762,
+        "box_height_300": 6.702
+      }
+    ],
+    "top_vehicle": {
+      "class_id": 6,
+      "label": "bus",
+      "confidence": 0.97408127784729,
+      "box": [
+        0.03130859,
+        0.20883605,
+        0.98131913,
+        0.72004473
+      ],
+      "box_width_300": 285.003,
+      "box_height_300": 153.363
+    }
+  }
+}

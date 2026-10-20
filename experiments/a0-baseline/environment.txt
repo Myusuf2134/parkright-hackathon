@@ -1,0 +1,12 @@
+Python 3.12.13; macOS arm64; CPU inference
+# Installed from the workspace uv.lock: uv sync --frozen --all-packages --all-extras
+torch==2.14.1
+torchvision==0.29.1
+numpy==2.5.4
+pillow==12.3.0
+shapely==2.2.0
+fastapi==0.143.1
+pydantic==2.14.1
+pytest==9.1.1
+ruff==0.17.0
+mypy==2.4.0
