@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {mkdirSync,writeFileSync} from 'node:fs';
-const stub=process.env.PARKRIGHT_SUITE==='stub';
-const mode=stub?'STUB INTEGRATION':'REAL NVIDIA INTEGRATION';
+const stub=process.env.PARKRIGHT_SUITE==='stub',a2=process.env.PARKRIGHT_SUITE==='a2';
+const mode=stub?'STUB INTEGRATION':a2?'REAL A2 INTEGRATION':'REAL NVIDIA INTEGRATION';
 const api='http://127.0.0.1:8422';
 const headers={authorization:'Bearer integration-local-test-token'};
 
@@ -19,7 +19,7 @@ test(`${mode}: renderer → authenticated API → calibrated provider → WebSoc
  await page.getByTestId('send-frame').click();
  const r=await response;expect(r.status()).toBe(202);
  const body=await r.json();expect(body.observations).toHaveLength(12);
- expect(body.model.provider).toBe(stub?'a0-test-stub':'a0-nvidia-ssd300');
+ expect(body.model.provider).toBe(stub?'a0-test-stub':a2?'a2-fasterrcnn':'a0-nvidia-ssd300');
  expect(body.observations.every((o:any)=>['OPEN','OCCUPIED','UNCERTAIN'].includes(o.state))).toBe(true);
  await expect.poll(()=>messages.some(m=>m.type==='occupancy_update'&&m.frame.seq===body.seq)).toBe(true);
  await expect(driver.getByText(new RegExp(body.model.provider))).toBeVisible();
@@ -34,7 +34,7 @@ test(`${mode}: renderer → authenticated API → calibrated provider → WebSoc
  expect(forbidden.status()).toBe(401);
  await expect(page.getByTestId('export-evaluation')).toContainText('1 frames');
  const data=await page.evaluate(()=> (window as any).__visionLab.streamer.dataset.snapshot());
- const folder=`experiments/vertical-slice/runs/${stub?'stub':'real'}`;mkdirSync(folder,{recursive:true});
+ const folder=`experiments/vertical-slice/runs/${stub?'stub':a2?'real-a2':'real'}`;mkdirSync(folder,{recursive:true});
  writeFileSync(`${folder}/dataset.json`,JSON.stringify(data,null,2));
  writeFileSync(`${folder}/diagnostics.json`,JSON.stringify(d,null,2));
  await driver.screenshot({path:`${folder}/driver.png`});
