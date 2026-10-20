@@ -4,7 +4,7 @@
   "dataset_seed": 2026102001,
   "seed_groups": { "dev": 4, "test": 4 },
   "frames": { "count": 10, "interval_ms": 500 },
-  "event_offsets_ms": [250, 2000],
+  "event_offsets_ms": [0, 2000],
   "density_ranges": { "sparse": [1, 3], "medium": [4, 7], "dense": [8, 11] },
   "presets": ["clear_day", "overcast", "dusk", "night"],
   "families": {
