@@ -34,10 +34,10 @@ class A0Provider:
                 sort_keys=True,
             ).encode()
         ).hexdigest()
+        # Detectors other than A0 name themselves; the space mapper is shared.
         self._model = ModelRef(
-            provider="a0-test-stub"
-            if detector.identity.startswith("TEST STUB")
-            else "a0-nvidia-ssd300",
+            provider=getattr(detector, "provider_name", None)
+            or ("a0-test-stub" if detector.identity.startswith("TEST STUB") else "a0-nvidia-ssd300"),
             version=f"1-{fingerprint[:32]}",
         )
         self.last_timings: dict[str, float] = {}
@@ -78,7 +78,7 @@ class A0Provider:
         except Exception as exc:
             self._phase = "unavailable"
             self._snapshot = {"error": type(exc).__name__}
-            log.exception("NVIDIA warm-up failed")
+            log.exception("detector warm-up failed")
         self._startup_ms = (perf_counter() - start) * 1000
 
     def _warmup_locked(self):

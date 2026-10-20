@@ -16,9 +16,16 @@ def _a0() -> PerceptionProvider:
     return from_environment()
 
 
+def _a2() -> PerceptionProvider:
+    from .a2.provider import from_environment
+
+    return from_environment()
+
+
 _PROVIDERS: dict[str, Callable[[], PerceptionProvider]] = {
     "none": UncertainProvider,
     "a0": _a0,
+    "a2": _a2,
 }
 
 
