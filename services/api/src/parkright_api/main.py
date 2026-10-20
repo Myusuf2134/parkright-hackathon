@@ -15,6 +15,8 @@ from .config import Settings
 from .deps import now
 from .errors import install_error_handlers
 from .realtime import RealtimeHub
+from .recommendations.client import NemotronClient
+from .routes import recommendations
 from .routes import facilities, frames, health, realtime, perception as perception_routes
 from .state import FacilityRegistry
 from .stream_tracker import FrameStreamTracker
@@ -66,6 +68,7 @@ def create_app(settings: Settings | None = None, perception: PerceptionProvider 
         openapi_url=f"{API_PREFIX}/openapi.json",
     )
     app.state.settings = settings
+    app.state.nemotron = NemotronClient()
     app.state.registry = FacilityRegistry.from_fixtures(settings.facility_fixtures, settings.stale_after_ms)
     app.state.perception = perception or create_provider(settings.perception_provider)
     app.state.calibration = Calibration(settings.calibration_file) if settings.calibration_file else None
@@ -82,9 +85,11 @@ def create_app(settings: Settings | None = None, perception: PerceptionProvider 
     app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["GET", "POST"], allow_headers=["authorization", "content-type"])
     # Whole-request cap for frame uploads: the JPEG limit plus room for metadata and multipart framing.
     app.add_middleware(UploadLimitMiddleware, path_pattern=rf"{API_PREFIX}/cameras/[^/]+/frames", max_bytes=settings.frame_max_bytes + 64 * 1024)
+    app.add_middleware(UploadLimitMiddleware, path_pattern=rf"{API_PREFIX}/recommendations", max_bytes=16384)
 
     api = APIRouter(prefix=API_PREFIX)
     api.include_router(health.router)
+    api.include_router(recommendations.router)
     api.include_router(perception_routes.router)
     api.include_router(facilities.router)
     api.include_router(frames.router)

@@ -3,7 +3,7 @@ name = "parkright-api"
 version = "0.1.0"
 description = "ParkRight API: frame ingestion, occupancy state, realtime, facilities."
 requires-python = ">=3.12"
-dependencies = ["parkright-contracts", "parkright-perception", "parkright-evaluation", "fastapi>=0.140", "uvicorn[standard]>=0.50", "pydantic-settings>=2.10", "python-multipart>=0.0.20"]
+dependencies = ["parkright-contracts", "parkright-perception", "parkright-evaluation", "fastapi>=0.140", "uvicorn[standard]>=0.50", "pydantic-settings>=2.10", "python-multipart>=0.0.20", "httpx>=0.28,<1"]
 
 [build-system]
 requires = ["hatchling"]
