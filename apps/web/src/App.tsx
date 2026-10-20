@@ -59,6 +59,38 @@ function Counts({ counts }: { counts: Facility['counts'] }) {
   );
 }
 
+interface Health {
+  perception: { provider: string; version: string };
+  inference: { phase?: string; inference_ready?: boolean; artifact_error?: string | null; thresholds?: { allow_open?: boolean } };
+}
+
+const DETECTOR_NAME: Record<string, string> = {
+  'a2-fasterrcnn': 'A2 Faster R-CNN',
+  'a0-nvidia-ssd300': 'A0 NVIDIA SSD300',
+  'a0-test-stub': 'test stub',
+  none: 'none (everything UNCERTAIN)',
+};
+
+/** Which detector the API runs and whether it is ready. Demo/debug information only. */
+function DetectorStatus() {
+  const [health, setHealth] = useState<Health | null>(null);
+  useEffect(() => {
+    const load = () => fetch('/api/v1/health').then((r) => (r.ok ? r.json() : null)).then(setHealth).catch(() => setHealth(null));
+    load();
+    const timer = setInterval(load, 5000);
+    return () => clearInterval(timer);
+  }, []);
+  if (!health) return <p className="muted small" data-testid="detector-status">detector: status unavailable</p>;
+  const i = health.inference;
+  return (
+    <p className="muted small" data-testid="detector-status">
+      detector: {DETECTOR_NAME[health.perception.provider] ?? 'unknown'} · {i.inference_ready ? 'ready' : i.phase ?? 'unavailable'}
+      {i.artifact_error ? ` (${i.artifact_error})` : ''}
+      {i.thresholds ? ` · OPEN ${i.thresholds.allow_open ? 'enabled' : 'disabled'}` : ''}
+    </p>
+  );
+}
+
 const STATE_LABEL: Record<ParkingSpace['current_state'], string> = {
   OPEN: 'Open',
   OCCUPIED: 'Occupied',
@@ -96,6 +128,7 @@ function FacilityView({ facilityId, onBack }: { facilityId: string; onBack: () =
         {camera?.camera_id}: {live.lastFrame ? `frame ${live.lastFrame.seq} received ${new Date(live.lastFrame.received_at).toLocaleTimeString()}` : 'no frames yet'}
         {' · '}perception: {model ? (model.provider === 'none' ? 'no detector connected (everything UNCERTAIN)' : `${model.provider}@${model.version}`) : '—'}
       </p>
+      <DetectorStatus />
 
       {f.levels.map((level) => (
         <div key={level.level_id} className="level">
