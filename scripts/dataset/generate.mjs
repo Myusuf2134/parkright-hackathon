@@ -159,6 +159,7 @@ async function main() {
     const frameIndex = new Map();
     const lines = [];
     const checksums = [];
+    const labelChecksums = [];
     let bytes = 0;
     let rendered = 0;
     const renderStart = performance.now();
@@ -188,7 +189,9 @@ async function main() {
         objects: d.objects,
         visibility_method: 'ID-buffer render through cam-01; renderer-dependent (not part of the logical determinism guarantee)',
       };
-      writeFileSync(join(work, record.labels_path), `${JSON.stringify(label, null, 1)}\n`);
+      const labelText = `${JSON.stringify(label, null, 1)}\n`;
+      writeFileSync(join(work, record.labels_path), labelText);
+      labelChecksums.push(`${sha256(labelText)}  ${record.labels_path}`);
       bytes += jpeg.length;
       if (++rendered % 100 === 0) {
         const rate = rendered / ((performance.now() - renderStart) / 1000);
@@ -202,6 +205,7 @@ async function main() {
       mkdirSync(join(work, 'calibration'), { recursive: true });
       writeFileSync(join(work, 'calibration/cam-01.json'), readFileSync(join(ROOT, 'packages/shared/calibration/cam-01.json')));
       writeFileSync(join(work, 'checksums.sha256'), `${checksums.join('\n')}\n`);
+      if (temporal) writeFileSync(join(work, 'labels.sha256'), `${labelChecksums.join('\n')}\n`);
       const renderSeconds = (performance.now() - renderStart) / 1000;
       const dataset = {
         schema,
