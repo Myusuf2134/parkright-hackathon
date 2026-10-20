@@ -1,0 +1,1033 @@
+{
+  "checkpoint": {
+    "epoch": 4,
+    "path": "/Users/moody/.cache/parkright/models/a2-fasterrcnn/best.pt",
+    "selection_metric": 0.9740807938308146,
+    "sha256": "43452092f0597922badc038c618dd5c76afc27d98be21688a2878f28b1c24985",
+    "size_bytes": 173396489
+  },
+  "config": {
+    "allow_open": false,
+    "ambiguity_confidence": 0.05,
+    "ambiguity_coverage": 0.02,
+    "architecture": "fasterrcnn_resnet50_fpn_v2",
+    "batch_size": 1,
+    "blur_probability": 0.08,
+    "brightness": 0.12,
+    "checkpoint_metric": "vehicle_map_50_95",
+    "class_mapping": {
+      "hatchback": 1,
+      "pickup": 2,
+      "sedan": 1,
+      "suv": 1,
+      "van": 1
+    },
+    "contrast": 0.12,
+    "epochs": 4,
+    "evaluation_confidence": 0.65,
+    "evaluation_iou": 0.5,
+    "horizontal_flip_probability": 0.5,
+    "jpeg_probability": 0.12,
+    "jpeg_quality_max": 95,
+    "jpeg_quality_min": 78,
+    "label_names": [
+      "background",
+      "car",
+      "truck"
+    ],
+    "learning_rate": 0.0025,
+    "max_size": 684,
+    "min_size": 384,
+    "momentum": 0.9,
+    "num_classes": 3,
+    "occupied_coverage": 0.45,
+    "optimizer": "SGD",
+    "scheduler": "StepLR(step_size=3,gamma=0.1)",
+    "schema": "parkright-a2-finetune-config-v1",
+    "seed": 20261019,
+    "target_box": "bbox_visible",
+    "trainable_backbone_layers": 0,
+    "weight_decay": 0.0005,
+    "weights": "FasterRCNN_ResNet50_FPN_V2_Weights.COCO_V1",
+    "workers": 0
+  },
+  "config_sha256": "7f3d63254ecc7d05bdec610c85c8dde7508e07f41e3d4b76cdae2d27769559b8",
+  "dataset_manifest_sha256": "935f4108f4b1e00c17f71b090ac60f4ad38c86e1ec183b10bef121f2a4e976c3",
+  "dataset_version": "a2-sim-v1-b569da957c",
+  "framework": {
+    "device": "cpu",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "python": "3.12.13",
+    "torch": "2.14.1",
+    "torchvision": "0.29.1"
+  },
+  "open_policy": "disabled; production false OPEN is structurally zero",
+  "schema": "parkright-a2-final-results-v1",
+  "source_weights_sha256": "dd69338a24b8d7381807e247652bdc356325bcbaf1cd3e092e00e0a1a58706bf",
+  "test": {
+    "a0": {
+      "detector": {
+        "ap50": 0.019117736061093283,
+        "false_negative": 1806,
+        "false_positive": 0,
+        "map_50_95": 0.011835754340714167,
+        "precision": 0.0,
+        "recall": 0.0,
+        "true_positive": 0
+      },
+      "images": 284,
+      "latency_ms": {
+        "batch_size": 1,
+        "count": 284,
+        "device": "cpu",
+        "machine": "macOS-27.0.1-arm64-arm-64bit",
+        "mean": 105.1552068669813,
+        "median": 93.47968750807922,
+        "model_max_size": 684,
+        "model_min_size": 384,
+        "p95": 138.12800002051517
+      },
+      "parking": {
+        "hypothetical_false_open": 1731,
+        "hypothetical_false_open_rate_on_occupied": 0.9692049272116461,
+        "hypothetical_open": 3348,
+        "occupied_fn": 1786,
+        "occupied_fp": 0,
+        "occupied_precision": 0.0,
+        "occupied_recall": 0.0,
+        "occupied_tp": 0,
+        "policy_correct": 1622,
+        "predicted_uncertain": 3408,
+        "production_false_open_count": 0,
+        "production_false_open_rate": 0.0,
+        "space_policy_accuracy": 0.47593896713615025,
+        "spaces": 3408,
+        "truth_empty": 1622,
+        "truth_occupied": 1786,
+        "uncertain_rate": 1.0
+      },
+      "per_class": {
+        "car": {
+          "ap50": 0.009383663479894886,
+          "map_50_95": 0.004410219074039759
+        },
+        "truck": {
+          "ap50": 0.007706071812000477,
+          "map_50_95": 0.00360267619800802
+        }
+      }
+    },
+    "a2": {
+      "detector": {
+        "ap50": 0.989903684214294,
+        "false_negative": 14,
+        "false_positive": 73,
+        "map_50_95": 0.9577504730679985,
+        "precision": 0.960857908847185,
+        "recall": 0.9922480620155039,
+        "true_positive": 1792
+      },
+      "images": 284,
+      "latency_ms": {
+        "batch_size": 1,
+        "count": 284,
+        "device": "cpu",
+        "machine": "macOS-27.0.1-arm64-arm-64bit",
+        "mean": 1873.0246816801964,
+        "median": 1877.4091460072668,
+        "model_max_size": 684,
+        "model_min_size": 384,
+        "p95": 2035.870249994332
+      },
+      "parking": {
+        "hypothetical_false_open": 1,
+        "hypothetical_false_open_rate_on_occupied": 0.0005599104143337066,
+        "hypothetical_open": 1102,
+        "occupied_fn": 22,
+        "occupied_fp": 73,
+        "occupied_precision": 0.9602612955906369,
+        "occupied_recall": 0.9876819708846585,
+        "occupied_tp": 1764,
+        "policy_correct": 3313,
+        "predicted_occupied": 1837,
+        "predicted_uncertain": 1571,
+        "production_false_open_count": 0,
+        "production_false_open_rate": 0.0,
+        "space_policy_accuracy": 0.9721244131455399,
+        "spaces": 3408,
+        "truth_empty": 1622,
+        "truth_occupied": 1786,
+        "uncertain_rate": 0.4609741784037559
+      },
+      "per_class": {
+        "car": {
+          "ap50": 0.9887302274024272,
+          "map_50_95": 0.9566052557877294
+        },
+        "truck": {
+          "ap50": 0.9445464059686609,
+          "map_50_95": 0.8935320581209828
+        }
+      }
+    }
+  },
+  "test_breakdowns": {
+    "environment": {
+      "clear_day": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 10,
+            "false_positive": 17,
+            "precision": 0.9674952198852772,
+            "recall": 0.9806201550387597,
+            "true_positive": 506
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9889702081419289,
+              "map_50_95": 0.9620089774641413
+            },
+            "truck": {
+              "ap50": 0.9646403773623129,
+              "map_50_95": 0.9094624644806013
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9898067877299915,
+            "false_negative": 5,
+            "false_positive": 12,
+            "map_50_95": 0.9607676827016413,
+            "precision": 0.9770554493307839,
+            "recall": 0.9903100775193798,
+            "true_positive": 511
+          }
+        },
+        "images": 82,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 371,
+          "occupied_fn": 9,
+          "occupied_fp": 5,
+          "occupied_precision": 0.9900398406374502,
+          "occupied_recall": 0.9822134387351779,
+          "occupied_tp": 497,
+          "policy_correct": 970,
+          "predicted_occupied": 502,
+          "predicted_uncertain": 482,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9857723577235772,
+          "spaces": 984,
+          "truth_empty": 478,
+          "truth_occupied": 506,
+          "uncertain_rate": 0.4898373983739837
+        }
+      },
+      "dusk": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 17,
+            "false_positive": 36,
+            "precision": 0.9140811455847255,
+            "recall": 0.9575,
+            "true_positive": 383
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9761433863546579,
+              "map_50_95": 0.9312548309476221
+            },
+            "truck": {
+              "ap50": 0.8899763447142666,
+              "map_50_95": 0.8338519714290801
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9879892326513291,
+            "false_negative": 5,
+            "false_positive": 24,
+            "map_50_95": 0.9374692972789331,
+            "precision": 0.9427207637231504,
+            "recall": 0.9875,
+            "true_positive": 395
+          }
+        },
+        "images": 62,
+        "parking": {
+          "hypothetical_false_open": 1,
+          "hypothetical_false_open_rate_on_occupied": 0.0025,
+          "hypothetical_open": 80,
+          "occupied_fn": 5,
+          "occupied_fp": 61,
+          "occupied_precision": 0.8662280701754386,
+          "occupied_recall": 0.9875,
+          "occupied_tp": 395,
+          "policy_correct": 678,
+          "predicted_occupied": 456,
+          "predicted_uncertain": 288,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9112903225806451,
+          "spaces": 744,
+          "truth_empty": 344,
+          "truth_occupied": 400,
+          "uncertain_rate": 0.3870967741935484
+        }
+      },
+      "night": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 10,
+            "false_positive": 35,
+            "precision": 0.9370503597122302,
+            "recall": 0.9811676082862524,
+            "true_positive": 521
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9894723968121024,
+              "map_50_95": 0.962689584330124
+            },
+            "truck": {
+              "ap50": 0.9610574559444073,
+              "map_50_95": 0.9368231908838898
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9899120372462863,
+            "false_negative": 4,
+            "false_positive": 29,
+            "map_50_95": 0.9633523752462005,
+            "precision": 0.947841726618705,
+            "recall": 0.992467043314501,
+            "true_positive": 527
+          }
+        },
+        "images": 84,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 386,
+          "occupied_fn": 8,
+          "occupied_fp": 7,
+          "occupied_precision": 0.9865384615384616,
+          "occupied_recall": 0.9846449136276392,
+          "occupied_tp": 513,
+          "policy_correct": 993,
+          "predicted_occupied": 520,
+          "predicted_uncertain": 488,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9851190476190477,
+          "spaces": 1008,
+          "truth_empty": 487,
+          "truth_occupied": 521,
+          "uncertain_rate": 0.48412698412698413
+        }
+      },
+      "overcast": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 5,
+            "false_positive": 13,
+            "precision": 0.9645776566757494,
+            "recall": 0.9860724233983287,
+            "true_positive": 354
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9990389569123541,
+              "map_50_95": 0.9750894970672693
+            },
+            "truck": {
+              "ap50": 0.950511960344807,
+              "map_50_95": 0.9001516979976222
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9998095101325488,
+            "false_negative": 0,
+            "false_positive": 8,
+            "map_50_95": 0.972300366082472,
+            "precision": 0.9782016348773842,
+            "recall": 1.0,
+            "true_positive": 359
+          }
+        },
+        "images": 56,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 265,
+          "occupied_fn": 0,
+          "occupied_fp": 0,
+          "occupied_precision": 1.0,
+          "occupied_recall": 1.0,
+          "occupied_tp": 359,
+          "policy_correct": 672,
+          "predicted_occupied": 359,
+          "predicted_uncertain": 313,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 1.0,
+          "spaces": 672,
+          "truth_empty": 313,
+          "truth_occupied": 359,
+          "uncertain_rate": 0.46577380952380953
+        }
+      }
+    },
+    "family": {
+      "occlusion": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 1,
+            "false_positive": 4,
+            "precision": 0.9658119658119658,
+            "recall": 0.9912280701754386,
+            "true_positive": 113
+          },
+          "per_class": {
+            "car": {
+              "ap50": 1.0,
+              "map_50_95": 0.9618114453301245
+            },
+            "truck": {
+              "ap50": 0.9774667121884602,
+              "map_50_95": 0.8739501536360532
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 1.0,
+            "false_negative": 0,
+            "false_positive": 3,
+            "map_50_95": 0.9526650609638493,
+            "precision": 0.9743589743589743,
+            "recall": 1.0,
+            "true_positive": 114
+          }
+        },
+        "images": 20,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 55,
+          "occupied_fn": 0,
+          "occupied_fp": 21,
+          "occupied_precision": 0.8444444444444444,
+          "occupied_recall": 1.0,
+          "occupied_tp": 114,
+          "policy_correct": 219,
+          "predicted_occupied": 135,
+          "predicted_uncertain": 105,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9125,
+          "spaces": 240,
+          "truth_empty": 126,
+          "truth_occupied": 114,
+          "uncertain_rate": 0.4375
+        }
+      },
+      "robust_large_vehicles": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 14,
+            "false_positive": 48,
+            "precision": 0.8389261744966443,
+            "recall": 0.946969696969697,
+            "true_positive": 250
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9864258231725895,
+              "map_50_95": 0.9472259197469798
+            },
+            "truck": {
+              "ap50": 0.9542783280579644,
+              "map_50_95": 0.9014318920037685
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9985297321533286,
+            "false_negative": 0,
+            "false_positive": 34,
+            "map_50_95": 0.9538756322410629,
+            "precision": 0.8859060402684564,
+            "recall": 1.0,
+            "true_positive": 264
+          }
+        },
+        "images": 32,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 74,
+          "occupied_fn": 0,
+          "occupied_fp": 0,
+          "occupied_precision": 1.0,
+          "occupied_recall": 1.0,
+          "occupied_tp": 264,
+          "policy_correct": 384,
+          "predicted_occupied": 264,
+          "predicted_uncertain": 120,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 1.0,
+          "spaces": 384,
+          "truth_empty": 120,
+          "truth_occupied": 264,
+          "uncertain_rate": 0.3125
+        }
+      },
+      "robust_pillar": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 18,
+            "false_positive": 20,
+            "precision": 0.8823529411764706,
+            "recall": 0.8928571428571429,
+            "true_positive": 150
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9364043098581456,
+              "map_50_95": 0.8643554509323297
+            },
+            "truck": {
+              "ap50": 0.7928408225437931,
+              "map_50_95": 0.7695449352627572
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9481205549734099,
+            "false_negative": 14,
+            "false_positive": 16,
+            "map_50_95": 0.8752592220538533,
+            "precision": 0.9058823529411765,
+            "recall": 0.9166666666666666,
+            "true_positive": 154
+          }
+        },
+        "images": 24,
+        "parking": {
+          "hypothetical_false_open": 1,
+          "hypothetical_false_open_rate_on_occupied": 0.005952380952380952,
+          "hypothetical_open": 89,
+          "occupied_fn": 14,
+          "occupied_fp": 1,
+          "occupied_precision": 0.9935483870967742,
+          "occupied_recall": 0.9166666666666666,
+          "occupied_tp": 154,
+          "policy_correct": 273,
+          "predicted_occupied": 155,
+          "predicted_uncertain": 133,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9479166666666666,
+          "spaces": 288,
+          "truth_empty": 120,
+          "truth_occupied": 168,
+          "uncertain_rate": 0.4618055555555556
+        }
+      },
+      "robust_row_pattern": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 0,
+            "false_positive": 2,
+            "precision": 0.9863013698630136,
+            "recall": 1.0,
+            "true_positive": 144
+          },
+          "per_class": {
+            "car": {
+              "ap50": 1.0,
+              "map_50_95": 0.9817715672630806
+            },
+            "truck": {
+              "ap50": 1.0,
+              "map_50_95": 0.9445544554455445
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 1.0,
+            "false_negative": 0,
+            "false_positive": 2,
+            "map_50_95": 0.9794675296872326,
+            "precision": 0.9863013698630136,
+            "recall": 1.0,
+            "true_positive": 144
+          }
+        },
+        "images": 24,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 127,
+          "occupied_fn": 0,
+          "occupied_fp": 0,
+          "occupied_precision": 1.0,
+          "occupied_recall": 1.0,
+          "occupied_tp": 144,
+          "policy_correct": 288,
+          "predicted_occupied": 144,
+          "predicted_uncertain": 144,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 1.0,
+          "spaces": 288,
+          "truth_empty": 144,
+          "truth_occupied": 144,
+          "uncertain_rate": 0.5
+        }
+      },
+      "settled": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 8,
+            "false_positive": 26,
+            "precision": 0.9711751662971175,
+            "recall": 0.9909502262443439,
+            "true_positive": 876
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9997145191663775,
+              "map_50_95": 0.9733657057562979
+            },
+            "truck": {
+              "ap50": 0.9361014820099309,
+              "map_50_95": 0.9091406202519231
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9999553000992183,
+            "false_negative": 0,
+            "false_positive": 18,
+            "map_50_95": 0.9737001253646154,
+            "precision": 0.9800443458980045,
+            "recall": 1.0,
+            "true_positive": 884
+          }
+        },
+        "images": 140,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 534,
+          "occupied_fn": 0,
+          "occupied_fp": 40,
+          "occupied_precision": 0.9567099567099567,
+          "occupied_recall": 1.0,
+          "occupied_tp": 884,
+          "policy_correct": 1640,
+          "predicted_occupied": 924,
+          "predicted_uncertain": 756,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9761904761904762,
+          "spaces": 1680,
+          "truth_empty": 796,
+          "truth_occupied": 884,
+          "uncertain_rate": 0.45
+        }
+      },
+      "static_empty": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 0,
+            "false_positive": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "true_positive": 0
+          },
+          "per_class": {
+            "car": {
+              "ap50": null,
+              "map_50_95": null
+            },
+            "truck": {
+              "ap50": null,
+              "map_50_95": null
+            }
+          },
+          "vehicle_binary": {
+            "ap50": null,
+            "false_negative": 0,
+            "false_positive": 0,
+            "map_50_95": null,
+            "precision": 0.0,
+            "recall": 0.0,
+            "true_positive": 0
+          }
+        },
+        "images": 4,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 36,
+          "occupied_fn": 0,
+          "occupied_fp": 0,
+          "occupied_precision": 0.0,
+          "occupied_recall": 0.0,
+          "occupied_tp": 0,
+          "policy_correct": 48,
+          "predicted_uncertain": 48,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 1.0,
+          "spaces": 48,
+          "truth_empty": 48,
+          "uncertain_rate": 1.0
+        }
+      },
+      "transition": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 1,
+            "false_positive": 1,
+            "precision": 0.9956896551724138,
+            "recall": 0.9956896551724138,
+            "true_positive": 231
+          },
+          "per_class": {
+            "car": {
+              "ap50": 1.0,
+              "map_50_95": 0.9736787291657267
+            },
+            "truck": {
+              "ap50": null,
+              "map_50_95": null
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 1.0,
+            "false_negative": 0,
+            "false_positive": 0,
+            "map_50_95": 0.9744904986240714,
+            "precision": 1.0,
+            "recall": 1.0,
+            "true_positive": 232
+          }
+        },
+        "images": 40,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 187,
+          "occupied_fn": 8,
+          "occupied_fp": 11,
+          "occupied_precision": 0.9488372093023256,
+          "occupied_recall": 0.9622641509433962,
+          "occupied_tp": 204,
+          "policy_correct": 461,
+          "predicted_occupied": 215,
+          "predicted_uncertain": 265,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9604166666666667,
+          "spaces": 480,
+          "truth_empty": 268,
+          "truth_occupied": 212,
+          "uncertain_rate": 0.5520833333333334
+        }
+      }
+    },
+    "kind": {
+      "settled": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 41,
+            "false_positive": 100,
+            "precision": 0.9387630128597673,
+            "recall": 0.9739517153748412,
+            "true_positive": 1533
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9876684108347781,
+              "map_50_95": 0.9556050595145308
+            },
+            "truck": {
+              "ap50": 0.9464383065204367,
+              "map_50_95": 0.8954093884310627
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9896891691114728,
+            "false_negative": 14,
+            "false_positive": 73,
+            "map_50_95": 0.9553928877973954,
+            "precision": 0.9552969993876301,
+            "recall": 0.9911054637865311,
+            "true_positive": 1560
+          }
+        },
+        "images": 244,
+        "parking": {
+          "hypothetical_false_open": 1,
+          "hypothetical_false_open_rate_on_occupied": 0.0006353240152477764,
+          "hypothetical_open": 915,
+          "occupied_fn": 14,
+          "occupied_fp": 62,
+          "occupied_precision": 0.9617755856966708,
+          "occupied_recall": 0.9911054637865311,
+          "occupied_tp": 1560,
+          "policy_correct": 2852,
+          "predicted_occupied": 1622,
+          "predicted_uncertain": 1306,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9740437158469946,
+          "spaces": 2928,
+          "truth_empty": 1354,
+          "truth_occupied": 1574,
+          "uncertain_rate": 0.44603825136612024
+        }
+      },
+      "transition": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 1,
+            "false_positive": 1,
+            "precision": 0.9956896551724138,
+            "recall": 0.9956896551724138,
+            "true_positive": 231
+          },
+          "per_class": {
+            "car": {
+              "ap50": 1.0,
+              "map_50_95": 0.9736787291657267
+            },
+            "truck": {
+              "ap50": null,
+              "map_50_95": null
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 1.0,
+            "false_negative": 0,
+            "false_positive": 0,
+            "map_50_95": 0.9744904986240714,
+            "precision": 1.0,
+            "recall": 1.0,
+            "true_positive": 232
+          }
+        },
+        "images": 40,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 187,
+          "occupied_fn": 8,
+          "occupied_fp": 11,
+          "occupied_precision": 0.9488372093023256,
+          "occupied_recall": 0.9622641509433962,
+          "occupied_tp": 204,
+          "policy_correct": 461,
+          "predicted_occupied": 215,
+          "predicted_uncertain": 265,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9604166666666667,
+          "spaces": 480,
+          "truth_empty": 268,
+          "truth_occupied": 212,
+          "uncertain_rate": 0.5520833333333334
+        }
+      }
+    },
+    "subset": {
+      "robustness": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 32,
+            "false_positive": 70,
+            "precision": 0.8859934853420195,
+            "recall": 0.9444444444444444,
+            "true_positive": 544
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9691490836100344,
+              "map_50_95": 0.9215960741213056
+            },
+            "truck": {
+              "ap50": 0.9429467425372807,
+              "map_50_95": 0.8932085134352251
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9769990881627315,
+            "false_negative": 14,
+            "false_positive": 52,
+            "map_50_95": 0.9339744113550992,
+            "precision": 0.9153094462540716,
+            "recall": 0.9756944444444444,
+            "true_positive": 562
+          }
+        },
+        "images": 80,
+        "parking": {
+          "hypothetical_false_open": 1,
+          "hypothetical_false_open_rate_on_occupied": 0.001736111111111111,
+          "hypothetical_open": 290,
+          "occupied_fn": 14,
+          "occupied_fp": 1,
+          "occupied_precision": 0.9982238010657194,
+          "occupied_recall": 0.9756944444444444,
+          "occupied_tp": 562,
+          "policy_correct": 945,
+          "predicted_occupied": 563,
+          "predicted_uncertain": 397,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.984375,
+          "spaces": 960,
+          "truth_empty": 384,
+          "truth_occupied": 576,
+          "uncertain_rate": 0.41354166666666664
+        }
+      },
+      "standard": {
+        "detector": {
+          "confidence_gate": 0.65,
+          "iou_gate": 0.5,
+          "mapped": {
+            "false_negative": 10,
+            "false_positive": 31,
+            "precision": 0.9752198241406874,
+            "recall": 0.991869918699187,
+            "true_positive": 1220
+          },
+          "per_class": {
+            "car": {
+              "ap50": 0.9995672797837494,
+              "map_50_95": 0.9711180549156848
+            },
+            "truck": {
+              "ap50": 0.9422052275444406,
+              "map_50_95": 0.8983506045499274
+            }
+          },
+          "vehicle_binary": {
+            "ap50": 0.9999678473042388,
+            "false_negative": 0,
+            "false_positive": 21,
+            "map_50_95": 0.9711733632743442,
+            "precision": 0.9832134292565947,
+            "recall": 1.0,
+            "true_positive": 1230
+          }
+        },
+        "images": 204,
+        "parking": {
+          "hypothetical_false_open": 0,
+          "hypothetical_false_open_rate_on_occupied": 0.0,
+          "hypothetical_open": 812,
+          "occupied_fn": 8,
+          "occupied_fp": 72,
+          "occupied_precision": 0.9434850863422292,
+          "occupied_recall": 0.9933884297520661,
+          "occupied_tp": 1202,
+          "policy_correct": 2368,
+          "predicted_occupied": 1274,
+          "predicted_uncertain": 1174,
+          "production_false_open_count": 0,
+          "production_false_open_rate": 0.0,
+          "space_policy_accuracy": 0.9673202614379085,
+          "spaces": 2448,
+          "truth_empty": 1238,
+          "truth_occupied": 1210,
+          "uncertain_rate": 0.4795751633986928
+        }
+      }
+    }
+  },
+  "test_protocol_deviation": "Before tooling existed, a schema probe displayed the first manifest record (static-empty test metadata, no test image). It was quarantined and did not influence configuration or checkpoint selection.",
+  "training_commit": "1f53183f92a1491c661d512b5b4c69a36fcfe41b",
+  "training_duration_seconds": 12056.803321665997,
+  "validation": {
+    "detector": {
+      "ap50": 0.9998916444981215,
+      "false_negative": 0,
+      "false_positive": 26,
+      "map_50_95": 0.9740807938308146,
+      "precision": 0.9799382716049383,
+      "recall": 1.0,
+      "true_positive": 1270
+    },
+    "images": 200,
+    "latency_ms": {
+      "batch_size": 1,
+      "count": 200,
+      "device": "cpu",
+      "machine": "macOS-27.0.1-arm64-arm-64bit",
+      "mean": 1746.1763576943486,
+      "median": 1757.7101454953663,
+      "model_max_size": 684,
+      "model_min_size": 384,
+      "p95": 1912.2619580011815
+    },
+    "parking": {
+      "hypothetical_false_open": 0,
+      "hypothetical_false_open_rate_on_occupied": 0.0,
+      "hypothetical_open": 770,
+      "occupied_fn": 14,
+      "occupied_fp": 50,
+      "occupied_precision": 0.9611197511664075,
+      "occupied_recall": 0.9888,
+      "occupied_tp": 1236,
+      "policy_correct": 2336,
+      "predicted_occupied": 1286,
+      "predicted_uncertain": 1114,
+      "production_false_open_count": 0,
+      "production_false_open_rate": 0.0,
+      "space_policy_accuracy": 0.9733333333333334,
+      "spaces": 2400,
+      "truth_empty": 1150,
+      "truth_occupied": 1250,
+      "uncertain_rate": 0.46416666666666667
+    },
+    "per_class": {
+      "car": {
+        "ap50": 0.9999580821757028,
+        "map_50_95": 0.9746222488727957
+      },
+      "truck": {
+        "ap50": 0.9957335839377937,
+        "map_50_95": 0.9583595932731116
+      }
+    }
+  }
+}

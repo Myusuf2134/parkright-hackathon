@@ -81,6 +81,7 @@ def detector_metrics(predictions, truths, confidence: float) -> dict:
             "map_50_95": None if all(np.isnan(value) for value in aps) else float(np.nanmean(aps)),
         }
     binary_aps = [average_precision(predictions, truths, iou=value, binary=True) for value in thresholds]
+    binary_map = None if all(np.isnan(value) for value in binary_aps) else float(np.nanmean(binary_aps))
     return {
         "confidence_gate": confidence,
         "iou_gate": 0.5,
@@ -88,7 +89,7 @@ def detector_metrics(predictions, truths, confidence: float) -> dict:
         "vehicle_binary": {
             **precision_recall(predictions, truths, confidence=confidence, binary=True),
             "ap50": binary_aps[0],
-            "map_50_95": float(np.nanmean(binary_aps)),
+            "map_50_95": binary_map,
         },
         "per_class": per_class,
     }

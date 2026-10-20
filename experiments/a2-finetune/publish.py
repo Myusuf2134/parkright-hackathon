@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 
@@ -13,6 +14,7 @@ def compact(metrics):
     return {
         "images": metrics["overall"]["images"],
         "detector": detector,
+        "per_class": metrics["overall"]["detector"].get("per_class", {}),
         "parking": parking,
         "latency_ms": latency,
     }
@@ -21,11 +23,13 @@ def compact(metrics):
 def row(name, metrics):
     d, p, latency = metrics["detector"], metrics["parking"], metrics.get("latency_ms", {})
     latency_text = f"{latency['mean']:.1f}" if "mean" in latency else "—"
+    def number(value):
+        return "N/A" if value is None or (isinstance(value, float) and not math.isfinite(value)) else f"{value:.4f}"
     return (
-        f"| {name} | {d['precision']:.4f} | {d['recall']:.4f} | {d['ap50']:.4f} | "
-        f"{d['map_50_95']:.4f} | {p['occupied_precision']:.4f} | "
-        f"{p['occupied_recall']:.4f} | {p['space_policy_accuracy']:.4f} | "
-        f"{p['uncertain_rate']:.4f} | {latency_text} |"
+        f"| {name} | {number(d['precision'])} | {number(d['recall'])} | {number(d['ap50'])} | "
+        f"{number(d['map_50_95'])} | {number(p['occupied_precision'])} | "
+        f"{number(p['occupied_recall'])} | {number(p['space_policy_accuracy'])} | "
+        f"{number(p['uncertain_rate'])} | {latency_text} |"
     )
 
 
@@ -44,6 +48,15 @@ def main():
     validation = json.loads(args.validation.read_text())
     test_a2 = json.loads(args.test_a2.read_text())
     test_a0 = json.loads(args.test_a0.read_text())
+    def sanitize(value):
+        if isinstance(value, float) and not math.isfinite(value):
+            return None
+        if isinstance(value, dict):
+            return {key: sanitize(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [sanitize(item) for item in value]
+        return value
+
     result = {
         "schema": "parkright-a2-final-results-v1",
         "dataset_version": frozen["dataset_version"],
@@ -68,6 +81,7 @@ def main():
         "open_policy": "disabled; production false OPEN is structurally zero",
     }
     args.json_output.parent.mkdir(parents=True, exist_ok=True)
+    result = sanitize(result)
     args.json_output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     lines = [
         "# ParkRight A2 fine-tuning results",
