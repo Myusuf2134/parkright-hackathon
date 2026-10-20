@@ -7,7 +7,7 @@ TEST was evaluated only after the model, checkpoint, mapping, preprocessing, thr
 | Evaluation | Det P | Det R | AP50 | mAP50:95 | OCC P | OCC R | Space policy acc | UNCERTAIN | CPU mean ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Validation A2 | 0.9799 | 1.0000 | 0.9999 | 0.9741 | 0.9611 | 0.9888 | 0.9733 | 0.4642 | 1746.2 |
-| TEST A0 | 0.0000 | 0.0000 | 0.0191 | 0.0118 | 0.0000 | 0.0000 | 0.4759 | 1.0000 | 105.2 |
+| TEST A0 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.4759 | 1.0000 | 105.2 |
 | TEST A2 | 0.9609 | 0.9922 | 0.9899 | 0.9578 | 0.9603 | 0.9877 | 0.9721 | 0.4610 | 1873.0 |
 
 `Space policy acc` treats correct OCCUPIED calls and policy-safe UNCERTAIN calls on empty spaces as correct because OPEN remained disabled. Production false OPEN is zero by construction. The machine-readable report includes the separately labeled naive absence-as-OPEN diagnostic.

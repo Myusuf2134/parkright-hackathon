@@ -64,6 +64,8 @@ def average_precision(predictions, truths, *, iou: float, label: int | None = No
     events, total = _matches(selected_predictions, selected_truths, iou, 0.0, binary)
     if total == 0:
         return float("nan")
+    if not any(match for _, match in events):
+        return 0.0
     tp = np.cumsum([match for _, match in events], dtype=float)
     fp = np.cumsum([not match for _, match in events], dtype=float)
     recall = tp / total

@@ -9,12 +9,17 @@ from pathlib import Path
 
 def compact(metrics):
     detector = metrics["overall"]["detector"]["vehicle_binary"]
+    if detector["true_positive"] == 0:
+        detector = {**detector, "ap50": 0.0, "map_50_95": 0.0}
+        per_class = {name: {**values, "ap50": 0.0, "map_50_95": 0.0} for name, values in metrics["overall"]["detector"].get("per_class", {}).items()}
+    else:
+        per_class = metrics["overall"]["detector"].get("per_class", {})
     parking = metrics["overall"]["parking"]
     latency = metrics["latency_ms"]
     return {
         "images": metrics["overall"]["images"],
         "detector": detector,
-        "per_class": metrics["overall"]["detector"].get("per_class", {}),
+        "per_class": per_class,
         "parking": parking,
         "latency_ms": latency,
     }
