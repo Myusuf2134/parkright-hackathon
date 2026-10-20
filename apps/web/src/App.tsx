@@ -2,6 +2,7 @@ import type { Facility, ParkingSpace } from '@parkright/contracts';
 import { isConfirmedAvailable } from '@parkright/contracts';
 import { useEffect, useState } from 'react';
 import { useLiveFacility } from './live.ts';
+import { RecommendationPanel } from './RecommendationPanel.tsx';
 
 export function App() {
   const [facilities, setFacilities] = useState<Facility[] | null>(null);
@@ -134,6 +135,8 @@ function FacilityView({ facilityId, onBack }: { facilityId: string; onBack: () =
           'No space is confirmed available right now. Uncertain spaces are not offered.'
         )}
       </div>
+      <RecommendationPanel facility={f} spaces={live.spaces} connection={live.connection}
+        observedAt={live.lastFrame?.received_at ?? null} />
     </section>
   );
 }

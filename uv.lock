@@ -546,6 +546,7 @@ version = "0.1.0"
 source = { editable = "services/api" }
 dependencies = [
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "parkright-contracts" },
     { name = "parkright-evaluation" },
     { name = "parkright-perception" },
@@ -557,6 +558,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.140" },
+    { name = "httpx", specifier = ">=0.28,<1" },
     { name = "parkright-contracts", editable = "packages/contracts" },
     { name = "parkright-evaluation", editable = "evaluation" },
     { name = "parkright-perception", editable = "services/perception" },
