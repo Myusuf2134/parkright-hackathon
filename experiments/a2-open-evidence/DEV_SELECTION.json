@@ -1,0 +1,2477 @@
+{
+  "schema": "parkright-open-evidence-dev-v1",
+  "iteration": 2,
+  "dataset_manifest_sha256": "4da7fec7f564491625c9b9dd3455d84411cbede2e4ae4d6a21f712d8b724017b",
+  "grid": {
+    "min_reference_match": [
+      0.8,
+      0.85,
+      0.9,
+      0.95
+    ],
+    "min_marking_visibility": [
+      0.5,
+      0.6,
+      0.7
+    ],
+    "max_interior_clutter": [
+      0.05,
+      0.1
+    ],
+    "max_appearance_change": [
+      0.02,
+      0.04,
+      0.08
+    ],
+    "max_vehicle_overlap": [
+      0.0,
+      0.02,
+      0.05,
+      0.1
+    ],
+    "motion_radius_px": [
+      360.0,
+      240.0,
+      120.0,
+      40.0
+    ],
+    "motion_iou": [
+      0.9,
+      0.8
+    ]
+  },
+  "primary_window": 5,
+  "combinations": 2304,
+  "safe_combinations": 1152,
+  "eligible_with_margin": 576,
+  "selection_rule": "zero DEV false OPEN and zero transition hazard at window 5, all one-step-looser neighbours also safe, max DEV recall",
+  "selected_rule": {
+    "min_reference_match": 0.95,
+    "min_marking_visibility": 0.6,
+    "max_interior_clutter": 0.05,
+    "max_appearance_change": 0.02,
+    "max_vehicle_overlap": 0.0,
+    "motion_radius_px": 360.0,
+    "motion_iou": 0.9,
+    "window": 5
+  },
+  "seconds": 651.2,
+  "dev_by_window": {
+    "1": {
+      "overall": {
+        "observations": 11520,
+        "truth_empty": 6266,
+        "truth_occupied": 5254,
+        "open_ready": 348,
+        "false_open": 0,
+        "false_open_rate": 0.0,
+        "potential_open_precision": 1.0,
+        "potential_open_recall": 0.055538,
+        "open_ready_coverage": 0.030208,
+        "uncertain_rate": 0.488021,
+        "transition_hazard": 0,
+        "ready_while_occluded": 0,
+        "rejection_rate_among_empty": {
+          "frame": 0.0019,
+          "visibility": 0.1578,
+          "occlusion": 0.2541,
+          "vehicle": 0.5425,
+          "surface": 0.2048,
+          "transition": 0.9355,
+          "temporal": 0.5814
+        }
+      },
+      "environment": {
+        "clear_day": {
+          "observations": 2880,
+          "truth_empty": 1439,
+          "truth_occupied": 1441,
+          "open_ready": 57,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.039611,
+          "open_ready_coverage": 0.019792,
+          "uncertain_rate": 0.475694,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0083,
+            "visibility": 0.0,
+            "occlusion": 0.0778,
+            "vehicle": 0.5024,
+            "surface": 0.3155,
+            "transition": 0.9569,
+            "temporal": 0.5212
+          }
+        },
+        "dusk": {
+          "observations": 2880,
+          "truth_empty": 1623,
+          "truth_occupied": 1257,
+          "open_ready": 8,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.004929,
+          "open_ready_coverage": 0.002778,
+          "uncertain_rate": 0.479167,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.6094,
+            "occlusion": 0.7597,
+            "vehicle": 0.8497,
+            "surface": 0.1855,
+            "transition": 0.9673,
+            "temporal": 0.9606
+          }
+        },
+        "night": {
+          "observations": 2880,
+          "truth_empty": 1637,
+          "truth_occupied": 1243,
+          "open_ready": 155,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.094685,
+          "open_ready_coverage": 0.053819,
+          "uncertain_rate": 0.504861,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.0,
+            "occlusion": 0.0648,
+            "vehicle": 0.4178,
+            "surface": 0.1735,
+            "transition": 0.9029,
+            "temporal": 0.427
+          }
+        },
+        "overcast": {
+          "observations": 2880,
+          "truth_empty": 1567,
+          "truth_occupied": 1313,
+          "open_ready": 128,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.081685,
+          "open_ready_coverage": 0.044444,
+          "uncertain_rate": 0.492361,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.0,
+            "occlusion": 0.09,
+            "vehicle": 0.3912,
+            "surface": 0.1557,
+            "transition": 0.917,
+            "temporal": 0.4052
+          }
+        }
+      },
+      "density": {
+        "dense": {
+          "observations": 2880,
+          "truth_empty": 644,
+          "truth_occupied": 2236,
+          "open_ready": 6,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.009317,
+          "open_ready_coverage": 0.002083,
+          "uncertain_rate": 0.222569,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1351,
+            "occlusion": 0.205,
+            "vehicle": 0.7686,
+            "surface": 0.3556,
+            "transition": 0.9876,
+            "temporal": 0.8059
+          }
+        },
+        "empty": {
+          "observations": 960,
+          "truth_empty": 896,
+          "truth_occupied": 64,
+          "open_ready": 65,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.072545,
+          "open_ready_coverage": 0.067708,
+          "uncertain_rate": 0.78125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0134,
+            "visibility": 0.1496,
+            "occlusion": 0.2489,
+            "vehicle": 0.3672,
+            "surface": 0.1161,
+            "transition": 0.9051,
+            "temporal": 0.4029
+          }
+        },
+        "full": {
+          "observations": 480,
+          "truth_empty": 40,
+          "truth_occupied": 440,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.08125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.175,
+            "occlusion": 0.325,
+            "vehicle": 0.75,
+            "surface": 0.4,
+            "transition": 1.0,
+            "temporal": 0.75
+          }
+        },
+        "medium": {
+          "observations": 4800,
+          "truth_empty": 2708,
+          "truth_occupied": 2092,
+          "open_ready": 140,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.051699,
+          "open_ready_coverage": 0.029167,
+          "uncertain_rate": 0.518333,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1765,
+            "occlusion": 0.2533,
+            "vehicle": 0.5897,
+            "surface": 0.2308,
+            "transition": 0.9376,
+            "temporal": 0.6481
+          }
+        },
+        "sparse": {
+          "observations": 2400,
+          "truth_empty": 1978,
+          "truth_occupied": 422,
+          "open_ready": 137,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.069262,
+          "open_ready_coverage": 0.057083,
+          "uncertain_rate": 0.71,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1431,
+            "occlusion": 0.272,
+            "vehicle": 0.4793,
+            "surface": 0.1562,
+            "transition": 0.9282,
+            "temporal": 0.4944
+          }
+        }
+      },
+      "state": {
+        "settled": {
+          "observations": 10272,
+          "truth_empty": 5547,
+          "truth_occupied": 4725,
+          "open_ready": 348,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.062737,
+          "open_ready_coverage": 0.033879,
+          "uncertain_rate": 0.475662,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.002,
+            "visibility": 0.1559,
+            "occlusion": 0.2455,
+            "vehicle": 0.5241,
+            "surface": 0.1841,
+            "transition": 0.9272,
+            "temporal": 0.5634
+          }
+        },
+        "transition": {
+          "observations": 1248,
+          "truth_empty": 719,
+          "truth_occupied": 529,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.589744,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0014,
+            "visibility": 0.1725,
+            "occlusion": 0.3199,
+            "vehicle": 0.6843,
+            "surface": 0.3644,
+            "transition": 1.0,
+            "temporal": 0.7204
+          }
+        }
+      },
+      "family": {
+        "entering": {
+          "observations": 1440,
+          "truth_empty": 734,
+          "truth_occupied": 706,
+          "open_ready": 43,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.058583,
+          "open_ready_coverage": 0.029861,
+          "uncertain_rate": 0.471528,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1199,
+            "occlusion": 0.154,
+            "vehicle": 0.4809,
+            "surface": 0.2302,
+            "transition": 0.9414,
+            "temporal": 0.5041
+          }
+        },
+        "exiting": {
+          "observations": 1440,
+          "truth_empty": 970,
+          "truth_occupied": 470,
+          "open_ready": 75,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.07732,
+          "open_ready_coverage": 0.052083,
+          "uncertain_rate": 0.572222,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1784,
+            "occlusion": 0.2402,
+            "vehicle": 0.5021,
+            "surface": 0.1567,
+            "transition": 0.9134,
+            "temporal": 0.5402
+          }
+        },
+        "large_vehicles": {
+          "observations": 960,
+          "truth_empty": 350,
+          "truth_occupied": 610,
+          "open_ready": 1,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.002857,
+          "open_ready_coverage": 0.001042,
+          "uncertain_rate": 0.3375,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1629,
+            "occlusion": 0.2143,
+            "vehicle": 0.7686,
+            "surface": 0.3771,
+            "transition": 0.9943,
+            "temporal": 0.7914
+          }
+        },
+        "occlusion_partial": {
+          "observations": 960,
+          "truth_empty": 508,
+          "truth_occupied": 452,
+          "open_ready": 25,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.049213,
+          "open_ready_coverage": 0.026042,
+          "uncertain_rate": 0.4875,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1949,
+            "occlusion": 0.2835,
+            "vehicle": 0.5906,
+            "surface": 0.2815,
+            "transition": 0.9291,
+            "temporal": 0.6949
+          }
+        },
+        "occlusion_severe": {
+          "observations": 960,
+          "truth_empty": 452,
+          "truth_occupied": 508,
+          "open_ready": 9,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.019912,
+          "open_ready_coverage": 0.009375,
+          "uncertain_rate": 0.45,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.2257,
+            "occlusion": 0.2987,
+            "vehicle": 0.5642,
+            "surface": 0.3606,
+            "transition": 0.958,
+            "temporal": 0.7124
+          }
+        },
+        "row_pattern": {
+          "observations": 1440,
+          "truth_empty": 732,
+          "truth_occupied": 708,
+          "open_ready": 52,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.071038,
+          "open_ready_coverage": 0.036111,
+          "uncertain_rate": 0.464583,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1134,
+            "occlusion": 0.3005,
+            "vehicle": 0.6311,
+            "surface": 0.1762,
+            "transition": 0.9276,
+            "temporal": 0.6516
+          }
+        },
+        "settled_dense": {
+          "observations": 960,
+          "truth_empty": 240,
+          "truth_occupied": 720,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.241667,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1667,
+            "occlusion": 0.3333,
+            "vehicle": 0.8375,
+            "surface": 0.2917,
+            "transition": 1.0,
+            "temporal": 0.85
+          }
+        },
+        "settled_empty": {
+          "observations": 960,
+          "truth_empty": 896,
+          "truth_occupied": 64,
+          "open_ready": 65,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.072545,
+          "open_ready_coverage": 0.067708,
+          "uncertain_rate": 0.78125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0134,
+            "visibility": 0.1496,
+            "occlusion": 0.2489,
+            "vehicle": 0.3672,
+            "surface": 0.1161,
+            "transition": 0.9051,
+            "temporal": 0.4029
+          }
+        },
+        "settled_full": {
+          "observations": 480,
+          "truth_empty": 40,
+          "truth_occupied": 440,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.08125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.175,
+            "occlusion": 0.325,
+            "vehicle": 0.75,
+            "surface": 0.4,
+            "transition": 1.0,
+            "temporal": 0.75
+          }
+        },
+        "settled_medium": {
+          "observations": 960,
+          "truth_empty": 538,
+          "truth_occupied": 422,
+          "open_ready": 30,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.055762,
+          "open_ready_coverage": 0.03125,
+          "uncertain_rate": 0.532292,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1691,
+            "occlusion": 0.2361,
+            "vehicle": 0.5855,
+            "surface": 0.2138,
+            "transition": 0.9424,
+            "temporal": 0.6004
+          }
+        },
+        "settled_sparse": {
+          "observations": 960,
+          "truth_empty": 806,
+          "truth_occupied": 154,
+          "open_ready": 48,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.059553,
+          "open_ready_coverage": 0.05,
+          "uncertain_rate": 0.722917,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1427,
+            "occlusion": 0.2841,
+            "vehicle": 0.4938,
+            "surface": 0.1117,
+            "transition": 0.9367,
+            "temporal": 0.4988
+          }
+        }
+      },
+      "row": {
+        "far (A)": {
+          "observations": 5760,
+          "truth_empty": 3178,
+          "truth_occupied": 2582,
+          "open_ready": 165,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.051919,
+          "open_ready_coverage": 0.028646,
+          "uncertain_rate": 0.472222,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0019,
+            "visibility": 0.0667,
+            "occlusion": 0.3099,
+            "vehicle": 0.5828,
+            "surface": 0.325,
+            "transition": 0.9408,
+            "temporal": 0.6076
+          }
+        },
+        "near (B)": {
+          "observations": 5760,
+          "truth_empty": 3088,
+          "truth_occupied": 2672,
+          "open_ready": 183,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.059262,
+          "open_ready_coverage": 0.031771,
+          "uncertain_rate": 0.503819,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0019,
+            "visibility": 0.2516,
+            "occlusion": 0.1966,
+            "vehicle": 0.501,
+            "surface": 0.081,
+            "transition": 0.9301,
+            "temporal": 0.5544
+          }
+        }
+      }
+    },
+    "2": {
+      "overall": {
+        "observations": 11520,
+        "truth_empty": 6266,
+        "truth_occupied": 5254,
+        "open_ready": 264,
+        "false_open": 0,
+        "false_open_rate": 0.0,
+        "potential_open_precision": 1.0,
+        "potential_open_recall": 0.042132,
+        "open_ready_coverage": 0.022917,
+        "uncertain_rate": 0.495312,
+        "transition_hazard": 0,
+        "ready_while_occluded": 0,
+        "rejection_rate_among_empty": {
+          "frame": 0.0019,
+          "visibility": 0.1578,
+          "occlusion": 0.2541,
+          "vehicle": 0.5425,
+          "surface": 0.2048,
+          "transition": 0.9536,
+          "temporal": 0.6653
+        }
+      },
+      "environment": {
+        "clear_day": {
+          "observations": 2880,
+          "truth_empty": 1439,
+          "truth_occupied": 1441,
+          "open_ready": 38,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.026407,
+          "open_ready_coverage": 0.013194,
+          "uncertain_rate": 0.482292,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0083,
+            "visibility": 0.0,
+            "occlusion": 0.0778,
+            "vehicle": 0.5024,
+            "surface": 0.3155,
+            "transition": 0.9715,
+            "temporal": 0.6192
+          }
+        },
+        "dusk": {
+          "observations": 2880,
+          "truth_empty": 1623,
+          "truth_occupied": 1257,
+          "open_ready": 5,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.003081,
+          "open_ready_coverage": 0.001736,
+          "uncertain_rate": 0.480208,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.6094,
+            "occlusion": 0.7597,
+            "vehicle": 0.8497,
+            "surface": 0.1855,
+            "transition": 0.984,
+            "temporal": 0.9803
+          }
+        },
+        "night": {
+          "observations": 2880,
+          "truth_empty": 1637,
+          "truth_occupied": 1243,
+          "open_ready": 129,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.078803,
+          "open_ready_coverage": 0.044792,
+          "uncertain_rate": 0.513889,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.0,
+            "occlusion": 0.0648,
+            "vehicle": 0.4178,
+            "surface": 0.1735,
+            "transition": 0.92,
+            "temporal": 0.5327
+          }
+        },
+        "overcast": {
+          "observations": 2880,
+          "truth_empty": 1567,
+          "truth_occupied": 1313,
+          "open_ready": 92,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.058711,
+          "open_ready_coverage": 0.031944,
+          "uncertain_rate": 0.504861,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.0,
+            "occlusion": 0.09,
+            "vehicle": 0.3912,
+            "surface": 0.1557,
+            "transition": 0.9407,
+            "temporal": 0.5201
+          }
+        }
+      },
+      "density": {
+        "dense": {
+          "observations": 2880,
+          "truth_empty": 644,
+          "truth_occupied": 2236,
+          "open_ready": 3,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.004658,
+          "open_ready_coverage": 0.001042,
+          "uncertain_rate": 0.223611,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1351,
+            "occlusion": 0.205,
+            "vehicle": 0.7686,
+            "surface": 0.3556,
+            "transition": 0.9938,
+            "temporal": 0.8618
+          }
+        },
+        "empty": {
+          "observations": 960,
+          "truth_empty": 896,
+          "truth_occupied": 64,
+          "open_ready": 55,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.061384,
+          "open_ready_coverage": 0.057292,
+          "uncertain_rate": 0.791667,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0134,
+            "visibility": 0.1496,
+            "occlusion": 0.2489,
+            "vehicle": 0.3672,
+            "surface": 0.1161,
+            "transition": 0.9319,
+            "temporal": 0.51
+          }
+        },
+        "full": {
+          "observations": 480,
+          "truth_empty": 40,
+          "truth_occupied": 440,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.08125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.175,
+            "occlusion": 0.325,
+            "vehicle": 0.75,
+            "surface": 0.4,
+            "transition": 1.0,
+            "temporal": 0.825
+          }
+        },
+        "medium": {
+          "observations": 4800,
+          "truth_empty": 2708,
+          "truth_occupied": 2092,
+          "open_ready": 103,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.038035,
+          "open_ready_coverage": 0.021458,
+          "uncertain_rate": 0.526042,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1765,
+            "occlusion": 0.2533,
+            "vehicle": 0.5897,
+            "surface": 0.2308,
+            "transition": 0.9553,
+            "temporal": 0.7267
+          }
+        },
+        "sparse": {
+          "observations": 2400,
+          "truth_empty": 1978,
+          "truth_occupied": 422,
+          "open_ready": 103,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.052073,
+          "open_ready_coverage": 0.042917,
+          "uncertain_rate": 0.724167,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1431,
+            "occlusion": 0.272,
+            "vehicle": 0.4793,
+            "surface": 0.1562,
+            "transition": 0.9469,
+            "temporal": 0.5844
+          }
+        }
+      },
+      "state": {
+        "settled": {
+          "observations": 10272,
+          "truth_empty": 5547,
+          "truth_occupied": 4725,
+          "open_ready": 264,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.047593,
+          "open_ready_coverage": 0.025701,
+          "uncertain_rate": 0.48384,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.002,
+            "visibility": 0.1559,
+            "occlusion": 0.2455,
+            "vehicle": 0.5241,
+            "surface": 0.1841,
+            "transition": 0.9475,
+            "temporal": 0.6454
+          }
+        },
+        "transition": {
+          "observations": 1248,
+          "truth_empty": 719,
+          "truth_occupied": 529,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.589744,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0014,
+            "visibility": 0.1725,
+            "occlusion": 0.3199,
+            "vehicle": 0.6843,
+            "surface": 0.3644,
+            "transition": 1.0,
+            "temporal": 0.8192
+          }
+        }
+      },
+      "family": {
+        "entering": {
+          "observations": 1440,
+          "truth_empty": 734,
+          "truth_occupied": 706,
+          "open_ready": 30,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.040872,
+          "open_ready_coverage": 0.020833,
+          "uncertain_rate": 0.480556,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1199,
+            "occlusion": 0.154,
+            "vehicle": 0.4809,
+            "surface": 0.2302,
+            "transition": 0.9591,
+            "temporal": 0.6063
+          }
+        },
+        "exiting": {
+          "observations": 1440,
+          "truth_empty": 970,
+          "truth_occupied": 470,
+          "open_ready": 59,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.060825,
+          "open_ready_coverage": 0.040972,
+          "uncertain_rate": 0.583333,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1784,
+            "occlusion": 0.2402,
+            "vehicle": 0.5021,
+            "surface": 0.1567,
+            "transition": 0.932,
+            "temporal": 0.6247
+          }
+        },
+        "large_vehicles": {
+          "observations": 960,
+          "truth_empty": 350,
+          "truth_occupied": 610,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.338542,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1629,
+            "occlusion": 0.2143,
+            "vehicle": 0.7686,
+            "surface": 0.3771,
+            "transition": 1.0,
+            "temporal": 0.8571
+          }
+        },
+        "occlusion_partial": {
+          "observations": 960,
+          "truth_empty": 508,
+          "truth_occupied": 452,
+          "open_ready": 20,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.03937,
+          "open_ready_coverage": 0.020833,
+          "uncertain_rate": 0.492708,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1949,
+            "occlusion": 0.2835,
+            "vehicle": 0.5906,
+            "surface": 0.2815,
+            "transition": 0.9449,
+            "temporal": 0.7402
+          }
+        },
+        "occlusion_severe": {
+          "observations": 960,
+          "truth_empty": 452,
+          "truth_occupied": 508,
+          "open_ready": 6,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.013274,
+          "open_ready_coverage": 0.00625,
+          "uncertain_rate": 0.453125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.2257,
+            "occlusion": 0.2987,
+            "vehicle": 0.5642,
+            "surface": 0.3606,
+            "transition": 0.9757,
+            "temporal": 0.7721
+          }
+        },
+        "row_pattern": {
+          "observations": 1440,
+          "truth_empty": 732,
+          "truth_occupied": 708,
+          "open_ready": 37,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.050546,
+          "open_ready_coverage": 0.025694,
+          "uncertain_rate": 0.475,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1134,
+            "occlusion": 0.3005,
+            "vehicle": 0.6311,
+            "surface": 0.1762,
+            "transition": 0.9495,
+            "temporal": 0.7404
+          }
+        },
+        "settled_dense": {
+          "observations": 960,
+          "truth_empty": 240,
+          "truth_occupied": 720,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.241667,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1667,
+            "occlusion": 0.3333,
+            "vehicle": 0.8375,
+            "surface": 0.2917,
+            "transition": 1.0,
+            "temporal": 0.9083
+          }
+        },
+        "settled_empty": {
+          "observations": 960,
+          "truth_empty": 896,
+          "truth_occupied": 64,
+          "open_ready": 55,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.061384,
+          "open_ready_coverage": 0.057292,
+          "uncertain_rate": 0.791667,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0134,
+            "visibility": 0.1496,
+            "occlusion": 0.2489,
+            "vehicle": 0.3672,
+            "surface": 0.1161,
+            "transition": 0.9319,
+            "temporal": 0.51
+          }
+        },
+        "settled_full": {
+          "observations": 480,
+          "truth_empty": 40,
+          "truth_occupied": 440,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.08125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.175,
+            "occlusion": 0.325,
+            "vehicle": 0.75,
+            "surface": 0.4,
+            "transition": 1.0,
+            "temporal": 0.825
+          }
+        },
+        "settled_medium": {
+          "observations": 960,
+          "truth_empty": 538,
+          "truth_occupied": 422,
+          "open_ready": 22,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.040892,
+          "open_ready_coverage": 0.022917,
+          "uncertain_rate": 0.540625,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1691,
+            "occlusion": 0.2361,
+            "vehicle": 0.5855,
+            "surface": 0.2138,
+            "transition": 0.9591,
+            "temporal": 0.6822
+          }
+        },
+        "settled_sparse": {
+          "observations": 960,
+          "truth_empty": 806,
+          "truth_occupied": 154,
+          "open_ready": 35,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.043424,
+          "open_ready_coverage": 0.036458,
+          "uncertain_rate": 0.736458,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1427,
+            "occlusion": 0.2841,
+            "vehicle": 0.4938,
+            "surface": 0.1117,
+            "transition": 0.9553,
+            "temporal": 0.5906
+          }
+        }
+      },
+      "row": {
+        "far (A)": {
+          "observations": 5760,
+          "truth_empty": 3178,
+          "truth_occupied": 2582,
+          "open_ready": 124,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.039018,
+          "open_ready_coverage": 0.021528,
+          "uncertain_rate": 0.47934,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0019,
+            "visibility": 0.0667,
+            "occlusion": 0.3099,
+            "vehicle": 0.5828,
+            "surface": 0.325,
+            "transition": 0.9575,
+            "temporal": 0.7067
+          }
+        },
+        "near (B)": {
+          "observations": 5760,
+          "truth_empty": 3088,
+          "truth_occupied": 2672,
+          "open_ready": 140,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.045337,
+          "open_ready_coverage": 0.024306,
+          "uncertain_rate": 0.511285,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0019,
+            "visibility": 0.2516,
+            "occlusion": 0.1966,
+            "vehicle": 0.501,
+            "surface": 0.081,
+            "transition": 0.9495,
+            "temporal": 0.6227
+          }
+        }
+      }
+    },
+    "3": {
+      "overall": {
+        "observations": 11520,
+        "truth_empty": 6266,
+        "truth_occupied": 5254,
+        "open_ready": 154,
+        "false_open": 0,
+        "false_open_rate": 0.0,
+        "potential_open_precision": 1.0,
+        "potential_open_recall": 0.024577,
+        "open_ready_coverage": 0.013368,
+        "uncertain_rate": 0.504861,
+        "transition_hazard": 0,
+        "ready_while_occluded": 0,
+        "rejection_rate_among_empty": {
+          "frame": 0.0019,
+          "visibility": 0.1578,
+          "occlusion": 0.2541,
+          "vehicle": 0.5425,
+          "surface": 0.2048,
+          "transition": 0.9627,
+          "temporal": 0.736
+        }
+      },
+      "environment": {
+        "clear_day": {
+          "observations": 2880,
+          "truth_empty": 1439,
+          "truth_occupied": 1441,
+          "open_ready": 21,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.014593,
+          "open_ready_coverage": 0.007292,
+          "uncertain_rate": 0.488194,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0083,
+            "visibility": 0.0,
+            "occlusion": 0.0778,
+            "vehicle": 0.5024,
+            "surface": 0.3155,
+            "transition": 0.9798,
+            "temporal": 0.7081
+          }
+        },
+        "dusk": {
+          "observations": 2880,
+          "truth_empty": 1623,
+          "truth_occupied": 1257,
+          "open_ready": 1,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.000616,
+          "open_ready_coverage": 0.000347,
+          "uncertain_rate": 0.481597,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.6094,
+            "occlusion": 0.7597,
+            "vehicle": 0.8497,
+            "surface": 0.1855,
+            "transition": 0.9901,
+            "temporal": 0.9858
+          }
+        },
+        "night": {
+          "observations": 2880,
+          "truth_empty": 1637,
+          "truth_occupied": 1243,
+          "open_ready": 81,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.049481,
+          "open_ready_coverage": 0.028125,
+          "uncertain_rate": 0.530556,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.0,
+            "occlusion": 0.0648,
+            "vehicle": 0.4178,
+            "surface": 0.1735,
+            "transition": 0.9297,
+            "temporal": 0.6255
+          }
+        },
+        "overcast": {
+          "observations": 2880,
+          "truth_empty": 1567,
+          "truth_occupied": 1313,
+          "open_ready": 51,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.032546,
+          "open_ready_coverage": 0.017708,
+          "uncertain_rate": 0.519097,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.0,
+            "occlusion": 0.09,
+            "vehicle": 0.3912,
+            "surface": 0.1557,
+            "transition": 0.9528,
+            "temporal": 0.6184
+          }
+        }
+      },
+      "density": {
+        "dense": {
+          "observations": 2880,
+          "truth_empty": 644,
+          "truth_occupied": 2236,
+          "open_ready": 1,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.001553,
+          "open_ready_coverage": 0.000347,
+          "uncertain_rate": 0.224306,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1351,
+            "occlusion": 0.205,
+            "vehicle": 0.7686,
+            "surface": 0.3556,
+            "transition": 0.9969,
+            "temporal": 0.9084
+          }
+        },
+        "empty": {
+          "observations": 960,
+          "truth_empty": 896,
+          "truth_occupied": 64,
+          "open_ready": 29,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.032366,
+          "open_ready_coverage": 0.030208,
+          "uncertain_rate": 0.81875,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0134,
+            "visibility": 0.1496,
+            "occlusion": 0.2489,
+            "vehicle": 0.3672,
+            "surface": 0.1161,
+            "transition": 0.9453,
+            "temporal": 0.6016
+          }
+        },
+        "full": {
+          "observations": 480,
+          "truth_empty": 40,
+          "truth_occupied": 440,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.08125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.175,
+            "occlusion": 0.325,
+            "vehicle": 0.75,
+            "surface": 0.4,
+            "transition": 1.0,
+            "temporal": 0.875
+          }
+        },
+        "medium": {
+          "observations": 4800,
+          "truth_empty": 2708,
+          "truth_occupied": 2092,
+          "open_ready": 60,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.022157,
+          "open_ready_coverage": 0.0125,
+          "uncertain_rate": 0.535,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1765,
+            "occlusion": 0.2533,
+            "vehicle": 0.5897,
+            "surface": 0.2308,
+            "transition": 0.9638,
+            "temporal": 0.7895
+          }
+        },
+        "sparse": {
+          "observations": 2400,
+          "truth_empty": 1978,
+          "truth_occupied": 422,
+          "open_ready": 64,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.032356,
+          "open_ready_coverage": 0.026667,
+          "uncertain_rate": 0.740417,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1431,
+            "occlusion": 0.272,
+            "vehicle": 0.4793,
+            "surface": 0.1562,
+            "transition": 0.957,
+            "temporal": 0.6648
+          }
+        }
+      },
+      "state": {
+        "settled": {
+          "observations": 10272,
+          "truth_empty": 5547,
+          "truth_occupied": 4725,
+          "open_ready": 154,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.027763,
+          "open_ready_coverage": 0.014992,
+          "uncertain_rate": 0.494548,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.002,
+            "visibility": 0.1559,
+            "occlusion": 0.2455,
+            "vehicle": 0.5241,
+            "surface": 0.1841,
+            "transition": 0.9578,
+            "temporal": 0.715
+          }
+        },
+        "transition": {
+          "observations": 1248,
+          "truth_empty": 719,
+          "truth_occupied": 529,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.589744,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0014,
+            "visibility": 0.1725,
+            "occlusion": 0.3199,
+            "vehicle": 0.6843,
+            "surface": 0.3644,
+            "transition": 1.0,
+            "temporal": 0.8985
+          }
+        }
+      },
+      "family": {
+        "entering": {
+          "observations": 1440,
+          "truth_empty": 734,
+          "truth_occupied": 706,
+          "open_ready": 16,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.021798,
+          "open_ready_coverage": 0.011111,
+          "uncertain_rate": 0.490278,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1199,
+            "occlusion": 0.154,
+            "vehicle": 0.4809,
+            "surface": 0.2302,
+            "transition": 0.9687,
+            "temporal": 0.6948
+          }
+        },
+        "exiting": {
+          "observations": 1440,
+          "truth_empty": 970,
+          "truth_occupied": 470,
+          "open_ready": 40,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.041237,
+          "open_ready_coverage": 0.027778,
+          "uncertain_rate": 0.596528,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1784,
+            "occlusion": 0.2402,
+            "vehicle": 0.5021,
+            "surface": 0.1567,
+            "transition": 0.9433,
+            "temporal": 0.701
+          }
+        },
+        "large_vehicles": {
+          "observations": 960,
+          "truth_empty": 350,
+          "truth_occupied": 610,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.338542,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1629,
+            "occlusion": 0.2143,
+            "vehicle": 0.7686,
+            "surface": 0.3771,
+            "transition": 1.0,
+            "temporal": 0.8971
+          }
+        },
+        "occlusion_partial": {
+          "observations": 960,
+          "truth_empty": 508,
+          "truth_occupied": 452,
+          "open_ready": 11,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.021654,
+          "open_ready_coverage": 0.011458,
+          "uncertain_rate": 0.502083,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1949,
+            "occlusion": 0.2835,
+            "vehicle": 0.5906,
+            "surface": 0.2815,
+            "transition": 0.9587,
+            "temporal": 0.7835
+          }
+        },
+        "occlusion_severe": {
+          "observations": 960,
+          "truth_empty": 452,
+          "truth_occupied": 508,
+          "open_ready": 2,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.004425,
+          "open_ready_coverage": 0.002083,
+          "uncertain_rate": 0.457292,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.2257,
+            "occlusion": 0.2987,
+            "vehicle": 0.5642,
+            "surface": 0.3606,
+            "transition": 0.9823,
+            "temporal": 0.8274
+          }
+        },
+        "row_pattern": {
+          "observations": 1440,
+          "truth_empty": 732,
+          "truth_occupied": 708,
+          "open_ready": 24,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.032787,
+          "open_ready_coverage": 0.016667,
+          "uncertain_rate": 0.484028,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1134,
+            "occlusion": 0.3005,
+            "vehicle": 0.6311,
+            "surface": 0.1762,
+            "transition": 0.9563,
+            "temporal": 0.8128
+          }
+        },
+        "settled_dense": {
+          "observations": 960,
+          "truth_empty": 240,
+          "truth_occupied": 720,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.241667,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1667,
+            "occlusion": 0.3333,
+            "vehicle": 0.8375,
+            "surface": 0.2917,
+            "transition": 1.0,
+            "temporal": 0.9583
+          }
+        },
+        "settled_empty": {
+          "observations": 960,
+          "truth_empty": 896,
+          "truth_occupied": 64,
+          "open_ready": 29,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.032366,
+          "open_ready_coverage": 0.030208,
+          "uncertain_rate": 0.81875,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0134,
+            "visibility": 0.1496,
+            "occlusion": 0.2489,
+            "vehicle": 0.3672,
+            "surface": 0.1161,
+            "transition": 0.9453,
+            "temporal": 0.6016
+          }
+        },
+        "settled_full": {
+          "observations": 480,
+          "truth_empty": 40,
+          "truth_occupied": 440,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.08125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.175,
+            "occlusion": 0.325,
+            "vehicle": 0.75,
+            "surface": 0.4,
+            "transition": 1.0,
+            "temporal": 0.875
+          }
+        },
+        "settled_medium": {
+          "observations": 960,
+          "truth_empty": 538,
+          "truth_occupied": 422,
+          "open_ready": 13,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.024164,
+          "open_ready_coverage": 0.013542,
+          "uncertain_rate": 0.55,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1691,
+            "occlusion": 0.2361,
+            "vehicle": 0.5855,
+            "surface": 0.2138,
+            "transition": 0.9665,
+            "temporal": 0.7416
+          }
+        },
+        "settled_sparse": {
+          "observations": 960,
+          "truth_empty": 806,
+          "truth_occupied": 154,
+          "open_ready": 19,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.023573,
+          "open_ready_coverage": 0.019792,
+          "uncertain_rate": 0.753125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1427,
+            "occlusion": 0.2841,
+            "vehicle": 0.4938,
+            "surface": 0.1117,
+            "transition": 0.9653,
+            "temporal": 0.6675
+          }
+        }
+      },
+      "row": {
+        "far (A)": {
+          "observations": 5760,
+          "truth_empty": 3178,
+          "truth_occupied": 2582,
+          "open_ready": 71,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.022341,
+          "open_ready_coverage": 0.012326,
+          "uncertain_rate": 0.488542,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0019,
+            "visibility": 0.0667,
+            "occlusion": 0.3099,
+            "vehicle": 0.5828,
+            "surface": 0.325,
+            "transition": 0.966,
+            "temporal": 0.7835
+          }
+        },
+        "near (B)": {
+          "observations": 5760,
+          "truth_empty": 3088,
+          "truth_occupied": 2672,
+          "open_ready": 83,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.026878,
+          "open_ready_coverage": 0.01441,
+          "uncertain_rate": 0.521181,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0019,
+            "visibility": 0.2516,
+            "occlusion": 0.1966,
+            "vehicle": 0.501,
+            "surface": 0.081,
+            "transition": 0.9592,
+            "temporal": 0.6872
+          }
+        }
+      }
+    },
+    "5": {
+      "overall": {
+        "observations": 11520,
+        "truth_empty": 6266,
+        "truth_occupied": 5254,
+        "open_ready": 39,
+        "false_open": 0,
+        "false_open_rate": 0.0,
+        "potential_open_precision": 1.0,
+        "potential_open_recall": 0.006224,
+        "open_ready_coverage": 0.003385,
+        "uncertain_rate": 0.514844,
+        "transition_hazard": 0,
+        "ready_while_occluded": 0,
+        "rejection_rate_among_empty": {
+          "frame": 0.0019,
+          "visibility": 0.1578,
+          "occlusion": 0.2541,
+          "vehicle": 0.5425,
+          "surface": 0.2048,
+          "transition": 0.9689,
+          "temporal": 0.8428
+        }
+      },
+      "environment": {
+        "clear_day": {
+          "observations": 2880,
+          "truth_empty": 1439,
+          "truth_occupied": 1441,
+          "open_ready": 6,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.00417,
+          "open_ready_coverage": 0.002083,
+          "uncertain_rate": 0.493403,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0083,
+            "visibility": 0.0,
+            "occlusion": 0.0778,
+            "vehicle": 0.5024,
+            "surface": 0.3155,
+            "transition": 0.9861,
+            "temporal": 0.8277
+          }
+        },
+        "dusk": {
+          "observations": 2880,
+          "truth_empty": 1623,
+          "truth_occupied": 1257,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.481944,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.6094,
+            "occlusion": 0.7597,
+            "vehicle": 0.8497,
+            "surface": 0.1855,
+            "transition": 0.9908,
+            "temporal": 0.9926
+          }
+        },
+        "night": {
+          "observations": 2880,
+          "truth_empty": 1637,
+          "truth_occupied": 1243,
+          "open_ready": 23,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.01405,
+          "open_ready_coverage": 0.007986,
+          "uncertain_rate": 0.550694,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.0,
+            "occlusion": 0.0648,
+            "vehicle": 0.4178,
+            "surface": 0.1735,
+            "transition": 0.9371,
+            "temporal": 0.774
+          }
+        },
+        "overcast": {
+          "observations": 2880,
+          "truth_empty": 1567,
+          "truth_occupied": 1313,
+          "open_ready": 10,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.006382,
+          "open_ready_coverage": 0.003472,
+          "uncertain_rate": 0.533333,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.0,
+            "occlusion": 0.09,
+            "vehicle": 0.3912,
+            "surface": 0.1557,
+            "transition": 0.9636,
+            "temporal": 0.7735
+          }
+        }
+      },
+      "density": {
+        "dense": {
+          "observations": 2880,
+          "truth_empty": 644,
+          "truth_occupied": 2236,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.224653,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1351,
+            "occlusion": 0.205,
+            "vehicle": 0.7686,
+            "surface": 0.3556,
+            "transition": 0.9969,
+            "temporal": 0.955
+          }
+        },
+        "empty": {
+          "observations": 960,
+          "truth_empty": 896,
+          "truth_occupied": 64,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.848958,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0134,
+            "visibility": 0.1496,
+            "occlusion": 0.2489,
+            "vehicle": 0.3672,
+            "surface": 0.1161,
+            "transition": 0.9487,
+            "temporal": 0.7522
+          }
+        },
+        "full": {
+          "observations": 480,
+          "truth_empty": 40,
+          "truth_occupied": 440,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.08125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.175,
+            "occlusion": 0.325,
+            "vehicle": 0.75,
+            "surface": 0.4,
+            "transition": 1.0,
+            "temporal": 0.95
+          }
+        },
+        "medium": {
+          "observations": 4800,
+          "truth_empty": 2708,
+          "truth_occupied": 2092,
+          "open_ready": 14,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.00517,
+          "open_ready_coverage": 0.002917,
+          "uncertain_rate": 0.544583,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1765,
+            "occlusion": 0.2533,
+            "vehicle": 0.5897,
+            "surface": 0.2308,
+            "transition": 0.9705,
+            "temporal": 0.8815
+          }
+        },
+        "sparse": {
+          "observations": 2400,
+          "truth_empty": 1978,
+          "truth_occupied": 422,
+          "open_ready": 25,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.012639,
+          "open_ready_coverage": 0.010417,
+          "uncertain_rate": 0.756667,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1431,
+            "occlusion": 0.272,
+            "vehicle": 0.4793,
+            "surface": 0.1562,
+            "transition": 0.9661,
+            "temporal": 0.7922
+          }
+        }
+      },
+      "state": {
+        "settled": {
+          "observations": 10272,
+          "truth_empty": 5547,
+          "truth_occupied": 4725,
+          "open_ready": 39,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.007031,
+          "open_ready_coverage": 0.003797,
+          "uncertain_rate": 0.505744,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.002,
+            "visibility": 0.1559,
+            "occlusion": 0.2455,
+            "vehicle": 0.5241,
+            "surface": 0.1841,
+            "transition": 0.9648,
+            "temporal": 0.8293
+          }
+        },
+        "transition": {
+          "observations": 1248,
+          "truth_empty": 719,
+          "truth_occupied": 529,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.589744,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0014,
+            "visibility": 0.1725,
+            "occlusion": 0.3199,
+            "vehicle": 0.6843,
+            "surface": 0.3644,
+            "transition": 1.0,
+            "temporal": 0.9471
+          }
+        }
+      },
+      "family": {
+        "entering": {
+          "observations": 1440,
+          "truth_empty": 734,
+          "truth_occupied": 706,
+          "open_ready": 4,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.00545,
+          "open_ready_coverage": 0.002778,
+          "uncertain_rate": 0.498611,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1199,
+            "occlusion": 0.154,
+            "vehicle": 0.4809,
+            "surface": 0.2302,
+            "transition": 0.9755,
+            "temporal": 0.8174
+          }
+        },
+        "exiting": {
+          "observations": 1440,
+          "truth_empty": 970,
+          "truth_occupied": 470,
+          "open_ready": 17,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.017526,
+          "open_ready_coverage": 0.011806,
+          "uncertain_rate": 0.6125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1784,
+            "occlusion": 0.2402,
+            "vehicle": 0.5021,
+            "surface": 0.1567,
+            "transition": 0.9526,
+            "temporal": 0.8268
+          }
+        },
+        "large_vehicles": {
+          "observations": 960,
+          "truth_empty": 350,
+          "truth_occupied": 610,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.338542,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1629,
+            "occlusion": 0.2143,
+            "vehicle": 0.7686,
+            "surface": 0.3771,
+            "transition": 1.0,
+            "temporal": 0.9571
+          }
+        },
+        "occlusion_partial": {
+          "observations": 960,
+          "truth_empty": 508,
+          "truth_occupied": 452,
+          "open_ready": 2,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.003937,
+          "open_ready_coverage": 0.002083,
+          "uncertain_rate": 0.511458,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1949,
+            "occlusion": 0.2835,
+            "vehicle": 0.5906,
+            "surface": 0.2815,
+            "transition": 0.9646,
+            "temporal": 0.8563
+          }
+        },
+        "occlusion_severe": {
+          "observations": 960,
+          "truth_empty": 452,
+          "truth_occupied": 508,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.459375,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.2257,
+            "occlusion": 0.2987,
+            "vehicle": 0.5642,
+            "surface": 0.3606,
+            "transition": 0.9823,
+            "temporal": 0.9027
+          }
+        },
+        "row_pattern": {
+          "observations": 1440,
+          "truth_empty": 732,
+          "truth_occupied": 708,
+          "open_ready": 8,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.010929,
+          "open_ready_coverage": 0.005556,
+          "uncertain_rate": 0.495139,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1134,
+            "occlusion": 0.3005,
+            "vehicle": 0.6311,
+            "surface": 0.1762,
+            "transition": 0.9631,
+            "temporal": 0.9098
+          }
+        },
+        "settled_dense": {
+          "observations": 960,
+          "truth_empty": 240,
+          "truth_occupied": 720,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.241667,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1667,
+            "occlusion": 0.3333,
+            "vehicle": 0.8375,
+            "surface": 0.2917,
+            "transition": 1.0,
+            "temporal": 0.9917
+          }
+        },
+        "settled_empty": {
+          "observations": 960,
+          "truth_empty": 896,
+          "truth_occupied": 64,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.848958,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0134,
+            "visibility": 0.1496,
+            "occlusion": 0.2489,
+            "vehicle": 0.3672,
+            "surface": 0.1161,
+            "transition": 0.9487,
+            "temporal": 0.7522
+          }
+        },
+        "settled_full": {
+          "observations": 480,
+          "truth_empty": 40,
+          "truth_occupied": 440,
+          "open_ready": 0,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": null,
+          "potential_open_recall": 0.0,
+          "open_ready_coverage": 0.0,
+          "uncertain_rate": 0.08125,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.175,
+            "occlusion": 0.325,
+            "vehicle": 0.75,
+            "surface": 0.4,
+            "transition": 1.0,
+            "temporal": 0.95
+          }
+        },
+        "settled_medium": {
+          "observations": 960,
+          "truth_empty": 538,
+          "truth_occupied": 422,
+          "open_ready": 3,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.005576,
+          "open_ready_coverage": 0.003125,
+          "uncertain_rate": 0.560417,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1691,
+            "occlusion": 0.2361,
+            "vehicle": 0.5855,
+            "surface": 0.2138,
+            "transition": 0.9758,
+            "temporal": 0.8309
+          }
+        },
+        "settled_sparse": {
+          "observations": 960,
+          "truth_empty": 806,
+          "truth_occupied": 154,
+          "open_ready": 5,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.006203,
+          "open_ready_coverage": 0.005208,
+          "uncertain_rate": 0.767708,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0,
+            "visibility": 0.1427,
+            "occlusion": 0.2841,
+            "vehicle": 0.4938,
+            "surface": 0.1117,
+            "transition": 0.9764,
+            "temporal": 0.7916
+          }
+        }
+      },
+      "row": {
+        "far (A)": {
+          "observations": 5760,
+          "truth_empty": 3178,
+          "truth_occupied": 2582,
+          "open_ready": 19,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.005979,
+          "open_ready_coverage": 0.003299,
+          "uncertain_rate": 0.497569,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0019,
+            "visibility": 0.0667,
+            "occlusion": 0.3099,
+            "vehicle": 0.5828,
+            "surface": 0.325,
+            "transition": 0.9714,
+            "temporal": 0.8886
+          }
+        },
+        "near (B)": {
+          "observations": 5760,
+          "truth_empty": 3088,
+          "truth_occupied": 2672,
+          "open_ready": 20,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.006477,
+          "open_ready_coverage": 0.003472,
+          "uncertain_rate": 0.532118,
+          "transition_hazard": 0,
+          "ready_while_occluded": 0,
+          "rejection_rate_among_empty": {
+            "frame": 0.0019,
+            "visibility": 0.2516,
+            "occlusion": 0.1966,
+            "vehicle": 0.501,
+            "surface": 0.081,
+            "transition": 0.9663,
+            "temporal": 0.7957
+          }
+        }
+      }
+    }
+  },
+  "dev_unsafe_cases_by_window": {
+    "1": [],
+    "2": [],
+    "3": [],
+    "5": []
+  },
+  "most_permissive_safe": [
+    {
+      "rule": {
+        "min_reference_match": 0.8,
+        "min_marking_visibility": 0.5,
+        "max_interior_clutter": 0.05,
+        "max_appearance_change": 0.02,
+        "max_vehicle_overlap": 0.0,
+        "motion_radius_px": 240.0,
+        "motion_iou": 0.8
+      },
+      "recall": 0.014842
+    },
+    {
+      "rule": {
+        "min_reference_match": 0.8,
+        "min_marking_visibility": 0.5,
+        "max_interior_clutter": 0.05,
+        "max_appearance_change": 0.02,
+        "max_vehicle_overlap": 0.02,
+        "motion_radius_px": 240.0,
+        "motion_iou": 0.8
+      },
+      "recall": 0.014842
+    },
+    {
+      "rule": {
+        "min_reference_match": 0.8,
+        "min_marking_visibility": 0.5,
+        "max_interior_clutter": 0.05,
+        "max_appearance_change": 0.02,
+        "max_vehicle_overlap": 0.05,
+        "motion_radius_px": 240.0,
+        "motion_iou": 0.8
+      },
+      "recall": 0.014842
+    },
+    {
+      "rule": {
+        "min_reference_match": 0.8,
+        "min_marking_visibility": 0.5,
+        "max_interior_clutter": 0.05,
+        "max_appearance_change": 0.02,
+        "max_vehicle_overlap": 0.1,
+        "motion_radius_px": 240.0,
+        "motion_iou": 0.8
+      },
+      "recall": 0.014842
+    },
+    {
+      "rule": {
+        "min_reference_match": 0.8,
+        "min_marking_visibility": 0.5,
+        "max_interior_clutter": 0.05,
+        "max_appearance_change": 0.04,
+        "max_vehicle_overlap": 0.0,
+        "motion_radius_px": 240.0,
+        "motion_iou": 0.8
+      },
+      "recall": 0.014842
+    }
+  ]
+}

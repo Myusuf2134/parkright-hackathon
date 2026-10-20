@@ -33,6 +33,12 @@ V1_REFERENCE = Path.home() / ".cache/parkright/datasets/a2-sim-v1-b569da957c/ima
 REFERENCE_PRESETS = ("clear_day", "overcast", "dusk", "night")
 WINDOWS = (1, 2, 3, 5)
 PRIMARY_WINDOW = 5
+# DEV iteration history (TEST untouched throughout):
+#   1. motion_radius_px (240, 120, 40): 576/1728 combinations safe, all at 240 px, so none had a
+#      safe looser neighbour (0 eligible). Every unsafe combination failed on transition hazard
+#      (an approaching vehicle 7 m away), none on false OPEN.
+#   2. Added the stricter 360 px radius so the unchanged margin rule can be met.
+DEV_ITERATION = 2
 # Thresholds explored on DEV. Feature-extraction parameters stay at EvidenceConfig defaults.
 GRID = {
     "min_reference_match": (0.8, 0.85, 0.9, 0.95),
@@ -40,7 +46,7 @@ GRID = {
     "max_interior_clutter": (0.05, 0.1),
     "max_appearance_change": (0.02, 0.04, 0.08),
     "max_vehicle_overlap": (0.0, 0.02, 0.05, 0.1),
-    "motion_radius_px": (240.0, 120.0, 40.0),
+    "motion_radius_px": (360.0, 240.0, 120.0, 40.0),
     "motion_iou": (0.9, 0.8),
 }
 # Index step that makes each threshold looser (grids are listed strict → loose for the motion
@@ -251,6 +257,7 @@ def cmd_dev(a):
     selected = max(eligible, key=lambda c: (results[c]["potential_open_recall"] or 0, strictness(c)), default=None)
     summary = {
         "schema": "parkright-open-evidence-dev-v1",
+        "iteration": DEV_ITERATION,
         "dataset_manifest_sha256": sha256_file(a.dataset / "manifest.jsonl"),
         "grid": GRID, "primary_window": PRIMARY_WINDOW, "combinations": len(results),
         "safe_combinations": sum(safe(m) for m in results.values()), "eligible_with_margin": len(eligible),

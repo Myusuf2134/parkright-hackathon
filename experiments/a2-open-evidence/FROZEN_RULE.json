@@ -1,0 +1,148 @@
+{
+  "schema": "parkright-open-evidence-frozen-v1",
+  "status": "frozen-before-test",
+  "frozen_at": "2026-10-20T19:23:50.518888-04:00",
+  "dataset_manifest_sha256": "4da7fec7f564491625c9b9dd3455d84411cbede2e4ae4d6a21f712d8b724017b",
+  "rule": {
+    "min_reference_match": 0.95,
+    "min_marking_visibility": 0.6,
+    "max_interior_clutter": 0.05,
+    "max_appearance_change": 0.02,
+    "max_vehicle_overlap": 0.0,
+    "motion_radius_px": 360.0,
+    "motion_iou": 0.9,
+    "window": 5
+  },
+  "rule_sha256": "640ca4ef14f7f6c83d32413a17cc056e5acfe06a9be83bd14a536cc87b6a7ebb",
+  "evidence_config": {
+    "detection_floor": 0.05,
+    "occupied_confidence": 0.65,
+    "occupied_coverage": 0.45,
+    "min_area_px": 1500.0,
+    "min_visibility": 0.95,
+    "min_marking_visibility": 0.6,
+    "max_interior_clutter": 0.05,
+    "max_vehicle_overlap": 0.0,
+    "max_occlusion_risk": 0.4,
+    "max_appearance_change": 0.02,
+    "neighbourhood_px": 300.0,
+    "motion_radius_px": 360.0,
+    "motion_iou": 0.9,
+    "window": 5,
+    "max_frame_age_ms": 10000,
+    "max_gap_ms": 2000,
+    "marking_samples": 24,
+    "line_inner_px": 2,
+    "line_outer_fraction": 0.15,
+    "pavement_band": [
+      0.2,
+      0.3
+    ],
+    "min_reference_match": 0.95,
+    "reference_size": 24,
+    "marking_min_contrast": 12.0,
+    "marking_rel_contrast": 0.25,
+    "clutter_gradient": 18.0,
+    "interior_scale": 0.7
+  },
+  "reference_images_sha256": {
+    "static-empty-clear_day.jpg": "b2959d118a3ed47e3d17ff469afba666205ee88fd6ad144a7e8a947b873e98ed",
+    "static-empty-overcast.jpg": "cd04723fef2e90d549351de3f4937f14503307424b61a2e4f2be33fe0df3b88a",
+    "static-empty-dusk.jpg": "c9a63c4632ae9dd75956eae87bb6c98abddfd04bae8f503f8d3ce4309f89a1d4",
+    "static-empty-night.jpg": "c103e814e4272a24d3a1b4412663a31a10f0800a20cd03f361c3d5c5d0c10c65"
+  },
+  "dev_overall_at_window": {
+    "1": {
+      "observations": 11520,
+      "truth_empty": 6266,
+      "truth_occupied": 5254,
+      "open_ready": 348,
+      "false_open": 0,
+      "false_open_rate": 0.0,
+      "potential_open_precision": 1.0,
+      "potential_open_recall": 0.055538,
+      "open_ready_coverage": 0.030208,
+      "uncertain_rate": 0.488021,
+      "transition_hazard": 0,
+      "ready_while_occluded": 0,
+      "rejection_rate_among_empty": {
+        "frame": 0.0019,
+        "visibility": 0.1578,
+        "occlusion": 0.2541,
+        "vehicle": 0.5425,
+        "surface": 0.2048,
+        "transition": 0.9355,
+        "temporal": 0.5814
+      }
+    },
+    "2": {
+      "observations": 11520,
+      "truth_empty": 6266,
+      "truth_occupied": 5254,
+      "open_ready": 264,
+      "false_open": 0,
+      "false_open_rate": 0.0,
+      "potential_open_precision": 1.0,
+      "potential_open_recall": 0.042132,
+      "open_ready_coverage": 0.022917,
+      "uncertain_rate": 0.495312,
+      "transition_hazard": 0,
+      "ready_while_occluded": 0,
+      "rejection_rate_among_empty": {
+        "frame": 0.0019,
+        "visibility": 0.1578,
+        "occlusion": 0.2541,
+        "vehicle": 0.5425,
+        "surface": 0.2048,
+        "transition": 0.9536,
+        "temporal": 0.6653
+      }
+    },
+    "3": {
+      "observations": 11520,
+      "truth_empty": 6266,
+      "truth_occupied": 5254,
+      "open_ready": 154,
+      "false_open": 0,
+      "false_open_rate": 0.0,
+      "potential_open_precision": 1.0,
+      "potential_open_recall": 0.024577,
+      "open_ready_coverage": 0.013368,
+      "uncertain_rate": 0.504861,
+      "transition_hazard": 0,
+      "ready_while_occluded": 0,
+      "rejection_rate_among_empty": {
+        "frame": 0.0019,
+        "visibility": 0.1578,
+        "occlusion": 0.2541,
+        "vehicle": 0.5425,
+        "surface": 0.2048,
+        "transition": 0.9627,
+        "temporal": 0.736
+      }
+    },
+    "5": {
+      "observations": 11520,
+      "truth_empty": 6266,
+      "truth_occupied": 5254,
+      "open_ready": 39,
+      "false_open": 0,
+      "false_open_rate": 0.0,
+      "potential_open_precision": 1.0,
+      "potential_open_recall": 0.006224,
+      "open_ready_coverage": 0.003385,
+      "uncertain_rate": 0.514844,
+      "transition_hazard": 0,
+      "ready_while_occluded": 0,
+      "rejection_rate_among_empty": {
+        "frame": 0.0019,
+        "visibility": 0.1578,
+        "occlusion": 0.2541,
+        "vehicle": 0.5425,
+        "surface": 0.2048,
+        "transition": 0.9689,
+        "temporal": 0.8428
+      }
+    }
+  }
+}
