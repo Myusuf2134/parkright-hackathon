@@ -1,0 +1,18 @@
+{
+  "schema": "parkright-a2-gpu-preparation-v1",
+  "status": "blocked-no-configured-gpu-access",
+  "gpu_execution_performed": false,
+  "container_build_performed": false,
+  "provisioning_performed": false,
+  "gpu_hardware": null,
+  "provider": null,
+  "gpu_latency_ms": null,
+  "sustained_fps": null,
+  "gpu_memory_bytes": null,
+  "accuracy_consistency": null,
+  "eligibility": "UNVERIFIED",
+  "sanity_subset_frames": 38,
+  "sanity_subset_strata": 21,
+  "tests_passed": 45,
+  "tests_skipped": 1
+}

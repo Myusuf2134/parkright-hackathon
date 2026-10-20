@@ -1,0 +1,9 @@
+**
+!experiments/
+!experiments/a2-finetune/
+!experiments/a2-finetune/a2_finetune/
+!experiments/a2-finetune/a2_finetune/*.py
+!experiments/a2-finetune/config.json
+!experiments/a2-gpu-validation/
+!experiments/a2-gpu-validation/benchmark.py
+!experiments/a2-gpu-validation/requirements.txt
