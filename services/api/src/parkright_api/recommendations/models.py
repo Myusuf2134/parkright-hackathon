@@ -2,11 +2,18 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 MODEL = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"
 PROVIDER = "nebius-token-factory"
-Reason = Literal["availability", "walking_time", "distance", "occupancy", "traffic"]
+RecommendationCode = Literal["RECOMMEND"]
+ReasonCode = Literal[
+    "CONFIRMED_AVAILABILITY", "SHORTER_WALK", "SHORTER_DISTANCE", "LOWER_OCCUPANCY", "LIGHTER_TRAFFIC",
+]
+UncertaintyCode = Literal[
+    "WALKING_TIME_UNKNOWN", "DISTANCE_UNKNOWN", "OCCUPANCY_UNKNOWN", "TRAFFIC_UNKNOWN",
+    "OPERATING_STATUS_UNKNOWN", "DESTINATION_UNSPECIFIED",
+]
 
 
 class StrictModel(BaseModel):
@@ -51,8 +58,17 @@ class RecommendationRequest(StrictModel):
 
 
 class ModelChoice(StrictModel):
-    facility_id: str = Field(min_length=1, max_length=80)
-    reasons: list[Reason] = Field(min_length=1, max_length=5)
+    selected_facility_id: str = Field(min_length=1, max_length=80, pattern=r"^[a-zA-Z0-9_-]+$")
+    recommendation_code: RecommendationCode
+    reason_codes: list[ReasonCode] = Field(min_length=1, max_length=5)
+    uncertainty_codes: list[UncertaintyCode] = Field(max_length=6)
+
+    @field_validator("reason_codes", "uncertainty_codes")
+    @classmethod
+    def unique_codes(cls, value: list[str]) -> list[str]:
+        if len(value) != len(set(value)):
+            raise ValueError("codes must be unique")
+        return value
 
 
 class Provenance(StrictModel):

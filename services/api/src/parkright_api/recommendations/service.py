@@ -2,7 +2,14 @@ from datetime import UTC, datetime, timedelta
 import time
 
 from .client import NemotronClient, ProviderFailure
-from .models import ParkingOption, Provenance, RecommendationRequest, RecommendationResponse
+from .models import (
+    ModelChoice,
+    ParkingOption,
+    Provenance,
+    RecommendationRequest,
+    RecommendationResponse,
+    UncertaintyCode,
+)
 
 MAX_AGE_SECONDS = 12
 
@@ -16,17 +23,61 @@ def eligible(option: ParkingOption, now: datetime) -> bool:
 
 
 def supported(option: ParkingOption) -> dict[str, str]:
-    facts = {"availability": f"{option.available_spaces} of {option.total_spaces} spaces reported available"}
+    facts = {
+        "CONFIRMED_AVAILABILITY": f"{option.available_spaces} of {option.total_spaces} spaces reported available",
+    }
     for key, value, unit in (
-        ("walking_time", option.walking_minutes, "minutes walking"),
-        ("distance", option.distance_m, "metres away"),
-        ("occupancy", option.occupancy_percentage, "% occupied"),
+        ("SHORTER_WALK", option.walking_minutes, "minutes walking"),
+        ("SHORTER_DISTANCE", option.distance_m, "metres away"),
+        ("LOWER_OCCUPANCY", option.occupancy_percentage, "% occupied"),
     ):
         if value is not None:
             facts[key] = f"{value:g} {unit}"
     if option.traffic != "unknown":
-        facts["traffic"] = f"reported {option.traffic} traffic"
+        facts["LIGHTER_TRAFFIC"] = f"reported {option.traffic} traffic"
     return facts
+
+
+def uncertainty_codes(option: ParkingOption, data: RecommendationRequest) -> list[UncertaintyCode]:
+    return [
+        code for missing, code in (
+            (option.walking_minutes is None, "WALKING_TIME_UNKNOWN"),
+            (option.distance_m is None, "DISTANCE_UNKNOWN"),
+            (option.occupancy_percentage is None, "OCCUPANCY_UNKNOWN"),
+            (option.traffic == "unknown", "TRAFFIC_UNKNOWN"),
+            (option.status == "unknown", "OPERATING_STATUS_UNKNOWN"),
+            (data.destination is None, "DESTINATION_UNSPECIFIED"),
+        ) if missing
+    ]
+
+
+UNCERTAINTY_TEXT: dict[UncertaintyCode, str] = {
+    "WALKING_TIME_UNKNOWN": "Walking time is unknown.",
+    "DISTANCE_UNKNOWN": "Distance is unknown.",
+    "OCCUPANCY_UNKNOWN": "Occupancy percentage is unknown.",
+    "TRAFFIC_UNKNOWN": "Traffic is unknown.",
+    "OPERATING_STATUS_UNKNOWN": "Facility operating status is unknown.",
+    "DESTINATION_UNSPECIFIED": "Destination is unspecified.",
+}
+
+
+def validate_choice(
+    choice: ModelChoice, options: list[ParkingOption], data: RecommendationRequest,
+) -> tuple[ParkingOption, list[str], list[UncertaintyCode]]:
+    chosen = next((option for option in options if option.facility_id == choice.selected_facility_id), None)
+    if chosen is None:
+        raise ProviderFailure("ungrounded_provider_response")
+    supported_facts = supported(chosen)
+    if (
+        choice.recommendation_code != "RECOMMEND"
+        or "CONFIRMED_AVAILABILITY" not in choice.reason_codes
+        or any(code not in supported_facts for code in choice.reason_codes)
+    ):
+        raise ProviderFailure("ungrounded_provider_response")
+    expected_uncertainties = uncertainty_codes(chosen, data)
+    if set(choice.uncertainty_codes) != set(expected_uncertainties):
+        raise ProviderFailure("ungrounded_provider_response")
+    return chosen, choice.reason_codes, expected_uncertainties
 
 
 async def recommend(data: RecommendationRequest, client: NemotronClient) -> RecommendationResponse:
@@ -34,7 +85,7 @@ async def recommend(data: RecommendationRequest, client: NemotronClient) -> Reco
     requested = datetime.now(UTC)
     options = [f for f in data.facilities if eligible(f, requested)]
     reason = "no_confirmed_availability"
-    attempted, chosen, reasons, response_id, reported_model = False, None, [], None, None
+    attempted, chosen, reasons, uncertainties_codes, response_id, reported_model = False, None, [], [], None, None
     if options:
         reason = None
         try:
@@ -43,12 +94,13 @@ async def recommend(data: RecommendationRequest, client: NemotronClient) -> Reco
             attempted = True
             choice, response_id, reported_model = await client.choose({
                 "destination": data.destination,
-                "facilities": [f.model_dump(mode="json") for f in options],
+                "facilities": [{
+                    **f.model_dump(mode="json"),
+                    "allowed_reason_codes": list(supported(f)),
+                    "required_uncertainty_codes": uncertainty_codes(f, data),
+                } for f in options],
             })
-            chosen = next((f for f in options if f.facility_id == choice.facility_id), None)
-            if chosen is None or any(r not in supported(chosen) for r in choice.reasons):
-                raise ProviderFailure("ungrounded_provider_response")
-            reasons = list(dict.fromkeys(["availability", *choice.reasons]))
+            chosen, reasons, uncertainties_codes = validate_choice(choice, options, data)
         except ProviderFailure as exc:
             reason = str(exc)
             chosen = None
@@ -63,7 +115,8 @@ async def recommend(data: RecommendationRequest, client: NemotronClient) -> Reco
                 f.walking_minutes if f.walking_minutes is not None else float("inf"),
                 f.distance_m if f.distance_m is not None else float("inf"), f.facility_id,
             ))[0]
-            reasons = ["availability"]
+            reasons = ["CONFIRMED_AVAILABILITY"]
+            uncertainties_codes = uncertainty_codes(chosen, data)
         elif chosen is None:
             reason = "snapshot_expired"
     if chosen is None:
@@ -75,16 +128,7 @@ async def recommend(data: RecommendationRequest, client: NemotronClient) -> Reco
         text = f"Consider {chosen.name}: " + "; ".join(facts[r] for r in reasons) + "."
         if chosen.is_simulated:
             text = "Simulation only — not a real parking recommendation. " + text
-        uncertainties = [
-            label for missing, label in (
-                (chosen.walking_minutes is None, "Walking time is unknown."),
-                (chosen.distance_m is None, "Distance is unknown."),
-                (chosen.occupancy_percentage is None, "Occupancy percentage is unknown."),
-                (chosen.traffic == "unknown", "Traffic is unknown."),
-                (chosen.status == "unknown", "Facility operating status is unknown."),
-                (data.destination is None, "Destination is unspecified."),
-            ) if missing
-        ]
+        uncertainties = [UNCERTAINTY_TEXT[code] for code in uncertainties_codes]
         expires = chosen.observed_at + timedelta(seconds=MAX_AGE_SECONDS)
     return RecommendationResponse(
         facility_id=chosen.facility_id if chosen else None,

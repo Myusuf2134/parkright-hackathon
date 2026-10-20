@@ -6,7 +6,7 @@ Isolated feature branch `feat/nemotron-recommendation`, based on integration com
 
 Perception turns camera pixels into occupancy. This service turns caller-supplied structured parking facts into advisory recommendations. It never writes occupancy or offers an individual space. The driver panel supplies only fresh, confirmed OPEN standard spaces as availability; UNCERTAIN is never counted. Simulated facilities are explicitly labelled.
 
-Nemotron selects a supplied facility and factual reason codes. Python validates that selection and renders a concise explanation using only supplied values. Unrestricted model prose is **never** shown to the driver. Successful provenance means a validated Nemotron selection, not Nemotron-authored free prose. Missing values are reported as unknown, not imputed.
+Nemotron returns a minimal structured decision: a supplied facility ID, `RECOMMEND`, fixed reason codes and fixed uncertainty codes. Python independently validates the selection and every code, then renders a concise explanation using only supplied values. Unrestricted model prose and provider reasoning are **never** shown to the driver. Successful provenance means a validated Nemotron selection, not Nemotron-authored free prose. Missing values are reported as unknown, not imputed.
 
 ## Run locally
 
@@ -57,19 +57,28 @@ Response fields:
 
 Fallback provenance names the configured provider/model for debugging; it **does not** claim they generated the result. The UI labels it “Local fallback — not a Nemotron recommendation”. UI advice is discarded on expiry, evidence changes or disconnect. It never changes the existing selectable-space behavior. An in-flight request is aborted on evidence change/unmount.
 
-## Prompt and provider transport
+## Structured decision and provider transport
 
-The fixed short system prompt instructs selection from supplied JSON, treats all strings as data, forbids invented facts and requests:
+The provider is asked for exactly four fields and no explanatory prose:
 
 ```json
-{"facility_id":"provided ID","reasons":["availability"]}
+{
+  "selected_facility_id": "garage-01",
+  "recommendation_code": "RECOMMEND",
+  "reason_codes": ["CONFIRMED_AVAILABILITY"],
+  "uncertainty_codes": ["WALKING_TIME_UNKNOWN", "TRAFFIC_UNKNOWN"]
+}
 ```
 
-Allowed reason codes: `availability`, `walking_time`, `distance`, `occupancy`, `traffic`. A reason requiring an absent field invalidates the answer. The user message is normalized JSON `{destination, facilities}` containing only eligible facilities. Availability is always included in the rendered explanation. There is no free-form application prompt or tool execution.
+The request uses Nebius guided JSON plus JSON-object mode. The schema forbids extra fields, fixes all code enums, and dynamically constrains `selected_facility_id` to the IDs actually sent. The same exact schema and a concrete JSON example are included in the system prompt because the hosted endpoint accepted `guided_json` but did not enforce it reliably during the first live probe. The strict prompt is therefore required compatibility behavior; guided JSON remains defense-in-depth.
 
-Transport: POST `https://api.tokenfactory.nebius.com/v1/chat/completions`, bearer authentication, exact user-requested model ID, temperature 0, max_tokens 512, JSON-object response format. Eight-second total deadline including response streaming; 64 KiB response limit; no retries, redirects, proxy environment inheritance or raw-body logging. Response must finish normally and report the expected model (case-insensitive comparison); malformed/truncated/refused/wrong-model outputs fall back.
+Each eligible facility also receives backend-derived `allowed_reason_codes` and `required_uncertainty_codes`. The backend recomputes both rather than trusting those copies. It rejects unknown or duplicate codes, omitted or added uncertainty codes, a missing `CONFIRMED_AVAILABILITY`, reasons unsupported by the selected facility, any unrecognized facility ID, and every extra field. Provider-generated counts, walking times, distances, traffic values, prices and destination facts cannot enter rendering because the decision schema has no fields for them.
 
-Official references checked 2026-10-19: [Nebius API](https://api.tokenfactory.nebius.com/docs), [Nebius Nemotron cookbook](https://github.com/nebius/token-factory-cookbook/blob/main/models/nemotron/nemotron3-nano-30b.md). The cookbook currently spells the model ID in lowercase and demonstrates a regional endpoint; this implementation preserves the exact model ID requested by the user and the general Token Factory endpoint. Account-specific availability, accepted casing, structured-output support and latency still require the gated live test. A model-not-found error is reported as fallback, never silently substituted with another model.
+Allowed reason codes are `CONFIRMED_AVAILABILITY`, `SHORTER_WALK`, `SHORTER_DISTANCE`, `LOWER_OCCUPANCY` and `LIGHTER_TRAFFIC`. Allowed uncertainty codes cover missing walking time, distance, occupancy, traffic, operating status and destination. Availability is always included in the backend-rendered explanation. There is no free-form application prompt or tool execution.
+
+Transport: POST `https://api.tokenfactory.nebius.com/v1/chat/completions`, bearer authentication, exact user-requested model ID, temperature 0, max_tokens 1024, JSON-object response format, guided JSON, and `chat_template_kwargs.enable_thinking=false`. Eight-second total deadline including response streaming; 64 KiB response limit; no retries, redirects, proxy environment inheritance or raw-body logging. Response must finish normally and report the expected model (case-insensitive comparison); malformed/truncated/refused/wrong-model outputs fall back. Even if a provider response contains separate reasoning fields, the client reads only the final structured `message.content`; reasoning is neither logged nor returned by the API.
+
+Official references checked 2026-10-19: [Nebius Nemotron model guide](https://github.com/nebius/token-factory-cookbook/blob/main/models/nemotron/nemotron3-nano-30b.md), [Nebius guided JSON example](https://github.com/nebius/token-factory-cookbook/blob/main/guided_json.ipynb), and [NVIDIA model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8). The Nebius guide identifies this model as supporting structured output; the guided JSON example combines `guided_json` with JSON-object mode; NVIDIA documents disabling thinking with `chat_template_kwargs`. The cookbook spells the model ID in lowercase and demonstrates a regional endpoint, while this implementation preserves the exact required model ID and the general Token Factory endpoint. A model-not-found error is reported as fallback, never silently substituted with another model.
 
 ## Fallback and cost boundaries
 
@@ -89,10 +98,12 @@ npm run lint
 PARKRIGHT_NEMOTRON_LIVE=1 .venv/bin/python -m pytest -q -s services/api/tests/test_recommendations.py -k live_nemotron
 ```
 
-The live test additionally requires an exported `NEBIUS_API_KEY` and asserts **success**, not merely HTTP 200/fallback. It prints measured end-to-end service latency without credentials. No key was present during implementation, so live service success and real Nemotron latency remain unverified. Mock latency is not provider performance evidence.
+The live test additionally requires an exported `NEBIUS_API_KEY` and asserts **success**, not merely HTTP 200/fallback. It covers one confirmed facility, multiple supplied facilities, missing walking time, missing traffic, stale/unknown availability, and irrelevant prompt-injection text. Output is limited to the schema-sanitized structured decision, backend-rendered response and provenance; credentials, raw provider bodies and reasoning are never printed.
 
-Local verification: 184 tests passed, two skipped (opt-in Nemotron live call and existing A0 real-weight smoke test). Workspace typechecks, web production build, repository Ruff lint and git whitespace checks passed. Initial sandbox restrictions on localhost test sockets and lint dependency downloads were resolved by approved reruns. The installed Node 25 runtime produced an existing Vitest engine-range warning during installation; the checks above completed successfully. No browser end-to-end suite was run.
+Live verification on 2026-10-19 succeeded through `POST /api/v1/recommendations` for all six cases with exact provider-reported model `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`. Five provider calls completed in 1475.00–1767.13 ms. Missing walking time and traffic produced exactly their corresponding uncertainty codes and backend wording. Stale/unknown availability did not call the provider and returned deterministic `no_confirmed_availability` fallback. Irrelevant text asking for invented free parking and a schedule did not appear in the structured decision or rendered recommendation.
 
-The short token/deadline budget is deliberately bounded. If the hosted model spends that budget on reasoning instead of returning its JSON choice, the request falls back; no hidden retry or model substitution occurs. Provider-specific reasoning controls are not assumed without a live compatibility check.
+Local verification: 196 tests passed and two explicitly gated tests skipped (the paid Nemotron live matrix without its opt-in flag, and the existing A0 real-weight smoke test). The focused recommendation file has 57 passing non-live tests. Workspace typechecks, the web production build, repository Ruff lint and git whitespace checks passed. The six-case live matrix also passed separately with the opt-in flag. The live run prints actual per-case latency; mock latency is not provider performance evidence.
+
+The token/deadline budget is deliberately bounded. If the hosted model fails to return its schema-valid choice within that budget, the request falls back; no hidden retry or model substitution occurs.
 
 Shared-contract change required: **none**. The frontend uses an endpoint-local response type. Main app changes are limited to client/router registration and the endpoint body-size limit; all perception and simulator paths remain untouched.
