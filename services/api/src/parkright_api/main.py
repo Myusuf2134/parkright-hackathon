@@ -90,6 +90,7 @@ def create_app(settings: Settings | None = None, perception: PerceptionProvider 
     api = APIRouter(prefix=API_PREFIX)
     api.include_router(health.router)
     api.include_router(recommendations.router)
+    api.include_router(recommendations.facility_router)
     api.include_router(perception_routes.router)
     api.include_router(facilities.router)
     api.include_router(frames.router)
