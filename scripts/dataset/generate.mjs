@@ -20,6 +20,9 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const SIM = join(ROOT, 'apps/simulator');
 const DATASET_SCHEMA = 'parkright-dataset-v1';
 const SAMPLE_SCHEMA = 'parkright-dataset-sample-v1';
+// Temporal OPEN-evidence datasets (config.kind === 'temporal'); see experiments/a2-open-evidence.
+const TEMPORAL_SCHEMA = 'parkright-temporal-dataset-v1';
+const TEMPORAL_SAMPLE_SCHEMA = 'parkright-temporal-sample-v1';
 
 function args() {
   const a = process.argv.slice(2);
@@ -99,10 +102,32 @@ function manifestRecord(version, s, d, frameIndex, info) {
   };
 }
 
+/** One frame of a temporal sequence. Phase per space is derived from the World's own vehicle phases. */
+function temporalRecord(version, s, d, info) {
+  const base = manifestRecord(version, s, d, s.frame_index, info);
+  const phase = Object.fromEntries(d.vehicles.filter((v) => v.phase !== 'parked').map((v) => [v.space_id, v.phase === 'arriving' ? 'entering' : 'exiting']));
+  const sessionId = `tq-${s.sequence_id}`;
+  return {
+    ...base,
+    schema: TEMPORAL_SAMPLE_SCHEMA,
+    kind: Object.keys(phase).length ? 'transition' : 'settled',
+    sequence_id: s.sequence_id,
+    frame_index: s.frame_index,
+    frame_count: s.frame_count,
+    t_ms: s.t_ms,
+    // Production-shaped metadata: one session per sequence, seq = frame index, monotonic time.
+    frame_metadata: { ...base.frame_metadata, session_id: sessionId, seq: s.frame_index },
+    scenario_params: { density: s.density, base_occupancy: s.occupancy, occluders: s.occluders, events: s.events, pattern: s.pattern },
+    spaces: d.spaces.map((x) => ({ ...x, phase: phase[x.space_id] ?? 'settled' })),
+  };
+}
+
 async function main() {
   const opt = args();
   const config = JSON.parse(readFileSync(opt.config, 'utf8'));
-  const configHash = sha256(JSON.stringify(stable({ schema: DATASET_SCHEMA, sample_schema: SAMPLE_SCHEMA, config })));
+  const temporal = config.kind === 'temporal';
+  const schema = temporal ? TEMPORAL_SCHEMA : DATASET_SCHEMA;
+  const configHash = sha256(JSON.stringify(stable(temporal ? { schema, sample_schema: TEMPORAL_SAMPLE_SCHEMA, config } : { schema: DATASET_SCHEMA, sample_schema: SAMPLE_SCHEMA, config })));
   const version = `${config.name}-${configHash.slice(0, 10)}`;
   const out = opt.out ?? join(homedir(), '.cache/parkright/datasets', version);
   if (opt.printOut) return console.log(out);
@@ -141,7 +166,7 @@ async function main() {
       const i = frameIndex.get(s.scenario_id) ?? 0;
       frameIndex.set(s.scenario_id, i + 1);
       const d = await page.evaluate((x) => (window.__parkrightDataset[x.mode])(x.s), { s, mode: opt.planOnly ? 'describe' : 'render' });
-      const record = manifestRecord(version, s, d, i, info);
+      const record = temporal ? temporalRecord(version, s, d, info) : manifestRecord(version, s, d, i, info);
       lines.push(JSON.stringify(record));
       if (opt.planOnly) continue;
       if (d.width !== info.pose.width || d.height !== info.pose.height) throw new Error(`${s.sample_id}: rendered ${d.width}x${d.height}`);
@@ -179,15 +204,15 @@ async function main() {
       writeFileSync(join(work, 'checksums.sha256'), `${checksums.join('\n')}\n`);
       const renderSeconds = (performance.now() - renderStart) / 1000;
       const dataset = {
-        schema: DATASET_SCHEMA,
+        schema,
         notice: 'OFFLINE DATASET. Labels are simulator ground truth for training/evaluation only.',
         dataset_version: version,
         config_sha256: configHash,
         config,
         classes: ['sedan', 'hatchback', 'suv', 'pickup', 'van'],
         object_classes: ['occluder'],
-        splits: ['train', 'validation', 'test'],
-        subsets: ['standard', 'robustness'],
+        splits: temporal ? ['dev', 'test'] : ['train', 'validation', 'test'],
+        subsets: temporal ? ['temporal'] : ['standard', 'robustness'],
         occlusion_rule: info.occlusion_rule,
         camera: { camera_id: info.camera_id, calibration_version: info.calibration_version, pose: info.pose },
         provenance: {

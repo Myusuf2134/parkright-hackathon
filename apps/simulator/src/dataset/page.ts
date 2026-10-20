@@ -18,6 +18,9 @@ import { cameraFor, occluderLabels, stageWorld, vehicleLabels } from './labels.t
 import { buildOccluder } from './occluders.ts';
 import { environmentOf, planDataset, type SamplePlan } from './plan.ts';
 import { OCCLUSION_RULE, type Visibility, VisibilityRenderer } from './raster.ts';
+import { planTemporal, stageSequence, type TemporalConfig, type TemporalFramePlan } from './temporal.ts';
+
+type Sample = SamplePlan | TemporalFramePlan;
 
 const pose = DEFAULT_POSE;
 if (JSON.stringify(pose) !== JSON.stringify(calibration.pose)) throw new Error('cam-01 default pose differs from calibration cam-01-fixed-v1');
@@ -37,8 +40,9 @@ const polygons = Object.fromEntries(
   ]),
 );
 
-function describe(sample: SamplePlan) {
-  stageWorld(lab.world, sample, pose);
+function describe(sample: Sample) {
+  if ('events' in sample) stageSequence(lab.world, sample, pose);
+  else stageWorld(lab.world, sample, pose);
   const truth = lab.world.truth();
   return {
     environment: environmentOf(sample.preset),
@@ -60,7 +64,7 @@ async function toBase64(blob: Blob): Promise<string> {
   return btoa(s);
 }
 
-async function render(sample: SamplePlan) {
+async function render(sample: Sample) {
   const logical = describe(sample);
   const occluders = new Group();
   occluders.name = 'dataset-occluders';
@@ -91,7 +95,7 @@ async function render(sample: SamplePlan) {
 
 Object.assign(window, {
   __parkrightDataset: {
-    plan: (config: DatasetConfig) => planDataset(config),
+    plan: (config: DatasetConfig | TemporalConfig) => ('kind' in config && config.kind === 'temporal' ? planTemporal(config) : planDataset(config as DatasetConfig)),
     describe,
     render,
     info: () => ({ calibration_version: calibration.version, camera_id: calibration.camera_id, pose, polygons, jpeg_quality: JPEG_QUALITY, occlusion_rule: OCCLUSION_RULE }),
