@@ -6,11 +6,15 @@ polygons, the detector's boxes and the detector/calibration/frame status. It nev
 simulator ground truth and never changes occupancy: nothing in the production frame path
 imports this package (pinned by tests), and production state stays OCCUPIED/UNCERTAIN
 with ``allow_open`` false.
+
+Vehicle tracking and bay-specific transition gating (tracking.py) are evaluation-only too.
 """
 
-from .frame import EmptyReference, EvidenceConfig, FrameContext, SpaceFrameEvidence, ViewGeometry, frame_evidence
-from .temporal import SpaceOpenEvidence, TemporalTracker
+from .frame import EmptyReference, EvidenceConfig, FrameContext, ReferenceProvenance, SpaceFrameEvidence, ViewGeometry, frame_evidence
+from .temporal import SeenFrames, SpaceOpenEvidence, TemporalTracker
+from .tracking import TrackingConfig, VehicleTracker
 
 __all__ = [
-    "EmptyReference", "EvidenceConfig", "FrameContext", "SpaceFrameEvidence", "SpaceOpenEvidence", "TemporalTracker", "ViewGeometry", "frame_evidence",
+    "EmptyReference", "EvidenceConfig", "FrameContext", "ReferenceProvenance", "SeenFrames", "SpaceFrameEvidence", "SpaceOpenEvidence",
+    "TemporalTracker", "TrackingConfig", "VehicleTracker", "ViewGeometry", "frame_evidence",
 ]

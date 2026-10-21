@@ -20,8 +20,18 @@ Every signal is measured from pixels, calibration geometry or detector output. S
   reference captures (best over references, so no lighting label is needed). A vehicle,
   pillar or anything else in the bay changes its structure. Markings say the bay's
   surroundings are visible; the reference match says its floor looks empty.
+
+Empty references carry provenance (:class:`ReferenceProvenance`): which camera and calibration
+they belong to, where the capture came from and how its empty bays were designated. A capture
+from a TEST split can never build a reference.
+
+Detections near each bay are collected within ``neighbourhood_px``; the radius is stored on the
+evidence (``near_radius_px``) so a motion gate can refuse a larger radius than was collected.
 """
 
+import hashlib
+import io
+import json
 import math
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -49,7 +59,8 @@ class EvidenceConfig:
     max_vehicle_overlap: float = 0.0
     max_occlusion_risk: float = 0.2
     max_appearance_change: float = 0.04
-    neighbourhood_px: float = 300.0
+    # Detections within this distance of a bay are kept for its motion gate. Must cover motion_radius_px.
+    neighbourhood_px: float = 480.0
     motion_radius_px: float = 40.0
     motion_iou: float = 0.9
     window: int = 5
@@ -70,6 +81,8 @@ class EvidenceConfig:
     def __post_init__(self):
         if self.window < 1:
             raise ValueError("window must be at least 1")
+        if self.neighbourhood_px < self.motion_radius_px:
+            raise ValueError(f"neighbourhood_px {self.neighbourhood_px} is smaller than motion_radius_px {self.motion_radius_px}: the gate would silently use the smaller radius")
 
 
 @dataclass(frozen=True)
@@ -119,11 +132,64 @@ def _expanded(poly, factor=1.1):
     return [(cx + (x - cx) * factor, cy + (y - cy) * factor) for x, y in poly]
 
 
+REFERENCE_SOURCE_SPLITS = frozenset(("reference", "calibration", "dev"))
+
+
+@dataclass(frozen=True)
+class ReferenceProvenance:
+    """Where one empty-reference capture came from. ``empty_spaces``: bays designated empty in it."""
+
+    camera_id: str
+    calibration_version: str
+    source_split: str
+    category: str
+    image_sha256: str
+    source_id: str
+    method: str
+    empty_spaces: tuple[str, ...]
+
+    def to_dict(self) -> dict:
+        return {k: (list(v) if isinstance(v, tuple) else v) for k, v in self.__dict__.items()}
+
+
+def provenance_sha256(entries: list[ReferenceProvenance]) -> str:
+    """Aggregate hash over every reference's provenance, including each image's SHA-256."""
+    rows = sorted((e.to_dict() for e in entries), key=lambda d: (d["image_sha256"], d["source_id"]))
+    return hashlib.sha256(json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
 class EmptyReference:
     """Per-bay appearance from operator-confirmed EMPTY captures of this camera (calibration-time input)."""
 
-    def __init__(self, patches: dict[str, list[np.ndarray]], size: int):
-        self.patches, self.size = patches, size
+    def __init__(self, patches: dict[str, list[np.ndarray]], size: int, provenance: tuple[ReferenceProvenance, ...] = ()):
+        self.patches, self.size, self.provenance = patches, size, provenance
+
+    @property
+    def aggregate_sha256(self) -> str | None:
+        return provenance_sha256(list(self.provenance)) if self.provenance else None
+
+    @classmethod
+    def from_provenance(
+        cls, captures: list[tuple[ReferenceProvenance, bytes]], view: "ViewGeometry", camera_id: str, calibration_version: str, size: int = 24,
+    ) -> "EmptyReference":
+        """Builds references only from captures whose provenance is acceptable; anything else raises."""
+        patches: dict[str, list[np.ndarray]] = {s: [] for s in view.polygons}
+        for meta, data in captures:
+            if meta.source_split not in REFERENCE_SOURCE_SPLITS:
+                raise ValueError(f"reference {meta.source_id}: split {meta.source_split!r} may not build empty references")
+            if hashlib.sha256(data).hexdigest() != meta.image_sha256:
+                raise ValueError(f"reference {meta.source_id}: image does not match its recorded SHA-256")
+            if meta.camera_id != camera_id or meta.calibration_version != calibration_version:
+                raise ValueError(f"reference {meta.source_id}: captured for {meta.camera_id}/{meta.calibration_version}")
+            unknown = set(meta.empty_spaces) - set(view.polygons)
+            if unknown:
+                raise ValueError(f"reference {meta.source_id}: unknown spaces {sorted(unknown)}")
+            with Image.open(io.BytesIO(data)) as image:
+                w, h = image.size
+                gray = np.asarray(image.convert("L"), dtype=np.float32)
+            for s in meta.empty_spaces:
+                patches[s].append(bay_patch(gray, _expanded(_px(view.polygons[s], w, h)), size))
+        return cls(patches, size, tuple(meta for meta, _ in captures))
 
     @classmethod
     def from_images(cls, images: list[Image.Image], view: "ViewGeometry", size: int = 24) -> "EmptyReference":
@@ -159,6 +225,8 @@ class SpaceFrameEvidence:
     signature: tuple[float, ...] = field(repr=False)
     # Detections near the bay: (x0, y0, x1, y1, distance to the polygon in px).
     near_boxes: tuple[tuple[float, float, float, float, float], ...] = field(repr=False)
+    # Radius near_boxes were collected within; 0 means unknown (no motion gate can rely on them).
+    near_radius_px: float = 0.0
 
     def blocking(self, c: EvidenceConfig) -> list[str]:
         out = [f"frame:{r}" for r in self.frame_reasons]
@@ -322,5 +390,6 @@ def frame_evidence(
             reference_match=round(reference.match(space_id, gray, poly), 4) if reference else 0.0,
             signature=tuple(cells),
             near_boxes=tuple(near),
+            near_radius_px=c.neighbourhood_px,
         )
     return out
