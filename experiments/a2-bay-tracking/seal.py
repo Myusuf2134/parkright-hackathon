@@ -51,7 +51,8 @@ def code_files(root: Path = ROOT) -> list[Path]:
 def code_sha256(root: Path = ROOT) -> str:
     h = hashlib.sha256()
     for f in code_files(root):
-        h.update(str(f.relative_to(root)).encode()).update(b"\0").update(f.read_bytes()).update(b"\0")
+        for part in (str(f.relative_to(root)).encode(), b"\0", f.read_bytes(), b"\0"):
+            h.update(part)
     return h.hexdigest()
 
 

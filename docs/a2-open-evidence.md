@@ -7,6 +7,24 @@ builds and measures the evidence a future OPEN decision would need; it does not 
 Branch `feat/a2-open-evidence`, based on `integration/a2-nemotron-demo` at `a696787`, with the
 `feat/a2-simulator-dataset` commits cherry-picked to extend the dataset generator.
 
+> **Corrections after the independent audit (made on `feat/a2-bay-tracking`; the original
+> branch is unchanged).** See `docs/a2-bay-tracking.md` for the fixes.
+>
+> 1. **The frozen 360 px motion radius was not the effective radius.** Detections were only
+>    collected within `neighbourhood_px` = 300 px of each bay, so the gate that ran had an
+>    effective radius of about 300 px. Every result below labelled "360 px" was produced by that
+>    ~300 px gate. The library now refuses a motion radius larger than the collection radius.
+> 2. **Iteration 2 covered 2,304 combinations** (iteration 1: 1,728). The two iterations are
+>    separate DEV searches; the frozen rule came from iteration 2.
+> 3. **Production OCCUPIED false positives were not all transitions.** Of the 360 OCCUPIED flags
+>    on truth-empty TEST bays, 88 (24%) were in bays that were themselves entering or exiting;
+>    272 (76%) were in settled bays, most plausibly a neighbouring or passing vehicle's box
+>    spilling over. The sentence "its false positives are vehicles mid-transition" below is
+>    wrong; it remains a fail-safe direction (a free bay reported busy), but not for that reason.
+> 4. Duplicate protection was window-local, capture timestamps were not required to increase,
+>    the empty references came from an earlier dataset's TEST directory, and the seal bound only
+>    the rule and manifest. All four are fixed on `feat/a2-bay-tracking`.
+
 ## Why absence of a detection is not evidence of an empty bay
 
 Codex's independent evaluation (`feat/a2-open-evaluation`, decision INSUFFICIENT_EVIDENCE) showed
