@@ -239,6 +239,16 @@ def test_pass_by_is_not_a_bay_approach():
         assert bay_state(m[sid]) == "settled", (sid, m[sid])
 
 
+def test_swept_path_blocks_bays_ahead_not_behind():
+    # Driving along the aisle close to row A (as cars do before turning in): its body will pass the
+    # entrances of the bays ahead within the horizon, not of the bay already behind it.
+    m = _motion([(0.38 + 0.02 * i, 0.4) for i in range(5)])
+    assert bay_state(m["A3"]) == "approaching"
+    assert bay_state(m["A1"]) != "approaching"
+    for sid in ("B1", "B2", "B3"):
+        assert bay_state(m[sid]) == "settled", (sid, m[sid])
+
+
 def test_neighbouring_bay_approach_is_localised():
     m = _motion([(0.5, 0.62 - 0.04 * i) for i in range(5)])
     assert bay_state(m["A2"]) == "approaching"

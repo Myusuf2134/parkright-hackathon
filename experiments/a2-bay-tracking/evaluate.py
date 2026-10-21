@@ -44,18 +44,28 @@ BASELINES = {
     "A_coarse_frozen_effective_300": {"gate": "coarse", **SURFACE, "motion_radius_px": 300.0, "motion_iou": 0.9, "window": 5},
     "B_coarse_corrected_360": {"gate": "coarse", **SURFACE, "motion_radius_px": 360.0, "motion_iou": 0.9, "window": 5},
 }
-# DEV iteration history (TEST untouched throughout): see DEV_ITERATION notes in DEV_SELECTION.json.
-DEV_ITERATION = 1
+# DEV iteration history (TEST untouched throughout):
+#   1. anchor-ray path test, 729 combinations (horizon fixed 3 s): 0 safe. Every tracking policy had
+#      zero false OPEN; the best had 2 transition hazards, both a car still driving along the aisle
+#      toward the bay it was about to turn into (its anchor ray parallel to the row never entered
+#      the bay). Results kept in DEV_SELECTION.iter1.json.
+#   2. swept-box path test (library change) and lost tracks extrapolated along their last
+#      velocity; horizon added to the grid; near_px reduced to two values. A spot check of the
+#      strictest setting on DEV still let a car in the aisle centre lane reach a row-B bay unseen:
+#      row-B entrances lie ~35 px below such a car's box, so path margins 40 and 60 px were added
+#      (0 dropped). Selection rule unchanged.
+DEV_ITERATION = 2
 # Tracking grid explored on DEV, each listed strict → loose. Selection uses one-step-looser neighbours.
 GRID = {
     "speed_floor_px_s": (10.0, 20.0, 40.0),
-    "path_margin_px": (20.0, 10.0, 0.0),
-    "near_px": (40.0, 25.0, 10.0),
+    "path_margin_px": (60.0, 40.0, 20.0, 10.0),
+    "near_px": (40.0, 25.0),
     "uncertain_near_px": (90.0, 60.0, 30.0),
     "lost_cooldown_ms": (3000.0, 1500.0, 0.0),
+    "horizon_ms": (4000.0, 3000.0, 2000.0),
     "window": (5, 3, 2),
 }
-FIXED_TRACKING = {"approach_latch_ms": 1500.0, "horizon_ms": 3000.0, "min_cos": 0.0}
+FIXED_TRACKING = {"approach_latch_ms": 1500.0, "min_cos": 0.0}
 SELECTION_RULE = (
     "tracking gate; zero DEV false OPEN and zero DEV transition hazard; every one-step-looser grid neighbour also has zero of both "
     "(margin); maximise DEV potential-OPEN recall; ties → strictest"
@@ -305,12 +315,14 @@ _DATA = None
 
 
 def _work(args):
+    """One library run at window 5 per tracking setting; windows 3 and 2 are derived (verify_windows checks this)."""
     combo, ref = args
     global _DATA
     if _DATA is None:
         _DATA = load_split("dev")
-    p = _policy(combo, ref)
-    return combo, ref, metrics(observations(_DATA, p)[p["window"]])
+    p = _policy(combo + (5,), ref)
+    rows = observations(_DATA, p, [5, 3, 2])
+    return [(combo + (w,), ref, metrics(rows[w])) for w in (5, 3, 2)]
 
 
 def cmd_dev(a):
@@ -322,8 +334,10 @@ def cmd_dev(a):
     keys = list(GRID)
     combos = list(itertools.product(*(GRID[k] for k in keys)))
     refs = (SURFACE["min_reference_match"],)
+    assert keys[-1] == "window" and GRID["window"] == (5, 3, 2)
+    settings = list(itertools.product(*(GRID[k] for k in keys[:-1])))
     with ProcessPoolExecutor(max_workers=a.workers) as pool:
-        results = {(c, r): m for c, r, m in pool.map(_work, [(c, r) for c in combos for r in refs], chunksize=4)}
+        results = {(c, r): m for batch in pool.map(_work, [(c, r) for c in settings for r in refs], chunksize=2) for c, r, m in batch}
 
     def looser(combo):
         for i, k in enumerate(keys):
@@ -346,17 +360,7 @@ def cmd_dev(a):
         "least_unsafe": sorted(({"policy": dict(zip(keys, c)), "false_open": results[(c, ref)]["false_open"], "hazard": results[(c, ref)]["transition_hazard"], "recall": results[(c, ref)]["potential_open_recall"]} for c in combos if not safe(results[(c, ref)])), key=lambda x: (x["false_open"] + x["hazard"], -(x["recall"] or 0)))[:8],
     }
     if selected:
-        p = summary["selected_policy"]
-        verify_windows(data, {**p, "window": 5})
-        five = observations(data, {**p, "window": 5}, [5, 3, 2, 1])
-        nocool = observations(data, {**p, "window": 5, "lost_cooldown_ms": 0.0}, [5, 3, 2, 1])
-        summary["comparison"] = {
-            **{k: {w: v["by_window"][w] for w in (5, 3, 2, 1)} for k, v in comparison.items()},
-            "C_tracking_no_cooldown": {w: metrics(nocool[w]) for w in (5, 3, 2, 1)},
-            "D_tracking_with_cooldown": {w: metrics(five[w]) for w in (5, 3, 2, 1)},
-        }
-        summary["E_selected_by_window"] = {w: breakdown(five[w]) for w in (5, 3, 2, 1)}
-        summary["selected_dev_unsafe_cases_by_window"] = {w: unsafe_cases(five[w]) for w in (5, 3, 2, 1)}
+        summary.update(selected_report(data, summary["selected_policy"], comparison))
     summary["seconds"] = round(time.perf_counter() - started, 1)
     (HERE / "DEV_SELECTION.json").write_text(json.dumps(summary, indent=2, default=str) + "\n")
     print(json.dumps({k: summary[k] for k in ("combinations", "safe_combinations", "eligible_with_margin", "selected_policy", "seconds")}, indent=2, default=str))
@@ -365,6 +369,36 @@ def cmd_dev(a):
     if selected:
         for k in ("C_tracking_no_cooldown", "D_tracking_with_cooldown"):
             print(k, {w: (m["false_open"], m["transition_hazard"], m["open_ready_coverage"]) for w, m in summary["comparison"][k].items()})
+
+
+def selected_report(data, p, comparison) -> dict:
+    """Policies A–E on DEV: baselines, tracking without (C) and with (D) a lost-track cooldown, and the selection by window (E)."""
+    verify_windows(data, {**p, "window": 5})
+    five = observations(data, {**p, "window": 5}, [5, 3, 2, 1])
+    nocool = observations(data, {**p, "window": 5, "lost_cooldown_ms": 0.0}, [5, 3, 2, 1])
+    cool = observations(data, {**p, "window": 5, "lost_cooldown_ms": max(p["lost_cooldown_ms"], GRID["lost_cooldown_ms"][0])}, [5, 3, 2, 1])
+    return {
+        "comparison": {
+            **{k: {w: v["by_window"][w] for w in (5, 3, 2, 1)} for k, v in comparison.items()},
+            "C_tracking_no_cooldown": {w: metrics(nocool[w]) for w in (5, 3, 2, 1)},
+            "D_tracking_with_cooldown": {w: metrics(cool[w]) for w in (5, 3, 2, 1)},
+        },
+        "D_cooldown_ms": max(p["lost_cooldown_ms"], GRID["lost_cooldown_ms"][0]),
+        "E_selected_by_window": {w: breakdown(five[w]) for w in (5, 3, 2, 1)},
+        "selected_dev_unsafe_cases_by_window": {w: unsafe_cases(five[w]) for w in (5, 3, 2, 1)},
+    }
+
+
+def cmd_dev_report(a):
+    """Recomputes only the A–E comparison for the already selected DEV policy (no re-selection)."""
+    path = HERE / "DEV_SELECTION.json"
+    dev = json.loads(path.read_text())
+    data = load_split("dev")
+    comparison = {name: {"policy": p, "by_window": {w: metrics(r) for w, r in observations(data, {**p, "window": 5}, [5, 3, 2, 1]).items()}} for name, p in BASELINES.items()}
+    dev.update(json.loads(json.dumps(selected_report(data, dev["selected_policy"], comparison), default=str)))
+    path.write_text(json.dumps(dev, indent=2, default=str) + "\n")
+    for k, v in dev["comparison"].items():
+        print(k, {w: (m["false_open"], m["transition_hazard"], m["open_ready_coverage"]) for w, m in v.items()})
 
 
 def cmd_freeze(a):
@@ -417,10 +451,11 @@ def main():
     f.add_argument("--split", choices=("dev", "test"), required=True)
     d = sub.add_parser("dev")
     d.add_argument("--workers", type=int, default=6)
+    sub.add_parser("dev-report")
     sub.add_parser("freeze")
     sub.add_parser("test")
     a = p.parse_args()
-    {"features": cmd_features, "dev": cmd_dev, "freeze": cmd_freeze, "test": cmd_test}[a.cmd](a)
+    {"features": cmd_features, "dev": cmd_dev, "dev-report": cmd_dev_report, "freeze": cmd_freeze, "test": cmd_test}[a.cmd](a)
 
 
 if __name__ == "__main__":

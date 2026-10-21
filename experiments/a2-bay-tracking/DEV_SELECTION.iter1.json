@@ -1,0 +1,536 @@
+{
+  "schema": "parkright-bay-tracking-dev-v1",
+  "iteration": 1,
+  "dataset": "a2-temporal-v2-ac0f55eabd",
+  "surface_thresholds": {
+    "min_reference_match": 0.95,
+    "min_marking_visibility": 0.6,
+    "max_interior_clutter": 0.05,
+    "max_appearance_change": 0.02,
+    "max_vehicle_overlap": 0.0
+  },
+  "fixed_tracking": {
+    "approach_latch_ms": 1500.0,
+    "horizon_ms": 3000.0,
+    "min_cos": 0.0
+  },
+  "grid": {
+    "speed_floor_px_s": [
+      10.0,
+      20.0,
+      40.0
+    ],
+    "path_margin_px": [
+      20.0,
+      10.0,
+      0.0
+    ],
+    "near_px": [
+      40.0,
+      25.0,
+      10.0
+    ],
+    "uncertain_near_px": [
+      90.0,
+      60.0,
+      30.0
+    ],
+    "lost_cooldown_ms": [
+      3000.0,
+      1500.0,
+      0.0
+    ],
+    "window": [
+      5,
+      3,
+      2
+    ]
+  },
+  "selection_rule": "tracking gate; zero DEV false OPEN and zero DEV transition hazard; every one-step-looser grid neighbour also has zero of both (margin); maximise DEV potential-OPEN recall; ties \u2192 strictest",
+  "combinations": 729,
+  "safe_combinations": 0,
+  "eligible_with_margin": 0,
+  "safety_by_parameter_value": {
+    "speed_floor_px_s": {
+      "10.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "20.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "40.0": {
+        "combos": 243,
+        "safe": 0
+      }
+    },
+    "path_margin_px": {
+      "20.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "10.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "0.0": {
+        "combos": 243,
+        "safe": 0
+      }
+    },
+    "near_px": {
+      "40.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "25.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "10.0": {
+        "combos": 243,
+        "safe": 0
+      }
+    },
+    "uncertain_near_px": {
+      "90.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "60.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "30.0": {
+        "combos": 243,
+        "safe": 0
+      }
+    },
+    "lost_cooldown_ms": {
+      "3000.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "1500.0": {
+        "combos": 243,
+        "safe": 0
+      },
+      "0.0": {
+        "combos": 243,
+        "safe": 0
+      }
+    },
+    "window": {
+      "5": {
+        "combos": 243,
+        "safe": 0
+      },
+      "3": {
+        "combos": 243,
+        "safe": 0
+      },
+      "2": {
+        "combos": 243,
+        "safe": 0
+      }
+    }
+  },
+  "baselines": {
+    "A_coarse_frozen_effective_300": {
+      "policy": {
+        "gate": "coarse",
+        "min_reference_match": 0.95,
+        "min_marking_visibility": 0.6,
+        "max_interior_clutter": 0.05,
+        "max_appearance_change": 0.02,
+        "max_vehicle_overlap": 0.0,
+        "motion_radius_px": 300.0,
+        "motion_iou": 0.9,
+        "window": 5
+      },
+      "by_window": {
+        "5": {
+          "observations": 13824,
+          "truth_empty": 7739,
+          "truth_occupied": 6085,
+          "open_ready": 28,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "transition_hazard": 0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.003618,
+          "open_ready_coverage": 0.002025,
+          "uncertain_rate": 0.530599,
+          "occupied_precision": 0.927411,
+          "occupied_recall": 0.984717,
+          "rejection_rate_among_empty": {
+            "frame": 0.0016,
+            "visibility": 0.1551,
+            "occlusion": 0.219,
+            "vehicle": 0.4919,
+            "surface": 0.2244,
+            "transition": 0.9867,
+            "temporal": 0.7721
+          },
+          "transition_reason_among_empty": {
+            "approaching": 0.0,
+            "departing": 0.0,
+            "ambiguous": 0.0,
+            "lost": 0.0,
+            "suspected": 0.9216,
+            "unknown": 0.0651
+          }
+        },
+        "3": {
+          "observations": 13824,
+          "truth_empty": 7739,
+          "truth_occupied": 6085,
+          "open_ready": 114,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "transition_hazard": 0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.014731,
+          "open_ready_coverage": 0.008247,
+          "uncertain_rate": 0.524378,
+          "occupied_precision": 0.927411,
+          "occupied_recall": 0.984717,
+          "rejection_rate_among_empty": {
+            "frame": 0.0016,
+            "visibility": 0.1551,
+            "occlusion": 0.219,
+            "vehicle": 0.4919,
+            "surface": 0.2244,
+            "transition": 0.9773,
+            "temporal": 0.6798
+          },
+          "transition_reason_among_empty": {
+            "approaching": 0.0,
+            "departing": 0.0,
+            "ambiguous": 0.0,
+            "lost": 0.0,
+            "suspected": 0.9121,
+            "unknown": 0.0651
+          }
+        },
+        "2": {
+          "observations": 13824,
+          "truth_empty": 7739,
+          "truth_occupied": 6085,
+          "open_ready": 222,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "transition_hazard": 0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.028686,
+          "open_ready_coverage": 0.016059,
+          "uncertain_rate": 0.516565,
+          "occupied_precision": 0.927411,
+          "occupied_recall": 0.984717,
+          "rejection_rate_among_empty": {
+            "frame": 0.0016,
+            "visibility": 0.1551,
+            "occlusion": 0.219,
+            "vehicle": 0.4919,
+            "surface": 0.2244,
+            "transition": 0.9658,
+            "temporal": 0.6228
+          },
+          "transition_reason_among_empty": {
+            "approaching": 0.0,
+            "departing": 0.0,
+            "ambiguous": 0.0,
+            "lost": 0.0,
+            "suspected": 0.9006,
+            "unknown": 0.0651
+          }
+        },
+        "1": {
+          "observations": 13824,
+          "truth_empty": 7739,
+          "truth_occupied": 6085,
+          "open_ready": 330,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "transition_hazard": 1,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.042641,
+          "open_ready_coverage": 0.023872,
+          "uncertain_rate": 0.508753,
+          "occupied_precision": 0.927411,
+          "occupied_recall": 0.984717,
+          "rejection_rate_among_empty": {
+            "frame": 0.0016,
+            "visibility": 0.1551,
+            "occlusion": 0.219,
+            "vehicle": 0.4919,
+            "surface": 0.2244,
+            "transition": 0.9461,
+            "temporal": 0.5537
+          },
+          "transition_reason_among_empty": {
+            "approaching": 0.0,
+            "departing": 0.0,
+            "ambiguous": 0.0,
+            "lost": 0.0,
+            "suspected": 0.881,
+            "unknown": 0.0651
+          }
+        }
+      }
+    },
+    "B_coarse_corrected_360": {
+      "policy": {
+        "gate": "coarse",
+        "min_reference_match": 0.95,
+        "min_marking_visibility": 0.6,
+        "max_interior_clutter": 0.05,
+        "max_appearance_change": 0.02,
+        "max_vehicle_overlap": 0.0,
+        "motion_radius_px": 360.0,
+        "motion_iou": 0.9,
+        "window": 5
+      },
+      "by_window": {
+        "5": {
+          "observations": 13824,
+          "truth_empty": 7739,
+          "truth_occupied": 6085,
+          "open_ready": 14,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "transition_hazard": 0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.001809,
+          "open_ready_coverage": 0.001013,
+          "uncertain_rate": 0.531612,
+          "occupied_precision": 0.927411,
+          "occupied_recall": 0.984717,
+          "rejection_rate_among_empty": {
+            "frame": 0.0016,
+            "visibility": 0.1551,
+            "occlusion": 0.219,
+            "vehicle": 0.4919,
+            "surface": 0.2244,
+            "transition": 0.9937,
+            "temporal": 0.7721
+          },
+          "transition_reason_among_empty": {
+            "approaching": 0.0,
+            "departing": 0.0,
+            "ambiguous": 0.0,
+            "lost": 0.0,
+            "suspected": 0.9285,
+            "unknown": 0.0651
+          }
+        },
+        "3": {
+          "observations": 13824,
+          "truth_empty": 7739,
+          "truth_occupied": 6085,
+          "open_ready": 56,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "transition_hazard": 0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.007236,
+          "open_ready_coverage": 0.004051,
+          "uncertain_rate": 0.528573,
+          "occupied_precision": 0.927411,
+          "occupied_recall": 0.984717,
+          "rejection_rate_among_empty": {
+            "frame": 0.0016,
+            "visibility": 0.1551,
+            "occlusion": 0.219,
+            "vehicle": 0.4919,
+            "surface": 0.2244,
+            "transition": 0.9882,
+            "temporal": 0.6798
+          },
+          "transition_reason_among_empty": {
+            "approaching": 0.0,
+            "departing": 0.0,
+            "ambiguous": 0.0,
+            "lost": 0.0,
+            "suspected": 0.9231,
+            "unknown": 0.0651
+          }
+        },
+        "2": {
+          "observations": 13824,
+          "truth_empty": 7739,
+          "truth_occupied": 6085,
+          "open_ready": 128,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "transition_hazard": 0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.01654,
+          "open_ready_coverage": 0.009259,
+          "uncertain_rate": 0.523365,
+          "occupied_precision": 0.927411,
+          "occupied_recall": 0.984717,
+          "rejection_rate_among_empty": {
+            "frame": 0.0016,
+            "visibility": 0.1551,
+            "occlusion": 0.219,
+            "vehicle": 0.4919,
+            "surface": 0.2244,
+            "transition": 0.9797,
+            "temporal": 0.6228
+          },
+          "transition_reason_among_empty": {
+            "approaching": 0.0,
+            "departing": 0.0,
+            "ambiguous": 0.0,
+            "lost": 0.0,
+            "suspected": 0.9146,
+            "unknown": 0.0651
+          }
+        },
+        "1": {
+          "observations": 13824,
+          "truth_empty": 7739,
+          "truth_occupied": 6085,
+          "open_ready": 204,
+          "false_open": 0,
+          "false_open_rate": 0.0,
+          "transition_hazard": 0,
+          "potential_open_precision": 1.0,
+          "potential_open_recall": 0.02636,
+          "open_ready_coverage": 0.014757,
+          "uncertain_rate": 0.517867,
+          "occupied_precision": 0.927411,
+          "occupied_recall": 0.984717,
+          "rejection_rate_among_empty": {
+            "frame": 0.0016,
+            "visibility": 0.1551,
+            "occlusion": 0.219,
+            "vehicle": 0.4919,
+            "surface": 0.2244,
+            "transition": 0.966,
+            "temporal": 0.5537
+          },
+          "transition_reason_among_empty": {
+            "approaching": 0.0,
+            "departing": 0.0,
+            "ambiguous": 0.0,
+            "lost": 0.0,
+            "suspected": 0.9009,
+            "unknown": 0.0651
+          }
+        }
+      }
+    }
+  },
+  "selected_policy": null,
+  "most_permissive_safe": [],
+  "least_unsafe": [
+    {
+      "policy": {
+        "speed_floor_px_s": 40.0,
+        "path_margin_px": 20.0,
+        "near_px": 10.0,
+        "uncertain_near_px": 90.0,
+        "lost_cooldown_ms": 0.0,
+        "window": 5
+      },
+      "false_open": 0,
+      "hazard": 2,
+      "recall": 0.050523
+    },
+    {
+      "policy": {
+        "speed_floor_px_s": 10.0,
+        "path_margin_px": 20.0,
+        "near_px": 10.0,
+        "uncertain_near_px": 90.0,
+        "lost_cooldown_ms": 0.0,
+        "window": 5
+      },
+      "false_open": 0,
+      "hazard": 2,
+      "recall": 0.049748
+    },
+    {
+      "policy": {
+        "speed_floor_px_s": 20.0,
+        "path_margin_px": 20.0,
+        "near_px": 10.0,
+        "uncertain_near_px": 90.0,
+        "lost_cooldown_ms": 0.0,
+        "window": 5
+      },
+      "false_open": 0,
+      "hazard": 2,
+      "recall": 0.049748
+    },
+    {
+      "policy": {
+        "speed_floor_px_s": 40.0,
+        "path_margin_px": 20.0,
+        "near_px": 25.0,
+        "uncertain_near_px": 90.0,
+        "lost_cooldown_ms": 0.0,
+        "window": 5
+      },
+      "false_open": 0,
+      "hazard": 2,
+      "recall": 0.049748
+    },
+    {
+      "policy": {
+        "speed_floor_px_s": 10.0,
+        "path_margin_px": 20.0,
+        "near_px": 25.0,
+        "uncertain_near_px": 90.0,
+        "lost_cooldown_ms": 0.0,
+        "window": 5
+      },
+      "false_open": 0,
+      "hazard": 2,
+      "recall": 0.048973
+    },
+    {
+      "policy": {
+        "speed_floor_px_s": 20.0,
+        "path_margin_px": 20.0,
+        "near_px": 25.0,
+        "uncertain_near_px": 90.0,
+        "lost_cooldown_ms": 0.0,
+        "window": 5
+      },
+      "false_open": 0,
+      "hazard": 2,
+      "recall": 0.048973
+    },
+    {
+      "policy": {
+        "speed_floor_px_s": 40.0,
+        "path_margin_px": 20.0,
+        "near_px": 40.0,
+        "uncertain_near_px": 90.0,
+        "lost_cooldown_ms": 0.0,
+        "window": 5
+      },
+      "false_open": 0,
+      "hazard": 2,
+      "recall": 0.046001
+    },
+    {
+      "policy": {
+        "speed_floor_px_s": 10.0,
+        "path_margin_px": 20.0,
+        "near_px": 40.0,
+        "uncertain_near_px": 90.0,
+        "lost_cooldown_ms": 0.0,
+        "window": 5
+      },
+      "false_open": 0,
+      "hazard": 2,
+      "recall": 0.045096
+    }
+  ],
+  "seconds": 2040.4
+}

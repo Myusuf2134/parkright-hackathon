@@ -20,16 +20,22 @@ Approach vector, per (track, bay), anchor = bottom centre of the box (ground con
   d        vector from the anchor to the bay polygon centroid;
   cos      v·d / (|v| |d|);
   closing  distance(anchor, polygon) then − now (positive when the vehicle gets closer);
-  path     the anchor extrapolated along v for ``horizon_ms`` enters the polygon grown by
+  path     the vehicle's box swept along v for ``horizon_ms`` touches the polygon grown by
            ``path_margin_px``; ttb is the first such time (projected time-to-bay).
   approaching = enough history ∧ |v| ≥ speed floor ∧ closing ≥ min_closing ∧ cos ≥ min_cos ∧ path
+
+Sweeping the box (not just the anchor ray) matters: a car still driving along the aisle toward
+the bay it will turn into moves parallel to the bay row, so its anchor ray never enters the bay,
+but its body will pass the bay's entrance within the horizon. Bays behind the vehicle, or beyond
+its reach within the horizon, are not blocked. A lost track keeps sweeping its last box along its
+last velocity (from its last observation to now + horizon) and blocks what it could reach.
 """
 
 import math
 from collections import deque
 from dataclasses import dataclass, field
 
-from shapely.geometry import LineString, Point, Polygon, box
+from shapely.geometry import MultiPoint, Point, Polygon, box
 
 VEHICLE_LABELS = frozenset(("car", "truck", "bus", "suv", "van", "pickup"))
 
@@ -99,6 +105,7 @@ class Track:
     ambiguous: bool = False
     max_speed: float = 0.0
     approached: dict = field(default_factory=dict)  # space_id → last time (s) this track was approaching it
+    now: float = 0.0  # time of the tracker's latest update (for lost-track extrapolation)
 
     @property
     def centroid(self):
@@ -195,6 +202,7 @@ class VehicleTracker:
             if v is not None:
                 tr.max_speed = max(tr.max_speed, math.hypot(*v))
         for ti, tr in enumerate(self.tracks):
+            tr.now = t
             if ti not in used_t:
                 tr.missed += 1
                 tr.age += 1
@@ -202,7 +210,7 @@ class VehicleTracker:
         self.tracks = [tr for tr in self.tracks if tr.missed <= c.max_missed]
         for di, (lab, conf, b) in enumerate(dets):
             if di not in used_d:
-                tr = Track(self._next, lab, conf, b, t, seq)
+                tr = Track(self._next, lab, conf, b, t, seq, now=t)
                 tr.history.append((seq, t, anchor(b), centroid(b), b))
                 self.tracks.append(tr)
                 self._next += 1
@@ -231,13 +239,36 @@ class Approach:
     ttb_ms: float | None
 
 
+def _sweep_hit(bbox, v, t0: float, t1: float, target) -> float | None:
+    """First time τ ∈ [t0, t1] (s) at which the box translated by v·τ touches target, else None."""
+    x0, y0, x1, y1 = bbox
+    corners = [(x + v[0] * t, y + v[1] * t) for t in (t0, t1) for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))]
+    if not MultiPoint(corners).convex_hull.intersects(target):  # exact sweep of a translated convex box
+        return None
+    lo, hi = t0, t1
+    if box(x0 + v[0] * lo, y0 + v[1] * lo, x1 + v[0] * lo, y1 + v[1] * lo).intersects(target):
+        return lo
+    for _ in range(12):  # bisection on first contact
+        mid = (lo + hi) / 2
+        hull = MultiPoint([(x + v[0] * t, y + v[1] * t) for t in (lo, mid) for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))]).convex_hull
+        lo, hi = (lo, mid) if hull.intersects(target) else (mid, hi)
+    return hi
+
+
 def _approach(tr: Track, bay: BayGeometry, c: TrackingConfig, others: list[BayGeometry]) -> Approach | None:
     b = box(*tr.bbox)
     gap = bay.polygon.distance(b)
     if gap > c.relevant_px:
         return None
     if tr.missed > 0:
-        return Approach(tr.track_id, "lost", gap, None, None, None, None) if gap <= c.uncertain_near_px else None
+        if gap <= c.uncertain_near_px:
+            return Approach(tr.track_id, "lost", gap, None, None, None, None)
+        v = tr.velocity(c, min_history=2)
+        if v is not None and math.hypot(*v) >= c.speed_floor_px_s:
+            hit = _sweep_hit(tr.bbox, v, 0.0, tr.now - tr.last_t + c.horizon_ms / 1000, bay.polygon.buffer(c.path_margin_px))
+            if hit is not None:
+                return Approach(tr.track_id, "lost", gap, math.hypot(*v), None, None, hit * 1000)
+        return None
     v = tr.velocity(c)
     if v is None or tr.ambiguous:
         return Approach(tr.track_id, "ambiguous", gap, None, None, None, None) if gap <= c.uncertain_near_px else None
@@ -256,16 +287,8 @@ def _approach(tr: Track, bay: BayGeometry, c: TrackingConfig, others: list[BayGe
     d = (bay.target[0] - now[0], bay.target[1] - now[1])
     nd = math.hypot(*d)
     cos = 1.0 if nd < 1e-6 else (v[0] * d[0] + v[1] * d[1]) / (speed * nd)
-    reach = c.horizon_ms / 1000
-    end = (now[0] + v[0] * reach, now[1] + v[1] * reach)
-    grown = bay.polygon.buffer(c.path_margin_px)
-    ttb = None
-    if grown.contains(Point(now)):
-        ttb = 0.0
-    else:
-        hit = LineString([now, end]).intersection(grown)
-        if not hit.is_empty:
-            ttb = min(math.dist(now, p) for p in _points(hit)) / speed * 1000
+    hit = _sweep_hit(tr.bbox, v, 0.0, c.horizon_ms / 1000, bay.polygon.buffer(c.path_margin_px))
+    ttb = None if hit is None else hit * 1000
     if overlapped and closing <= 0:
         return Approach(tr.track_id, "departing", gap, speed, cos, closing, ttb)
     if closing >= c.min_closing_px and cos >= c.min_cos and ttb is not None:
@@ -273,14 +296,6 @@ def _approach(tr: Track, bay: BayGeometry, c: TrackingConfig, others: list[BayGe
     if gap <= c.near_px and closing > -c.min_closing_px:
         return Approach(tr.track_id, "ambiguous", gap, speed, cos, closing, ttb)
     return Approach(tr.track_id, "passing", gap, speed, cos, closing, ttb)
-
-
-def _points(geom):
-    if hasattr(geom, "geoms"):
-        for g in geom.geoms:
-            yield from _points(g)
-    else:
-        yield from geom.coords
 
 
 BLOCKING = ("approaching", "departing", "lost", "ambiguous", "paused")
