@@ -1,0 +1,9 @@
+{
+  "schema": "parkright-bay-tracking-test-seal-v1",
+  "sealed_at": "2026-10-21T18:52:22.041753-04:00",
+  "frozen_policy_sha256": "43fff16c378b19d080b2466f6a889b5d04256c2e4be5d92b60f9d45536e6eafc",
+  "caches": {
+    "test_detections_sha256": "a5f7934d2228d3df01b30a86f4ed616bfb55b4b815df9d7ac0d8fb963a1b9300",
+    "test_features_sha256": "360cda46c034123188f5e08775360198343e531ce1f8c47615e25e80fd7da9b6"
+  }
+}
