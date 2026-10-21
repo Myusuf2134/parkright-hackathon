@@ -23,6 +23,9 @@ const SAMPLE_SCHEMA = 'parkright-dataset-sample-v1';
 // Temporal OPEN-evidence datasets (config.kind === 'temporal'); see experiments/a2-open-evidence.
 const TEMPORAL_SCHEMA = 'parkright-temporal-dataset-v1';
 const TEMPORAL_SAMPLE_SCHEMA = 'parkright-temporal-sample-v1';
+// Temporal v2 (config.kind === 'temporal-v2', scripted motion + reference split); see experiments/a2-bay-tracking.
+const TEMPORAL_V2_SCHEMA = 'parkright-temporal-dataset-v2';
+const TEMPORAL_V2_SAMPLE_SCHEMA = 'parkright-temporal-sample-v2';
 
 function args() {
   const a = process.argv.slice(2);
@@ -122,12 +125,32 @@ function temporalRecord(version, s, d, info) {
   };
 }
 
+/** One frame of a v2 sequence (or a reference capture). Per-space phase/intrusion/horizon labels come from the page. */
+function temporalV2Record(version, s, d, info) {
+  const base = manifestRecord(version, s, d, s.frame_index, info);
+  const transition = d.spaces.some((x) => d.v2[x.space_id].phase !== 'settled');
+  return {
+    ...base,
+    schema: TEMPORAL_V2_SAMPLE_SCHEMA,
+    kind: s.subset === 'reference' ? 'reference' : transition ? 'transition' : 'settled',
+    sequence_id: s.sequence_id,
+    frame_index: s.frame_index,
+    frame_count: s.frame_count,
+    t_ms: s.t_ms,
+    frame_metadata: { ...base.frame_metadata, session_id: `tq-${s.sequence_id}`, seq: s.frame_index },
+    scenario_params: { density: s.density, base_occupancy: s.occupancy, occluders: s.occluders, scripts: s.scripts, pattern: s.pattern, roles: s.roles, dropout_frames: s.dropout_frames },
+    spaces: d.spaces.map((x) => ({ ...x, ...d.v2[x.space_id] })),
+  };
+}
+
 async function main() {
   const opt = args();
   const config = JSON.parse(readFileSync(opt.config, 'utf8'));
-  const temporal = config.kind === 'temporal';
-  const schema = temporal ? TEMPORAL_SCHEMA : DATASET_SCHEMA;
-  const configHash = sha256(JSON.stringify(stable(temporal ? { schema, sample_schema: TEMPORAL_SAMPLE_SCHEMA, config } : { schema: DATASET_SCHEMA, sample_schema: SAMPLE_SCHEMA, config })));
+  const v2 = config.kind === 'temporal-v2';
+  const temporal = config.kind === 'temporal' || v2;
+  const schema = v2 ? TEMPORAL_V2_SCHEMA : temporal ? TEMPORAL_SCHEMA : DATASET_SCHEMA;
+  const sampleSchema = v2 ? TEMPORAL_V2_SAMPLE_SCHEMA : temporal ? TEMPORAL_SAMPLE_SCHEMA : SAMPLE_SCHEMA;
+  const configHash = sha256(JSON.stringify(stable(temporal ? { schema, sample_schema: sampleSchema, config } : { schema: DATASET_SCHEMA, sample_schema: SAMPLE_SCHEMA, config })));
   const version = `${config.name}-${configHash.slice(0, 10)}`;
   const out = opt.out ?? join(homedir(), '.cache/parkright/datasets', version);
   if (opt.printOut) return console.log(out);
@@ -167,7 +190,7 @@ async function main() {
       const i = frameIndex.get(s.scenario_id) ?? 0;
       frameIndex.set(s.scenario_id, i + 1);
       const d = await page.evaluate((x) => (window.__parkrightDataset[x.mode])(x.s), { s, mode: opt.planOnly ? 'describe' : 'render' });
-      const record = temporal ? temporalRecord(version, s, d, info) : manifestRecord(version, s, d, i, info);
+      const record = v2 ? temporalV2Record(version, s, d, info) : temporal ? temporalRecord(version, s, d, info) : manifestRecord(version, s, d, i, info);
       lines.push(JSON.stringify(record));
       if (opt.planOnly) continue;
       if (d.width !== info.pose.width || d.height !== info.pose.height) throw new Error(`${s.sample_id}: rendered ${d.width}x${d.height}`);
@@ -215,8 +238,8 @@ async function main() {
         config,
         classes: ['sedan', 'hatchback', 'suv', 'pickup', 'van'],
         object_classes: ['occluder'],
-        splits: temporal ? ['dev', 'test'] : ['train', 'validation', 'test'],
-        subsets: temporal ? ['temporal'] : ['standard', 'robustness'],
+        splits: v2 ? ['reference', 'dev', 'test'] : temporal ? ['dev', 'test'] : ['train', 'validation', 'test'],
+        subsets: v2 ? ['temporal', 'reference'] : temporal ? ['temporal'] : ['standard', 'robustness'],
         occlusion_rule: info.occlusion_rule,
         camera: { camera_id: info.camera_id, calibration_version: info.calibration_version, pose: info.pose },
         provenance: {

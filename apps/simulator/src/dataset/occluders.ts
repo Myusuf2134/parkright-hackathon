@@ -7,13 +7,15 @@
  *            (train/val/test family). cam-01 looks down from 10.5 m, so anything lower
  *            than ~2 m in front of row B sits below every line of sight and hides nothing.
  *   pillar — tall thin columns, one in the aisle and one near the camera (robustness only)
+ *   screen — a tall wide panel on the camera side of the aisle that hides a vehicle driving
+ *            behind it (temporal v2: track loss during an approach)
  */
 import { BoxGeometry, Mesh, MeshStandardMaterial } from 'three';
 import type { Rng } from '../sim/prng.ts';
 
 export interface OccluderSpec {
   id: string;
-  kind: 'crate' | 'pillar';
+  kind: 'crate' | 'pillar' | 'screen';
   /** Box centre on the ground (m) and full size (m): x across, y up, z along. */
   x: number;
   z: number;
@@ -32,6 +34,11 @@ export function pillars(r: Rng, prefix: string): OccluderSpec[] {
     { id: `${prefix}-aisle`, kind: 'pillar', x: round(r.range(2, 18)), z: round(r.range(9.2, 10.8)), size: [0.8, 4.5, 0.8] },
     { id: `${prefix}-near`, kind: 'pillar', x: round(r.range(2, 18)), z: round(r.range(19.4, 20.4)), size: [0.8, 4.5, 0.8] },
   ];
+}
+
+/** z 11.5–12.3 stays inside the aisle (row B starts at 12.4) and clear of the 10 ± 1 m driving line. */
+export function screen(id: string, x: number, z: number): OccluderSpec {
+  return { id, kind: 'screen', x: round(x), z: round(z), size: [3.2, 4.5, 0.8] };
 }
 
 const concrete = new MeshStandardMaterial({ color: '#8d8a84', roughness: 0.93 });

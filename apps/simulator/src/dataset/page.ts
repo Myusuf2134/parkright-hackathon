@@ -19,8 +19,9 @@ import { buildOccluder } from './occluders.ts';
 import { environmentOf, planDataset, type SamplePlan } from './plan.ts';
 import { OCCLUSION_RULE, type Visibility, VisibilityRenderer } from './raster.ts';
 import { planTemporal, stageSequence, type TemporalConfig, type TemporalFramePlan } from './temporal.ts';
+import { frameLabels, planTemporalV2, stageV2, type TemporalV2Config, type TemporalV2FramePlan, unstageV2 } from './temporalV2.ts';
 
-type Sample = SamplePlan | TemporalFramePlan;
+type Sample = SamplePlan | TemporalFramePlan | TemporalV2FramePlan;
 
 const pose = DEFAULT_POSE;
 if (JSON.stringify(pose) !== JSON.stringify(calibration.pose)) throw new Error('cam-01 default pose differs from calibration cam-01-fixed-v1');
@@ -41,10 +42,14 @@ const polygons = Object.fromEntries(
 );
 
 function describe(sample: Sample) {
-  if ('events' in sample) stageSequence(lab.world, sample, pose);
+  unstageV2(lab.world);
+  let v2: ReturnType<typeof frameLabels> | undefined;
+  if ('v2' in sample) v2 = frameLabels(lab.world, sample, pose);
+  else if ('events' in sample) stageSequence(lab.world, sample, pose);
   else stageWorld(lab.world, sample, pose);
   const truth = lab.world.truth();
   return {
+    ...(v2 ? { v2 } : {}),
     environment: environmentOf(sample.preset),
     sim_time_ms: truth.simTimeMs,
     spaces: truth.spaces.map((s) => ({ space_id: s.space_id, truth: s.truth })),
@@ -95,7 +100,12 @@ async function render(sample: Sample) {
 
 Object.assign(window, {
   __parkrightDataset: {
-    plan: (config: DatasetConfig | TemporalConfig) => ('kind' in config && config.kind === 'temporal' ? planTemporal(config) : planDataset(config as DatasetConfig)),
+    plan: (config: DatasetConfig | TemporalConfig | TemporalV2Config) =>
+      'kind' in config && config.kind === 'temporal-v2'
+        ? planTemporalV2(config)
+        : 'kind' in config && config.kind === 'temporal'
+          ? planTemporal(config)
+          : planDataset(config as DatasetConfig),
     describe,
     render,
     info: () => ({ calibration_version: calibration.version, camera_id: calibration.camera_id, pose, polygons, jpeg_quality: JPEG_QUALITY, occlusion_rule: OCCLUSION_RULE }),

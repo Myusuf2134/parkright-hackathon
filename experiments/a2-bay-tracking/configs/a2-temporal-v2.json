@@ -1,0 +1,21 @@
+{
+  "kind": "temporal-v2",
+  "name": "a2-temporal-v2",
+  "dataset_seed": 2026102101,
+  "seed_groups": { "reference": 1, "dev": 2, "test": 2 },
+  "sequences_per_seed": 2,
+  "frames": { "count": 16, "interval_ms": 500 },
+  "density_ranges": { "sparse": [1, 3], "medium": [4, 7], "dense": [8, 11] },
+  "presets": ["clear_day", "overcast", "dusk", "night"],
+  "families": [
+    "settled_empty", "settled_sparse", "settled_medium", "settled_dense", "settled_full",
+    "entering", "exiting", "aborted_approach", "pass_by", "neighbor_approach", "two_vehicles",
+    "pause_near", "detector_dropout", "occluded_approach", "occlusion_partial", "occlusion_severe",
+    "large_vehicles", "row_pattern"
+  ],
+  "large_vehicle_kinds": ["pickup", "van"],
+  "reference_layouts_per_preset": 3,
+  "aisle_speed_mps": [3.5, 4.5],
+  "dropout_frames": 2,
+  "future_horizon_ms": 2000
+}
