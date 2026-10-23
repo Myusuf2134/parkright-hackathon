@@ -25,6 +25,12 @@
     "test:integration:real": "playwright test -c scripts/integration/playwright.config.ts",
     "test:integration:a2": "PARKRIGHT_SUITE=a2 playwright test -c scripts/integration/playwright.config.ts",
     "dev:a2": "PARKRIGHT_PERCEPTION_PROVIDER=a2 scripts/integration/api.sh",
-    "lint": "uvx --from ruff==0.17.0 ruff check --isolated --select E4,E7,E9,F --ignore E741 services tests experiments"
+    "lint": "uvx --from ruff==0.17.0 ruff check --isolated --select E4,E7,E9,F --ignore E741 services tests experiments",
+    "demo:hackathon": "node scripts/demo/start.mjs",
+    "demo:hackathon:live": "node scripts/demo/start.mjs --live",
+    "demo:check": "node scripts/demo/check.mjs",
+    "demo:reset": "node scripts/demo/reset.mjs",
+    "demo:stop": "node scripts/demo/stop.mjs",
+    "test:demo:reliability": "PARKRIGHT_DEMO_RUNS=5 playwright test -c scripts/demo/playwright.config.ts"
   }
 }
