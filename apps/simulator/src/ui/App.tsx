@@ -9,6 +9,7 @@ import { OccupancyPanel } from './OccupancyPanel.tsx';
 import { SimulationPanel } from './SimulationPanel.tsx';
 import { type OverlayToggles, Viewport } from './Viewport.tsx';
 import { decodeSpec, encodeSpec } from '../sim/spec.ts';
+import { isDemoMode } from '../demo/demoMode.ts';
 
 const TOGGLES: [keyof OverlayToggles, string][] = [
   ['labels', 'Space IDs'],
@@ -66,6 +67,7 @@ export function App() {
           </div>
         </div>
         <div className="top-status">
+          {isDemoMode() && <span className="pill connected" data-testid="demo-badge"><i />DEMO MODE · FIXED SCENE</span>}
           <span className={`pill ${api}`} data-testid="api-status">
             <i />
             {api === 'connected' ? 'API CONNECTED' : api === 'disconnected' ? 'API DISCONNECTED' : 'API …'}

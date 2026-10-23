@@ -6,6 +6,7 @@ import { FACILITY } from './sim/facility.ts';
 import { BackendView } from './stream/backendView.ts';
 import { FrameStreamer } from './stream/streamer.ts';
 import { App } from './ui/App.tsx';
+import { isDemoMode, startDemoMode } from './demo/demoMode.ts';
 import { LabContext } from './ui/context.ts';
 import './ui/styles.css';
 
@@ -14,6 +15,7 @@ const streamer = new FrameStreamer(lab);
 const backend = new BackendView(FACILITY.facility_id);
 streamer.start();
 backend.start();
+if (isDemoMode()) startDemoMode(streamer);
 
 if (import.meta.env.DEV) Object.assign(window, { __visionLab: { lab, streamer, backend } });
 
