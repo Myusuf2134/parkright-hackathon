@@ -1,0 +1,19 @@
+
+ParkRight Demo Check
+
+[PASS] API  — http://127.0.0.1:8400 healthy
+[PASS] demo mode  — hackathon-tuttle-dreese-v1 · fixture ddc4df045828…
+[PASS] A2 detector  — a2-fasterrcnn@1-5f91c1eb70450307c6eed130ce113dd8 ready
+[PASS] OPEN disabled  — allow_open=false · no bay reported OPEN
+[PASS] checkpoint hash  — 43452092…c24985
+[PASS] simulator  — http://127.0.0.1:5181
+[PASS] web  — http://127.0.0.1:5180
+[PASS] websocket  — snapshot for garage-01 (12 bays)
+[PASS] camera stream  — frame 3 · 4 vehicles · occupied A1,A3,B2,B5
+[PASS] recommendation  — Tuttle Garage · Level 2 · B12 · 4-min walk · fallback
+[PASS] fallback mode  — deterministic local logic; Nemotron is not called
+[PASS] CPU load  — load 6.8 on 8 cores · A2 1.9 s/frame
+[PASS] state  — epoch 7 · 7 frames since reset
+
+DEMO READY
+

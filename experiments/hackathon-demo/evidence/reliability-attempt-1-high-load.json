@@ -1,0 +1,40 @@
+{
+  "runs": 5,
+  "completed": 2,
+  "summary": [
+    {
+      "run": 1,
+      "ok": true,
+      "seconds": 5.9,
+      "epoch": 1,
+      "frames": 1,
+      "occupied": [
+        "A1",
+        "A3",
+        "B2",
+        "B5"
+      ],
+      "source": "fallback",
+      "result": "Tuttle Garage · Level 2 · B12 · 4 min",
+      "recommendation_latency_ms": 0.08,
+      "nemotron_mode": "fallback"
+    },
+    {
+      "run": 2,
+      "ok": true,
+      "seconds": 8.2,
+      "epoch": 2,
+      "frames": 1,
+      "occupied": [
+        "A1",
+        "A3",
+        "B2",
+        "B5"
+      ],
+      "source": "fallback",
+      "result": "Tuttle Garage · Level 2 · B12 · 4 min",
+      "recommendation_latency_ms": 1.26,
+      "nemotron_mode": "fallback"
+    }
+  ]
+}
