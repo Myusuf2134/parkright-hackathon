@@ -32,10 +32,17 @@ class Settings(BaseSettings):
     evaluation_enabled: bool | None = Field(default=None, description="Ground-truth route. Default: on except in production.")
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5180", "http://127.0.0.1:5180"])
 
+    demo_mode: bool = Field(default=False, description="Hackathon demo mode: fixed scenario, demo routes, reset.")
+    demo_nemotron: Literal["live", "fallback"] = Field(
+        default="fallback", description="Demo only. live calls Nemotron when NEBIUS_API_KEY is set; fallback never calls it.",
+    )
+
     @model_validator(mode="after")
     def _production_rules(self) -> "Settings":
         if self.env == "production" and self.ingest_token is None:
             raise ValueError("PARKRIGHT_INGEST_TOKEN is required in production")
+        if self.env == "production" and self.demo_mode:
+            raise ValueError("PARKRIGHT_DEMO_MODE cannot be enabled in production")
         return self
 
     @property

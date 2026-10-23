@@ -177,6 +177,10 @@ async def ingest_frame(request: Request, camera_id: Annotated[CameraId, Path()])
             published_at=now(),
         )
         hub(request).publish(facility.facility_id, message.model_dump_json())
+        demo = getattr(request.app.state, "demo", None)
+        if demo is not None:  # demo mode only: keep the processed frame for the driver demo view
+            diagnostics = getattr(provider, "diagnostics", lambda: {})()
+            demo.record_frame(camera_id, metadata.session_id, metadata.seq, received_at, jpeg, diagnostics)
 
     body = FrameIngestResult(**base | {"observations": observations, "model": provider.model, "changed": len(changes)}, outcome=FrameOutcome.ACCEPTED, gap=verdict.gap, detail=verdict.detail)
     return JSONResponse(body.model_dump(mode="json"), status_code=202)

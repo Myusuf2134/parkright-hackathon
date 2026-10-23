@@ -1,0 +1,67 @@
+{
+  "schema": "parkright-hackathon-demo-v1",
+  "scenario_id": "hackathon-tuttle-dreese-v1",
+  "disclaimer": "Demo fixture. Simulated data for the hackathon demo; not live Ohio State or garage data.",
+  "student": {
+    "name": "Mahdi"
+  },
+  "next_class": {
+    "time": "10:20 AM",
+    "course": "CSE 2421",
+    "destination": "Dreese Laboratories",
+    "destination_short": "Dreese Labs"
+  },
+  "simulator": {
+    "facility_id": "garage-01",
+    "camera_id": "cam-01",
+    "seed": 4242,
+    "environment": "clear_day",
+    "occupied_bays": ["A1", "A3", "B2", "B5"],
+    "hash": "seed=4242&env=clear_day&occ=A1.0,A3.0,B2.0,B5.0",
+    "stream_fps": 1
+  },
+  "camera_garage": "tuttle-garage",
+  "candidates": [
+    {
+      "facility_id": "tuttle-garage",
+      "name": "Tuttle Garage",
+      "walking_minutes": 4,
+      "distance_m": 320,
+      "traffic": "moderate",
+      "status": "open",
+      "total_spaces": 600,
+      "demo_available_spaces": 46,
+      "demo_space": { "level": "Level 2", "space_id": "B12" }
+    },
+    {
+      "facility_id": "lane-avenue-garage",
+      "name": "Lane Avenue Garage",
+      "walking_minutes": 7,
+      "distance_m": 560,
+      "traffic": "moderate",
+      "status": "open",
+      "total_spaces": 400,
+      "demo_available_spaces": 23,
+      "demo_space": { "level": "Level 3", "space_id": "C18" }
+    },
+    {
+      "facility_id": "ohio-union-garage",
+      "name": "Ohio Union Garage",
+      "walking_minutes": 11,
+      "distance_m": 880,
+      "traffic": "heavy",
+      "status": "open",
+      "total_spaces": 500,
+      "demo_available_spaces": 31,
+      "demo_space": { "level": "Level 1", "space_id": "A07" }
+    }
+  ],
+  "expected": {
+    "facility_id": "tuttle-garage",
+    "garage": "Tuttle Garage",
+    "level": "Level 2",
+    "space_id": "B12",
+    "walking_minutes": 4,
+    "camera_occupied_bays": ["A1", "A3", "B2", "B5"]
+  }
+}

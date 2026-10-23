@@ -130,6 +130,12 @@ class FacilityState:
                 changes.append(self._change(now, prev.current_state, "observation"))
         return changes
 
+    def reset(self) -> None:
+        """Forgets all evidence: every space is UNCERTAIN and never observed. Demo reset only."""
+        self._beliefs.clear()
+        self._last_frame_at.clear()
+        self._announced_stale.clear()
+
     def sweep(self, now: datetime) -> tuple[bool, list[OccupancyChange]]:
         """Notices evidence that has gone stale since the last sweep. Returns whether anything
         newly went stale, and the driver-visible changes that caused."""
