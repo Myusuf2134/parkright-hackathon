@@ -1,0 +1,22 @@
+// Simulator (showcase) + driver page together; screenshots of the driver. node driver-shot.mjs <out-prefix> [simQuery] [waitMs]
+import { chromium } from 'playwright';
+const [out, simQuery = 'scenario=live&env=day', wait = '30000'] = process.argv.slice(2);
+const SIM = process.env.SIM_URL ?? 'http://127.0.0.1:5201';
+const WEB = process.env.WEB_URL ?? 'http://127.0.0.1:5202';
+const b = await chromium.launch({ args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] });
+const ctx = await b.newContext({ viewport: { width: 1680, height: 1050 } });
+const sim = await ctx.newPage();
+await sim.goto(`${SIM}/?showcase=1&sim=garage&${simQuery}`);
+const d = await ctx.newPage();
+const errors = [];
+d.on('pageerror', (e) => errors.push(e.message));
+await d.goto(`${WEB}/?record=1`);
+await d.waitForTimeout(Number(wait));
+await d.screenshot({ path: `${out}-driver.png` });
+const updates = await d.locator('.demo').getAttribute('data-updates');
+await d.getByTestId('find-parking').click();
+await d.waitForTimeout(1500);
+await d.screenshot({ path: `${out}-driver-result.png`, fullPage: true });
+await sim.screenshot({ path: `${out}-sim.png` });
+console.log(out, 'ws updates', updates, errors.length ? errors.slice(0, 3) : 'no errors');
+await b.close();

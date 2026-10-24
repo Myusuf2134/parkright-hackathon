@@ -1,0 +1,377 @@
+preset,scenario,camera,cycle,seq,status,truth,predicted,vehicles,a2_ms,ingest_ms,encode_ms,ws_latency_ms,moving
+clear_day,live,cam-01,0,0,accepted,A1 A3 A4 A5 A9,A1 A3 A4 A5 A9,8,2104,2140,163,2304,0
+clear_day,live,cam-02,0,0,accepted,B3 B5 B7 B8,B3 B5 B7 B8,9,1689,1714,33,1736,1
+clear_day,live,cam-03,0,0,accepted,C3 C5 C6,C3 C5 C6,7,1715,1744,24,1756,1
+clear_day,live,cam-04,0,0,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,9,1630,1660,18,1666,1
+clear_day,live,cam-01,1,1,accepted,A1 A3 A5 A9,A1 A3 A4 A5 A9,7,1639,1649,20,1669,1
+clear_day,live,cam-02,1,1,accepted,B3 B5 B7 B8,B2 B3 B5 B7 B8,10,1677,1696,19,1704,1
+clear_day,live,cam-03,1,1,accepted,C3 C5 C6,C3 C5 C6,6,1558,1577,19,1585,2
+clear_day,live,cam-04,1,1,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,9,1703,1711,16,1727,1
+clear_day,live,cam-01,2,2,accepted,A1 A3 A5 A9,A1 A2 A3 A5 A9,8,1511,1518,30,1549,2
+clear_day,live,cam-02,2,2,accepted,B3 B5 B7 B8,B2 B3 B4 B5 B7 B8,11,1508,1515,21,1539,2
+clear_day,live,cam-03,2,2,accepted,C3 C5 C6,C3 C5 C6,9,1618,1637,49,1676,3
+clear_day,live,cam-04,2,2,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,9,1631,1656,23,1665,3
+clear_day,live,cam-01,3,3,accepted,A1 A3 A5 A9,A1 A3 A4 A5 A6 A8 A9,10,1515,1522,24,1546,3
+clear_day,live,cam-02,3,3,accepted,B3 B5 B7 B8,B1 B3 B5 B7,11,1650,1658,21,1680,3
+clear_day,live,cam-03,3,3,accepted,C3 C5 C6,C3 C5 C6,7,1597,1605,27,1633,4
+clear_day,live,cam-04,3,3,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,9,1556,1574,41,1605,4
+clear_day,live,cam-01,4,4,accepted,A1 A3 A5 A9,A1 A3 A4 A5 A6 A9,7,1828,1837,16,1852,4
+clear_day,live,cam-02,4,4,accepted,B3 B5 B7 B8,B3 B5 B6 B7 B8,10,1789,1810,34,1831,4
+clear_day,live,cam-03,4,4,accepted,C3 C5 C6,C3 C4 C5 C6,11,1726,1733,24,1758,4
+clear_day,live,cam-04,4,4,accepted,D2 D3 D5 D6 D7 D8,D1 D2 D3 D5 D6 D7 D8,11,2041,2066,19,2069,4
+clear_day,live,cam-01,5,5,accepted,A1 A3 A5 A9,A1 A3 A6 A9,8,2007,2018,26,2046,4
+clear_day,live,cam-02,5,5,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7 B8,10,1834,1843,29,1872,4
+clear_day,live,cam-03,5,5,accepted,C3 C5 C6 C7,C3 C5 C6 C7 C8,8,2018,2044,46,2076,4
+clear_day,live,cam-04,5,5,accepted,D2 D3 D5 D6 D7,D2 D3 D5 D6 D7,11,2376,2406,23,2411,4
+clear_day,live,cam-01,6,6,accepted,A1 A3 A5 A9,A1 A3 A5 A9,9,2331,2343,26,2370,3
+clear_day,live,cam-02,6,6,accepted,B3 B5 B6 B7 B8,B1 B2 B3 B5 B6 B7,10,2164,2174,27,2202,3
+clear_day,live,cam-03,6,6,accepted,C3 C5 C6 C7,C3 C4 C6 C7,6,2630,2666,29,2673,4
+clear_day,live,cam-04,6,6,accepted,D2 D3 D5 D6 D7,D1 D5 D6 D7,9,3063,3105,32,3107,4
+clear_day,live,cam-01,7,7,accepted,A1 A3 A4 A5 A9,A1 A3 A4 A5 A9,8,3467,3529,67,3547,3
+clear_day,live,cam-02,7,7,accepted,B3 B5 B6 B7 B8,B5 B6 B7 B8,12,3996,4012,27,4043,3
+clear_day,live,cam-03,7,7,accepted,C1 C5 C6 C7,C1 C2 C3 C4 C5 C6 C7,10,4358,4381,71,4458,2
+clear_day,live,cam-04,7,7,accepted,D2 D3 D5 D6 D7,D2 D3 D4 D5 D6 D7,10,4149,4237,74,4245,3
+clear_day,live,cam-01,8,8,accepted,A1 A3 A5 A9,A1 A2 A3 A5 A9,9,3818,3850,54,3907,3
+clear_day,live,cam-02,8,8,accepted,B3 B5 B6 B7 B8,B1 B2 B3 B5 B6 B7 B8,9,3925,3965,41,3985,3
+clear_day,live,cam-03,8,8,accepted,C1 C4 C6 C7,C1 C2 C3 C4 C6 C7,9,3977,3993,49,4042,4
+clear_day,live,cam-04,8,8,accepted,D2 D3 D5 D6 D7,D2 D3 D5 D6 D7,9,3893,3911,45,3959,3
+clear_day,live,cam-01,9,9,accepted,A1 A3 A5 A9,A1 A3 A6 A9,7,2893,2905,49,2954,3
+clear_day,live,cam-02,9,9,accepted,B3 B5 B6 B7 B8,B3 B5 B6,11,3571,3623,32,3622,3
+clear_day,live,cam-03,9,9,accepted,C1 C4 C6 C7,C1 C2 C3 C4 C6 C7,14,2724,2755,82,2817,4
+clear_day,live,cam-04,9,9,accepted,D2 D3 D5 D6 D7,D2 D3 D5 D6 D7,9,2663,2690,35,2709,3
+clear_day,class-transition,cam-01,0,0,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,13,2872,2888,123,3013,0
+clear_day,class-transition,cam-02,0,0,accepted,B1 B2 B3 B5 B6 B7 B8,B1 B2 B3 B5 B6 B7 B8,14,2661,2707,36,2714,1
+clear_day,class-transition,cam-03,0,0,accepted,C1 C2 C3 C4 C7 C8,C1 C2 C3 C4 C7 C8,12,2477,2494,131,2625,2
+clear_day,class-transition,cam-04,0,0,accepted,D1 D2 D4 D5 D6 D8,D1 D2 D4 D5 D6 D8 D9,11,2334,2347,21,2368,3
+clear_day,class-transition,cam-01,1,1,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,13,2498,2538,68,2577,3
+clear_day,class-transition,cam-02,1,1,accepted,B1 B2 B3 B5 B6 B7 B8,B1 B2 B3 B5 B6 B7 B8,17,2559,2598,28,2598,4
+clear_day,class-transition,cam-03,1,1,accepted,C1 C3 C4 C7 C8,C1 C2 C3 C4 C7 C8,12,2416,2425,62,2487,4
+clear_day,class-transition,cam-04,1,1,accepted,D1 D2 D4 D5 D6,D2 D4 D5 D7 D8 D9,10,2290,2300,32,2331,5
+clear_day,class-transition,cam-01,2,2,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8 A9,11,2375,2410,31,2417,5
+clear_day,class-transition,cam-02,2,2,accepted,B1 B2 B3 B5 B6 B7,B1 B2 B3 B5 B6 B7 B8,13,2174,2209,35,2217,6
+clear_day,class-transition,cam-03,2,2,accepted,C1 C3 C4 C7 C8,C1 C3 C4 C7 C8,13,2238,2268,37,2283,6
+clear_day,class-transition,cam-04,2,2,accepted,D1 D2 D4 D5 D6,D1 D2 D4 D5 D6,8,2184,2214,27,2220,5
+clear_day,class-transition,cam-01,3,3,accepted,A3 A4 A5 A6 A7 A8 A9,A1 A2 A3 A4 A5 A6 A7 A8 A9,12,2171,2180,37,2218,4
+clear_day,class-transition,cam-02,3,3,accepted,B1 B2 B3 B5 B7,B1 B2 B3 B5 B6 B7 B8,11,2178,2187,81,2268,4
+clear_day,class-transition,cam-03,3,3,accepted,C1 C3 C4 C7,C1 C3 C4 C7,13,2165,2175,44,2221,5
+clear_day,class-transition,cam-04,3,3,accepted,D1 D2 D4 D5 D6,D1 D2 D4 D5 D6,9,2391,2424,21,2425,5
+clear_day,class-transition,cam-01,4,4,accepted,A3 A4 A5 A6 A7 A8 A9,A3 A4 A5 A6 A7 A8 A9,13,2115,2125,27,2154,6
+clear_day,class-transition,cam-02,4,4,accepted,B1 B2 B3 B5 B7,B1 B2 B3 B5 B7,9,2478,2488,48,2537,6
+clear_day,class-transition,cam-03,4,4,accepted,C1 C3 C4,C2 C4 C6 C7,16,2096,2124,34,2139,6
+clear_day,class-transition,cam-04,4,4,accepted,D1 D4 D5 D6,D1 D2 D3 D4 D5 D6,9,2107,2115,29,2145,8
+clear_day,class-transition,cam-01,5,5,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,12,2103,2112,24,2137,8
+clear_day,class-transition,cam-02,5,5,accepted,B1 B2 B5 B7,B1 B2 B3 B4 B5 B7,17,2173,2202,25,2209,8
+clear_day,class-transition,cam-03,5,5,accepted,C1 C3 C4,C1 C2 C3 C4,10,2143,2153,28,2181,5
+clear_day,class-transition,cam-04,5,5,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D6 D9,7,2210,2241,46,2265,5
+clear_day,class-transition,cam-01,6,6,accepted,A3 A4 A5 A6 A7 A8,A1 A2 A3 A4 A5 A6 A7 A8,12,2123,2131,27,2159,6
+clear_day,class-transition,cam-02,6,6,accepted,B1 B5 B7,B1 B5 B7,13,2146,2155,49,2204,5
+clear_day,class-transition,cam-03,6,6,accepted,C3 C4,C1 C2 C3 C4,10,2164,2185,31,2204,6
+clear_day,class-transition,cam-04,6,6,accepted,D1 D4 D5 D6 D9,D1 D2 D4 D5 D6 D9,9,2028,2036,22,2059,7
+clear_day,class-transition,cam-01,7,7,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8 A9,13,2094,2102,26,2128,7
+clear_day,class-transition,cam-02,7,7,accepted,B1 B4 B5,B1 B4 B5,13,1990,2000,36,2037,7
+clear_day,class-transition,cam-03,7,7,accepted,C3 C4,C1 C2 C3 C4,10,2056,2064,22,2087,7
+clear_day,class-transition,cam-04,7,7,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D6 D7 D8 D9,10,2269,2282,23,2305,6
+clear_day,class-transition,cam-01,8,8,accepted,A2 A3 A4 A5 A6 A7 A8,A2 A3 A4 A5 A6 A7 A8,11,2347,2358,48,2406,7
+clear_day,class-transition,cam-02,8,8,accepted,B1 B4 B5,B1 B2 B4 B5,15,2153,2161,23,2185,5
+clear_day,class-transition,cam-03,8,8,accepted,C3 C4,C3 C4 C5 C6,10,2089,2099,33,2133,6
+clear_day,class-transition,cam-04,8,8,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D6 D9,10,2120,2129,28,2159,5
+clear_day,class-transition,cam-01,9,9,accepted,A2 A3 A4 A5 A6 A7 A8,A2 A3 A4 A5 A6 A7 A8,10,2178,2186,23,2210,6
+clear_day,class-transition,cam-02,9,9,accepted,B1 B4 B5,B1 B4 B5,12,2170,2183,39,2222,5
+clear_day,class-transition,cam-03,9,9,accepted,C3 C4,C3 C4,10,2214,2223,28,2252,6
+clear_day,class-transition,cam-04,9,9,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D6 D7 D8 D9,8,2153,2176,27,2189,5
+clear_day,occlusion-stress,cam-01,0,0,accepted,A1 A2 A4 A6 A9,A1 A2 A4 A6 A9,7,2136,2149,132,2284,0
+clear_day,occlusion-stress,cam-02,0,0,accepted,B2 B4 B5,B2 B4 B5,13,2235,2264,33,2280,1
+clear_day,occlusion-stress,cam-03,0,0,accepted,C1 C2 C3 C8,C1 C2 C3 C8,13,2008,2041,29,2051,1
+clear_day,occlusion-stress,cam-04,0,0,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,8,2118,2151,22,2154,2
+clear_day,occlusion-stress,cam-01,1,1,accepted,A1 A2 A4 A6 A9,A1 A2 A4 A6 A9,8,2109,2137,48,2166,2
+clear_day,occlusion-stress,cam-02,1,1,accepted,B2 B4 B5,B2 B3 B4 B5,11,2460,2493,24,2497,3
+clear_day,occlusion-stress,cam-03,1,1,accepted,C2 C3 C8,C1 C2 C3 C8,14,2334,2344,32,2378,3
+clear_day,occlusion-stress,cam-04,1,1,accepted,D2 D3 D5 D6 D7 D8,D1 D2 D3 D5 D6 D7 D8,10,2162,2171,27,2201,4
+clear_day,occlusion-stress,cam-01,2,2,accepted,A1 A2 A4 A6 A9,A2 A4 A6 A9,7,2201,2229,56,2266,4
+clear_day,occlusion-stress,cam-02,2,2,accepted,B2 B4 B5,B2,14,2099,2126,25,2133,5
+clear_day,occlusion-stress,cam-03,2,2,accepted,C2 C3 C8,C2 C3 C8,14,2133,2160,68,2210,5
+clear_day,occlusion-stress,cam-04,2,2,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,8,2001,2027,28,2038,5
+clear_day,occlusion-stress,cam-01,3,3,accepted,A1 A2 A4 A6 A9,A1 A2 A4 A7 A9,8,2146,2156,20,2176,5
+clear_day,occlusion-stress,cam-02,3,3,accepted,B2 B4 B5,B4 B5,15,2013,2042,24,2049,6
+clear_day,occlusion-stress,cam-03,3,3,accepted,C2 C3 C8,C2 C3 C8,13,2082,2108,30,2121,6
+clear_day,occlusion-stress,cam-04,3,3,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D3 D5 D6 D7,7,2073,2101,22,2103,6
+clear_day,occlusion-stress,cam-01,4,4,accepted,A1 A2 A4 A6 A9,A1 A2 A3 A6 A9,8,2062,2087,65,2135,6
+clear_day,occlusion-stress,cam-02,4,4,accepted,B2 B4 B5,B2 B4 B5 B6 B7 B8,17,2155,2182,30,2193,7
+clear_day,occlusion-stress,cam-03,4,4,accepted,C2 C3 C5 C8,C1 C4 C5 C8,11,2175,2204,48,2234,7
+clear_day,occlusion-stress,cam-04,4,4,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D3 D5 D8,8,2171,2203,44,2229,7
+clear_day,occlusion-stress,cam-01,5,5,accepted,A1 A2 A4 A6 A9,A1 A2 A3 A6 A9,9,2093,2121,48,2150,6
+clear_day,occlusion-stress,cam-02,5,5,accepted,B2 B4 B5 B7,B2 B4 B5 B7,14,2056,2083,29,2095,7
+clear_day,occlusion-stress,cam-03,5,5,accepted,C2 C3 C5 C8,C1 C4 C5 C8,14,2195,2223,31,2236,7
+clear_day,occlusion-stress,cam-04,5,5,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D3 D5 D6 D7 D8,11,2128,2155,27,2164,7
+clear_day,occlusion-stress,cam-01,6,6,accepted,A1 A2 A4 A6 A9,A1 A2 A3 A4 A5 A6 A9,9,2101,2141,34,2158,7
+clear_day,occlusion-stress,cam-02,6,6,accepted,B2 B4 B5 B7,B2 B4 B5 B6 B7,18,2111,2139,35,2156,7
+clear_day,occlusion-stress,cam-03,6,6,accepted,C2 C3 C5 C8,C1 C4 C5 C8,13,2077,2103,57,2143,7
+clear_day,occlusion-stress,cam-04,6,6,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D3 D5 D6 D9,9,2029,2056,45,2084,8
+clear_day,occlusion-stress,cam-01,7,7,accepted,A1 A2 A4 A6 A7 A9,A1 A2 A3 A4 A6 A7 A9,12,2223,2248,27,2262,7
+clear_day,occlusion-stress,cam-02,7,7,accepted,B2 B4 B5 B7,B4 B5 B7 B8,13,2144,2170,29,2186,7
+clear_day,occlusion-stress,cam-03,7,7,accepted,C2 C3 C5 C8,C2 C5 C8,17,2083,2092,34,2129,7
+clear_day,occlusion-stress,cam-04,7,7,accepted,D2 D3 D5 D6 D7 D8 D9,D1 D2 D3 D5 D6 D7 D8,12,2206,2231,32,2247,8
+clear_day,occlusion-stress,cam-01,8,8,accepted,A1 A2 A4 A6 A7 A9,A1 A4 A6 A7 A9,9,2044,2053,30,2083,6
+clear_day,occlusion-stress,cam-02,8,8,accepted,B2 B4 B5 B7,B2 B4 B5 B6,12,2472,2495,32,2514,6
+clear_day,occlusion-stress,cam-03,8,8,accepted,C2 C3 C4 C5 C8,C2 C3 C4 C5 C8,12,2150,2178,38,2199,7
+clear_day,occlusion-stress,cam-04,8,8,accepted,D2 D3 D5 D6 D7 D8 D9,D1 D2 D3 D5,9,2446,2474,45,2501,6
+clear_day,occlusion-stress,cam-01,9,9,accepted,A1 A2 A4 A6 A7 A9,A1 A2 A4 A7 A8 A9,10,2108,2136,29,2149,7
+clear_day,occlusion-stress,cam-02,9,9,accepted,B2 B4 B5 B7,B1 B2 B4 B5 B7,16,2328,2354,32,2371,8
+clear_day,occlusion-stress,cam-03,9,9,accepted,C2 C3 C4 C5 C8,C4 C5 C8,9,2038,2064,38,2087,8
+clear_day,occlusion-stress,cam-04,9,9,accepted,D2 D3 D5 D6 D7 D8 D9,D1 D2 D3 D5 D6 D9,10,2161,2185,28,2200,9
+dusk,live,cam-01,0,0,accepted,A1 A3 A4 A5 A9,A1 A4 A5 A9,7,2091,2106,97,2203,0
+dusk,live,cam-02,0,0,accepted,B3 B5 B7 B8,B3 B5 B7,8,2132,2145,29,2174,1
+dusk,live,cam-03,0,0,accepted,C3 C5 C6,C3 C5 C6,7,2014,2060,49,2075,1
+dusk,live,cam-04,0,0,accepted,D2 D3 D5 D6 D7 D8,D5 D7 D8,7,2223,2265,24,2268,1
+dusk,live,cam-01,1,1,accepted,A1 A3 A5 A9,A1 A2 A3 A5 A9,8,2220,2229,77,2307,1
+dusk,live,cam-02,1,1,accepted,B3 B5 B7 B8,B1 B2 B3 B5 B7,10,2133,2162,29,2171,2
+dusk,live,cam-03,1,1,accepted,C3 C5 C6,C3 C5 C6,7,2096,2124,29,2134,2
+dusk,live,cam-04,1,1,accepted,D2 D3 D5 D6 D7 D8,D5 D7 D8,7,2046,2074,24,2079,2
+dusk,live,cam-01,2,2,accepted,A1 A3 A5 A9,A1 A3 A4 A5 A9,8,2114,2144,22,2146,3
+dusk,live,cam-02,2,2,accepted,B3 B5 B7 B8,B2 B4 B5 B7 B8,8,2065,2074,26,2101,3
+dusk,live,cam-03,2,2,accepted,C3 C5 C6,C3 C5 C6,8,2152,2180,27,2188,3
+dusk,live,cam-04,2,2,accepted,D2 D3 D5 D6 D7 D8,D5 D7 D8,7,2088,2115,40,2137,4
+dusk,live,cam-01,3,3,accepted,A1 A3 A5 A9,A1 A5 A9,6,2025,2054,22,2057,4
+dusk,live,cam-02,3,3,accepted,B3 B5 B7 B8,B3 B5 B6 B7 B8,9,2040,2051,31,2082,4
+dusk,live,cam-03,3,3,accepted,C3 C5 C6,C3 C5 C6 C7,9,2157,2169,25,2195,4
+dusk,live,cam-04,3,3,accepted,D2 D3 D5 D6 D7 D8,D1 D2 D5 D7 D8,9,2056,2065,43,2109,4
+dusk,live,cam-01,4,4,accepted,A1 A3 A5 A9,A1 A3 A4 A6 A9,6,2100,2109,19,2130,4
+dusk,live,cam-02,4,4,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7,9,2021,2031,43,2075,4
+dusk,live,cam-03,4,4,accepted,C3 C5 C6 C7,C3 C5 C6 C7,9,2073,2101,37,2120,4
+dusk,live,cam-04,4,4,accepted,D2 D3 D5 D6 D7,D5 D6 D7,6,2175,2210,19,2203,4
+dusk,live,cam-01,5,5,accepted,A1 A3 A5 A9,A1 A3 A5 A9,7,2028,2037,29,2066,3
+dusk,live,cam-02,5,5,accepted,B3 B5 B6 B7 B8,B2 B5 B6 B7,9,2042,2051,23,2075,3
+dusk,live,cam-03,5,5,accepted,C3 C5 C6 C7,C3 C7 C8,7,2163,2172,42,2215,4
+dusk,live,cam-04,5,5,accepted,D2 D3 D5 D6 D7,D1 D4 D5 D7,8,2184,2196,50,2247,4
+dusk,live,cam-01,6,6,accepted,A1 A3 A4 A5 A9,A1 A4 A5 A9,7,2064,2092,43,2116,4
+dusk,live,cam-02,6,6,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7 B8,7,2083,2110,47,2138,3
+dusk,live,cam-03,6,6,accepted,C3 C5 C6 C7,C3 C5 C6 C7 C8,11,2060,2071,35,2107,4
+dusk,live,cam-04,6,6,accepted,D2 D3 D5 D6 D7,D5 D6 D7,7,2201,2210,34,2244,3
+dusk,live,cam-01,7,7,accepted,A1 A3 A4 A5 A9,A1 A4 A5 A9,7,2145,2155,22,2177,2
+dusk,live,cam-02,7,7,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7,8,2092,2100,28,2129,3
+dusk,live,cam-03,7,7,accepted,C1 C5 C6 C7,C1 C3 C4 C5 C6 C7 C8,10,2141,2151,49,2203,2
+dusk,live,cam-04,7,7,accepted,D2 D3 D5 D6 D7,D5 D7 D9,7,2438,2465,35,2487,3
+dusk,live,cam-01,8,8,accepted,A1 A3 A5 A9,A1 A2 A3 A5 A9,7,2413,2429,31,2462,3
+dusk,live,cam-02,8,8,accepted,B3 B5 B6 B7 B8,B1 B3 B5 B6 B7 B8,10,2460,2473,44,2518,4
+dusk,live,cam-03,8,8,accepted,C1 C6 C7,C1 C4 C8,11,2190,2200,32,2232,3
+dusk,live,cam-04,8,8,accepted,D2 D3 D5 D6 D7,D1 D2 D3 D4 D5 D6 D7,10,2299,2310,30,2339,3
+dusk,live,cam-01,9,9,accepted,A1 A3 A5 A9,A1 A3 A5 A7 A9,8,2264,2288,74,2348,4
+dusk,live,cam-02,9,9,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7 B8,11,2148,2171,26,2185,3
+dusk,live,cam-03,9,9,accepted,C1 C4 C6 C7,C1 C4 C6 C7,9,2332,2341,32,2374,3
+dusk,live,cam-04,9,9,accepted,D2 D3 D5 D6 D7,D5 D6 D7,6,2269,2278,26,2304,3
+dusk,live,cam-01,10,10,accepted,A1 A3 A5 A9,A1 A3 A5 A9,8,2325,2337,29,2367,3
+dusk,live,cam-02,10,10,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7,7,2112,2121,35,2157,3
+dusk,live,cam-03,10,10,accepted,C1 C4 C6 C7,C2 C4 C6 C7,12,2261,2271,49,2321,4
+dusk,live,cam-04,10,10,accepted,D2 D3 D5 D6 D7,D5 D6 D7,6,2124,2149,22,2154,3
+dusk,class-transition,cam-01,0,0,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,11,2351,2395,159,2535,0
+dusk,class-transition,cam-02,0,0,accepted,B1 B2 B3 B5 B6 B7 B8,B1 B2 B3 B5 B6 B7 B8,14,2269,2304,37,2319,1
+dusk,class-transition,cam-03,0,0,accepted,C1 C2 C3 C4 C7 C8,C1 C2 C3 C4 C7 C8,15,2196,2229,81,2291,1
+dusk,class-transition,cam-04,0,0,accepted,D1 D2 D4 D5 D6 D8,D1 D2 D5 D6 D8 D9,9,2271,2304,28,2311,2
+dusk,class-transition,cam-01,1,1,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,11,2273,2305,43,2326,3
+dusk,class-transition,cam-02,1,1,accepted,B1 B2 B3 B5 B6 B7 B8,B1 B2 B3 B5 B6 B7 B8,14,2225,2253,24,2258,3
+dusk,class-transition,cam-03,1,1,accepted,C1 C2 C3 C4 C7 C8,C1 C2 C3 C4 C7 C8,14,2371,2399,28,2408,4
+dusk,class-transition,cam-04,1,1,accepted,D1 D2 D4 D5 D6,D1 D2 D5 D6 D9,9,2287,2315,26,2323,5
+dusk,class-transition,cam-01,2,2,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8 A9,11,2263,2290,32,2304,5
+dusk,class-transition,cam-02,2,2,accepted,B1 B2 B3 B5 B6 B7,B2 B3 B5 B6 B7 B8,11,2405,2420,35,2456,6
+dusk,class-transition,cam-03,2,2,accepted,C1 C3 C4 C7 C8,C1 C4 C7 C8,14,2179,2211,48,2237,6
+dusk,class-transition,cam-04,2,2,accepted,D1 D2 D4 D5 D6,D1 D2 D5 D6,7,2262,2273,31,2304,7
+dusk,class-transition,cam-01,3,3,accepted,A3 A4 A5 A6 A7 A8 A9,A3 A4 A5 A6 A7 A8 A9,13,2370,2398,35,2415,5
+dusk,class-transition,cam-02,3,3,accepted,B1 B2 B3 B5 B6 B7,B1 B2 B3 B4 B5 B6 B7,11,2265,2292,27,2301,4
+dusk,class-transition,cam-03,3,3,accepted,C1 C3 C4 C7,C1 C3 C4 C7,14,2287,2315,32,2329,4
+dusk,class-transition,cam-04,3,3,accepted,D1 D2 D4 D5 D6,D1 D2 D5 D6,7,2163,2190,46,2220,5
+dusk,class-transition,cam-01,4,4,accepted,A3 A4 A5 A6 A7 A8 A9,A3 A4 A5 A6 A7 A9,11,2001,2027,26,2036,6
+dusk,class-transition,cam-02,4,4,accepted,B1 B2 B3 B5 B7,B1 B2 B3 B5 B7,12,2179,2205,41,2227,6
+dusk,class-transition,cam-03,4,4,accepted,C1 C3 C4,C1 C7 C8,14,2071,2099,30,2112,6
+dusk,class-transition,cam-04,4,4,accepted,D1 D4 D5 D6,D2 D3 D4 D5 D7,7,2166,2192,25,2201,6
+dusk,class-transition,cam-01,5,5,accepted,A3 A4 A5 A6 A7 A8 A9,A3 A4 A5 A6 A7 A8 A9,12,2131,2159,22,2163,8
+dusk,class-transition,cam-02,5,5,accepted,B1 B2 B3 B5 B7,B2 B3 B5 B7,11,2061,2070,29,2100,8
+dusk,class-transition,cam-03,5,5,accepted,C1 C3 C4,C1 C2 C3 C4,12,2167,2195,63,2240,8
+dusk,class-transition,cam-04,5,5,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D6 D9,7,2096,2122,21,2126,5
+dusk,class-transition,cam-01,6,6,accepted,A3 A4 A5 A6 A7 A8,A2 A3 A4 A6 A7 A8 A9,10,2157,2183,43,2208,5
+dusk,class-transition,cam-02,6,6,accepted,B1 B5 B7,B1 B3 B7 B8,13,2069,2096,28,2107,6
+dusk,class-transition,cam-03,6,6,accepted,C3 C4,C3 C4,9,2216,2227,25,2255,6
+dusk,class-transition,cam-04,6,6,accepted,D1 D4 D5 D6 D9,D1 D2 D4 D5 D6 D9,7,2147,2169,35,2192,6
+dusk,class-transition,cam-01,7,7,accepted,A3 A4 A5 A6 A7 A8,A1 A2 A3 A4 A5 A6 A7 A8 A9,9,2148,2172,48,2207,7
+dusk,class-transition,cam-02,7,7,accepted,B1 B5,B1 B3 B4 B5,9,2065,2090,28,2106,7
+dusk,class-transition,cam-03,7,7,accepted,C3 C4,C1 C2 C3 C4 C6 C7 C8,11,2339,2366,31,2382,8
+dusk,class-transition,cam-04,7,7,accepted,D1 D4 D5 D6 D9,D1 D2 D4 D5 D6 D9,10,2434,2445,34,2481,6
+dusk,class-transition,cam-01,8,8,accepted,A2 A3 A4 A5 A6 A7 A8,A1 A2 A3 A4 A5 A6 A7 A8,9,2113,2136,25,2149,7
+dusk,class-transition,cam-02,8,8,accepted,B1 B4 B5,B1 B4,6,2079,2101,33,2122,6
+dusk,class-transition,cam-03,8,8,accepted,C3 C4,C3 C4 C8,11,2080,2089,31,2121,6
+dusk,class-transition,cam-04,8,8,accepted,D1 D4 D5 D6 D9,D1 D3 D4 D5 D6 D9,7,2150,2175,24,2184,6
+dusk,class-transition,cam-01,9,9,accepted,A2 A3 A4 A5 A6 A7 A8,A1 A2 A3 A4 A5 A6 A7 A8,11,2010,2031,58,2077,5
+dusk,class-transition,cam-02,9,9,accepted,B1 B4 B5,B1 B4 B5 B6 B7 B8,12,2072,2093,22,2102,6
+dusk,class-transition,cam-03,9,9,accepted,C3 C4,C3 C4,9,2172,2181,30,2213,5
+dusk,class-transition,cam-04,9,9,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D6 D9,8,2162,2205,42,2233,6
+dusk,occlusion-stress,cam-01,0,0,accepted,A1 A2 A4 A6 A9,A1 A2 A4 A6 A9,9,2217,2248,116,2347,0
+dusk,occlusion-stress,cam-02,0,0,accepted,B2 B4 B5,B4 B5,9,2112,2143,29,2154,1
+dusk,occlusion-stress,cam-03,0,0,accepted,C1 C2 C3 C8,C1 C2 C3 C8,11,2062,2097,28,2105,1
+dusk,occlusion-stress,cam-04,0,0,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,8,2040,2074,25,2080,2
+dusk,occlusion-stress,cam-01,1,1,accepted,A1 A2 A4 A6 A9,A1 A2 A4 A6 A9,9,2121,2150,26,2156,2
+dusk,occlusion-stress,cam-02,1,1,accepted,B2 B4 B5,B3 B5,11,2000,2027,24,2031,3
+dusk,occlusion-stress,cam-03,1,1,accepted,C2 C3 C8,C1 C2 C3 C8,12,2184,2214,23,2217,3
+dusk,occlusion-stress,cam-04,1,1,accepted,D2 D3 D5 D6 D7 D8,D1 D2 D3 D5 D6 D7 D8,9,2071,2081,45,2128,4
+dusk,occlusion-stress,cam-01,2,2,accepted,A1 A2 A4 A6 A9,A1 A2 A4 A6 A9,9,2319,2348,32,2362,4
+dusk,occlusion-stress,cam-02,2,2,accepted,B2 B4 B5,B2 B5,8,2153,2184,30,2193,5
+dusk,occlusion-stress,cam-03,2,2,accepted,C2 C3 C8,C2 C3 C8,12,2168,2178,29,2208,5
+dusk,occlusion-stress,cam-04,2,2,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,8,2018,2045,45,2072,5
+dusk,occlusion-stress,cam-01,3,3,accepted,A1 A2 A4 A6 A9,A1 A2 A5 A6 A9,8,2008,2017,25,2043,5
+dusk,occlusion-stress,cam-02,3,3,accepted,B2 B4 B5,B1 B4 B5 B7,14,2117,2125,26,2151,6
+dusk,occlusion-stress,cam-03,3,3,accepted,C2 C3 C8,C2 C3 C8,12,2013,2040,74,2096,6
+dusk,occlusion-stress,cam-04,3,3,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D3 D5 D6 D7,8,2185,2193,20,2216,6
+dusk,occlusion-stress,cam-01,4,4,accepted,A1 A2 A4 A6 A9,A1 A6 A9,7,2092,2120,32,2134,6
+dusk,occlusion-stress,cam-02,4,4,accepted,B2 B4 B5,B2 B4 B5 B6,8,2137,2164,28,2175,7
+dusk,occlusion-stress,cam-03,4,4,accepted,C2 C3 C5 C8,C2 C8,10,2226,2254,30,2265,7
+dusk,occlusion-stress,cam-04,4,4,accepted,D2 D3 D5 D6 D7 D8 D9,D1 D2 D3 D5 D6,10,2055,2064,35,2100,8
+dusk,occlusion-stress,cam-01,5,5,accepted,A1 A2 A4 A6 A9,A1 A6 A9,10,2079,2106,22,2110,7
+dusk,occlusion-stress,cam-02,5,5,accepted,B2 B4 B5 B7,B3 B4 B5,10,1996,2022,41,2046,7
+dusk,occlusion-stress,cam-03,5,5,accepted,C2 C3 C5 C8,C2 C3 C8,11,2146,2173,33,2189,7
+dusk,occlusion-stress,cam-04,5,5,accepted,D2 D3 D5 D6 D7 D8 D9,D1 D2 D3 D5 D6 D7 D8,11,2159,2193,29,2197,7
+dusk,occlusion-stress,cam-01,6,6,accepted,A1 A2 A4 A6 A9,A1 A2 A4 A6 A9,7,2093,2119,32,2134,7
+dusk,occlusion-stress,cam-02,6,6,accepted,B2 B4 B5 B7,B2 B4 B5 B6,11,2356,2384,37,2404,7
+dusk,occlusion-stress,cam-03,6,6,accepted,C2 C3 C5 C8,C2 C8,7,2221,2230,27,2263,7
+dusk,occlusion-stress,cam-04,6,6,accepted,D2 D3 D5 D6 D7 D8 D9,D1 D2 D3 D5 D6 D7,10,2224,2252,64,2299,7
+dusk,occlusion-stress,cam-01,7,7,accepted,A1 A2 A4 A6 A7 A9,A1 A2 A3 A4 A6 A7 A9,13,2138,2160,29,2178,7
+dusk,occlusion-stress,cam-02,7,7,accepted,B2 B4 B5 B7,B2 B4 B5 B7 B8,11,2301,2322,34,2345,6
+dusk,occlusion-stress,cam-03,7,7,accepted,C2 C3 C5 C8,C2 C8,10,2094,2105,61,2166,7
+dusk,occlusion-stress,cam-04,7,7,accepted,D2 D3 D5 D6 D7 D8 D9,D1 D2 D3 D5 D6 D7 D8,11,2129,2139,24,2164,8
+dusk,occlusion-stress,cam-01,8,8,accepted,A1 A2 A4 A6 A7 A9,A1 A4 A6 A7 A9,10,2082,2103,29,2121,6
+dusk,occlusion-stress,cam-02,8,8,accepted,B2 B4 B5 B7,B2 B4 B5 B6,12,2242,2253,27,2281,6
+dusk,occlusion-stress,cam-03,8,8,accepted,C2 C3 C4 C5 C8,C2 C3 C4 C8,12,2047,2069,31,2089,7
+dusk,occlusion-stress,cam-04,8,8,accepted,D2 D3 D5 D6 D7 D8 D9,D1 D2 D3 D5 D6,8,2122,2130,64,2196,7
+dusk,occlusion-stress,cam-01,9,9,accepted,A1 A2 A4 A6 A7 A9,A1 A2 A6 A7,12,2218,2253,32,2262,7
+dusk,occlusion-stress,cam-02,9,9,accepted,B2 B4 B5 B7,B2 B5 B7,11,2157,2181,29,2196,8
+dusk,occlusion-stress,cam-03,9,9,accepted,C2 C3 C4 C5 C8,C8,10,2268,2305,33,2325,8
+dusk,occlusion-stress,cam-04,9,9,accepted,D2 D3 D5 D6 D7 D8 D9,D3 D5 D6 D7 D8,6,2147,2174,33,2190,9
+dusk,occlusion-stress,cam-01,10,10,accepted,A1 A4 A6 A7 A9,A1 A4 A5 A6 A7 A9,11,2241,2251,44,2297,8
+dusk,occlusion-stress,cam-02,10,10,accepted,B2 B4 B5 B6 B7,B2 B4 B5 B6 B7,10,2325,2335,40,2375,9
+dusk,occlusion-stress,cam-03,10,10,accepted,C1 C2 C3 C4 C5 C8,C2 C3 C8,8,2200,2223,30,2240,7
+dusk,occlusion-stress,cam-04,10,10,accepted,D2 D3 D5 D6 D7 D8 D9,D5 D6 D7,5,2309,2332,25,2345,8
+night,live,cam-01,0,0,accepted,A1 A3 A4 A5 A9,A1 A3 A5 A9,7,2436,2452,111,2563,0
+night,live,cam-02,0,0,accepted,B3 B5 B7 B8,B3 B5 B7 B8,6,2155,2188,33,2202,1
+night,live,cam-03,0,0,accepted,C3 C5 C6,C3 C5 C6,8,2141,2172,30,2183,1
+night,live,cam-04,0,0,accepted,D2 D3 D5 D6 D7 D8,D5 D7 D8,8,2078,2109,19,2108,1
+night,live,cam-01,1,1,accepted,A1 A3 A5 A9,A1 A2 A3 A5 A9,7,2050,2079,24,2083,1
+night,live,cam-02,1,1,accepted,B3 B5 B7 B8,B1 B2 B3 B5 B7 B8,8,2154,2183,22,2186,2
+night,live,cam-03,1,1,accepted,C3 C5 C6,C3 C5 C6,6,2123,2156,23,2158,2
+night,live,cam-04,1,1,accepted,D2 D3 D5 D6 D7 D8,D5 D7 D8,8,2217,2243,24,2250,2
+night,live,cam-01,2,2,accepted,A1 A3 A5 A9,A1 A3 A4 A5 A9,7,2049,2075,21,2078,3
+night,live,cam-02,2,2,accepted,B3 B5 B7 B8,B2 B4 B5 B7 B8,6,2076,2104,23,2107,3
+night,live,cam-03,2,2,accepted,C3 C5 C6,C3 C5 C6,5,2112,2121,75,2197,3
+night,live,cam-04,2,2,accepted,D2 D3 D5 D6 D7 D8,D5 D7 D8,8,2234,2261,25,2269,4
+night,live,cam-01,3,3,accepted,A1 A3 A5 A9,A1 A3 A4 A5 A9,7,2091,2118,22,2123,4
+night,live,cam-02,3,3,accepted,B3 B5 B7 B8,B3 B5 B6 B7,7,2057,2086,30,2097,4
+night,live,cam-03,3,3,accepted,C3 C5 C6,C3 C4 C5 C6,9,2219,2249,35,2265,4
+night,live,cam-04,3,3,accepted,D2 D3 D5 D6 D7 D8,D1 D5 D7 D8 D9,10,2030,2059,25,2068,4
+night,live,cam-01,4,4,accepted,A1 A3 A5 A9,A1 A3 A5 A7 A9,7,2179,2206,28,2217,4
+night,live,cam-02,4,4,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7,7,2309,2319,24,2345,4
+night,live,cam-03,4,4,accepted,C3 C5 C6 C7,C3 C5 C6 C7,8,2635,2644,45,2690,5
+night,live,cam-04,4,4,accepted,D2 D3 D5 D6 D7,D5 D7,9,2311,2340,28,2350,2
+night,live,cam-01,5,5,accepted,A1 A3 A5 A9,A2 A3 A5 A9,9,2110,2136,24,2144,3
+night,live,cam-02,5,5,accepted,B3 B5 B6 B7 B8,B1 B3 B5 B6 B7 B8,8,2209,2236,26,2245,4
+night,live,cam-03,5,5,accepted,C3 C5 C6 C7,C2 C5 C6 C7,7,2230,2257,29,2270,4
+night,live,cam-04,5,5,accepted,D2 D3 D5 D6 D7,D1 D5 D7,8,2214,2240,22,2247,4
+night,live,cam-01,6,6,accepted,A1 A3 A4 A5 A9,A1 A4 A5 A9,9,2206,2239,41,2257,3
+night,live,cam-02,6,6,accepted,B3 B5 B6 B7 B8,B5 B6 B7 B8,7,2117,2142,26,2151,4
+night,live,cam-03,6,6,accepted,C1 C3 C5 C6 C7,C1 C2 C5 C6 C7,10,2288,2297,27,2324,3
+night,live,cam-04,6,6,accepted,D2 D3 D5 D6 D7,D1 D2 D5 D7,8,2194,2216,24,2229,2
+night,live,cam-01,7,7,accepted,A1 A3 A4 A5 A9,A1 A4 A5 A9,8,2084,2108,23,2119,3
+night,live,cam-02,7,7,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7 B8,9,2099,2120,25,2135,2
+night,live,cam-03,7,7,accepted,C1 C5 C6 C7,C1 C2 C5 C6 C7,10,2135,2156,25,2168,3
+night,live,cam-04,7,7,accepted,D2 D3 D5 D6 D7,D5,8,2085,2106,19,2113,3
+night,live,cam-01,8,8,accepted,A1 A3 A5 A9,A2 A3 A5 A9,8,2233,2244,26,2274,4
+night,live,cam-02,8,8,accepted,B3 B5 B6 B7 B8,B1 B3 B5 B6 B7 B8,9,2289,2299,29,2333,4
+night,live,cam-03,8,8,accepted,C1 C6 C7,C1 C2 C3 C6 C7,11,2472,2503,33,2523,3
+night,live,cam-04,8,8,accepted,D2 D3 D5 D6 D7,D1 D2 D5 D6 D7,7,2452,2476,27,2491,4
+night,live,cam-01,9,9,accepted,A1 A3 A5 A9,A1 A3 A5 A8 A9,8,2259,2281,28,2297,3
+night,live,cam-02,9,9,accepted,B3 B5 B6 B7 B8,B3 B5 B6 B7 B8,11,2283,2291,24,2317,3
+night,live,cam-03,9,9,accepted,C1 C4 C6 C7,C1 C4 C6 C7,10,2265,2288,31,2307,2
+night,live,cam-04,9,9,accepted,D2 D3 D5 D6 D7,D5 D6 D7,8,2269,2279,21,2301,3
+night,class-transition,cam-01,0,0,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,13,2249,2301,140,2425,0
+night,class-transition,cam-02,0,0,accepted,B1 B2 B3 B5 B6 B7 B8,B1 B2 B3 B5 B6 B7 B8,14,2048,2076,29,2089,1
+night,class-transition,cam-03,0,0,accepted,C1 C2 C3 C4 C7 C8,C1 C2 C3 C4 C7 C8,12,2199,2229,32,2241,1
+night,class-transition,cam-04,0,0,accepted,D1 D2 D4 D5 D6 D8,D1 D4 D5 D6 D8 D9,9,2104,2136,66,2180,2
+night,class-transition,cam-01,1,1,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,13,2165,2193,24,2198,3
+night,class-transition,cam-02,1,1,accepted,B1 B2 B3 B5 B6 B7 B8,B1 B2 B3 B5 B6 B7 B8,14,2078,2106,45,2131,3
+night,class-transition,cam-03,1,1,accepted,C1 C2 C3 C4 C7 C8,C1 C2 C3 C4 C7 C8,12,2120,2150,29,2160,4
+night,class-transition,cam-04,1,1,accepted,D1 D2 D4 D5 D6,D1 D4 D5 D6,10,2092,2127,25,2126,4
+night,class-transition,cam-01,2,2,accepted,A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8 A9,10,2296,2325,25,2331,5
+night,class-transition,cam-02,2,2,accepted,B1 B2 B3 B5 B6 B7 B8,B2 B3 B5 B6 B7,12,2276,2304,26,2312,5
+night,class-transition,cam-03,2,2,accepted,C1 C3 C4 C7 C8,C1 C2 C4 C7 C8,13,2102,2131,29,2141,5
+night,class-transition,cam-04,2,2,accepted,D1 D2 D4 D5 D6,D4 D5 D6,7,2148,2176,42,2200,6
+night,class-transition,cam-01,3,3,accepted,A3 A4 A5 A6 A7 A8 A9,A3 A4 A5 A6 A7 A8 A9,12,2001,2010,23,2034,5
+night,class-transition,cam-02,3,3,accepted,B1 B2 B3 B5 B6 B7,B1 B2 B3 B5 B6 B7 B8,15,2127,2139,25,2162,5
+night,class-transition,cam-03,3,3,accepted,C1 C3 C4 C7,C1 C3 C4 C7 C8,10,2365,2394,28,2405,4
+night,class-transition,cam-04,3,3,accepted,D1 D2 D4 D5 D6,D1 D4 D5 D6,7,2393,2405,38,2446,4
+night,class-transition,cam-01,4,4,accepted,A3 A4 A5 A6 A7 A8 A9,A3 A4 A5 A6 A7 A8 A9,13,2142,2170,35,2188,4
+night,class-transition,cam-02,4,4,accepted,B1 B2 B3 B5 B7,B2 B3 B5 B7,9,2055,2083,23,2088,6
+night,class-transition,cam-03,4,4,accepted,C1 C3 C4,C1 C2 C3 C4 C7,13,2323,2338,77,2416,6
+night,class-transition,cam-04,4,4,accepted,D1 D4 D5 D6,D1 D2 D5 D7,6,2098,2127,26,2135,7
+night,class-transition,cam-01,5,5,accepted,A3 A4 A5 A6 A7 A8 A9,A3 A4 A5 A6 A7 A9,11,2210,2218,22,2240,7
+night,class-transition,cam-02,5,5,accepted,B1 B2 B3 B5 B7,B2 B3 B5 B7,11,2079,2108,47,2140,8
+night,class-transition,cam-03,5,5,accepted,C1 C3 C4,C1 C3 C4 C5 C6,9,2130,2139,30,2170,8
+night,class-transition,cam-04,5,5,accepted,D1 D4 D5 D6 D9,D4 D5 D6 D9,7,2160,2185,33,2202,8
+night,class-transition,cam-01,6,6,accepted,A3 A4 A5 A6 A7 A8,A1 A2 A3 A4 A5 A6 A7 A8 A9,14,2073,2082,22,2105,6
+night,class-transition,cam-02,6,6,accepted,B1 B5 B7,B1 B2 B3 B5 B6 B7,12,2155,2180,22,2185,5
+night,class-transition,cam-03,6,6,accepted,C3 C4,C1 C3 C4,7,2052,2076,26,2086,6
+night,class-transition,cam-04,6,6,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D6 D9,6,2257,2280,19,2286,6
+night,class-transition,cam-01,7,7,accepted,A3 A4 A5 A6 A7 A8,A1 A2 A3 A4 A5,9,2185,2196,23,2220,6
+night,class-transition,cam-02,7,7,accepted,B1 B5,B1 B5,8,2114,2124,27,2153,7
+night,class-transition,cam-03,7,7,accepted,C3 C4,C3 C4 C5 C6,11,2158,2179,27,2194,7
+night,class-transition,cam-04,7,7,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D9,6,2050,2061,25,2086,8
+night,class-transition,cam-01,8,8,accepted,A3 A4 A5 A6 A7 A8,A1 A3 A4 A5 A6 A7 A8,10,2107,2128,26,2143,6
+night,class-transition,cam-02,8,8,accepted,B1 B4 B5,B1 B4 B5,7,2154,2177,23,2187,7
+night,class-transition,cam-03,8,8,accepted,C3 C4,C1 C2 C3 C4,10,2073,2097,52,2135,6
+night,class-transition,cam-04,8,8,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D7 D8 D9,8,2214,2222,17,2240,6
+night,class-transition,cam-01,9,9,accepted,A2 A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,9,2252,2276,35,2299,5
+night,class-transition,cam-02,9,9,accepted,B1 B4 B5,B1 B3 B4 B5,10,2151,2160,24,2184,6
+night,class-transition,cam-03,9,9,accepted,C3 C4,C3 C4,9,2104,2125,30,2144,6
+night,class-transition,cam-04,9,9,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D6 D9,6,2070,2091,22,2102,6
+night,class-transition,cam-01,10,10,accepted,A2 A3 A4 A5 A6 A7 A8,A3 A4 A5 A6 A7 A8,10,2009,2029,60,2077,6
+night,class-transition,cam-02,10,10,accepted,B1 B4 B5,B1 B2 B3 B4 B5,11,2108,2133,24,2144,5
+night,class-transition,cam-03,10,10,accepted,C3 C4,C3 C4,10,1974,1994,29,2010,6
+night,class-transition,cam-04,10,10,accepted,D1 D4 D5 D6 D9,D1 D4 D5 D9,9,2023,2042,17,2047,6
+night,occlusion-stress,cam-01,0,0,accepted,A1 A2 A4 A6 A9,A1 A2 A4 A6 A9,8,2322,2342,26,2369,0
+night,occlusion-stress,cam-02,0,0,accepted,B2 B4 B5,B2 B4 B5,10,2210,2244,28,2255,1
+night,occlusion-stress,cam-03,0,0,accepted,C1 C2 C3 C8,C1 C2 C3 C8,12,2092,2123,69,2173,1
+night,occlusion-stress,cam-04,0,0,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,9,2117,2148,20,2149,2
+night,occlusion-stress,cam-01,1,1,accepted,A1 A2 A4 A6 A9,A2 A4 A6 A9,8,2012,2039,19,2038,2
+night,occlusion-stress,cam-02,1,1,accepted,B2 B4 B5,B2 B4 B5,9,2020,2027,43,2070,3
+night,occlusion-stress,cam-03,1,1,accepted,C2 C3 C8,C1 C2 C3 C8,11,2047,2072,28,2081,3
+night,occlusion-stress,cam-04,1,1,accepted,D2 D3 D5 D6 D7 D8,D1 D2 D3 D5 D6 D7 D8,10,1971,1997,20,1998,4
+night,occlusion-stress,cam-01,2,2,accepted,A1 A2 A4 A6 A9,A2 A4 A6 A9,8,2117,2144,24,2149,4
+night,occlusion-stress,cam-02,2,2,accepted,B2 B4 B5,B5,7,1902,1927,75,1984,5
+night,occlusion-stress,cam-03,2,2,accepted,C2 C3 C8,C2 C3 C8,10,2066,2073,43,2117,5
+night,occlusion-stress,cam-04,2,2,accepted,D2 D3 D5 D6 D7 D8,D2 D3 D5 D6 D7 D8,9,2138,2164,23,2170,5
+night,occlusion-stress,cam-01,3,3,accepted,A1 A2 A4 A6 A9,A6 A9,4,2053,2088,20,2083,5
+night,occlusion-stress,cam-02,3,3,accepted,B2 B4 B5,B1 B4 B5,13,2029,2054,24,2061,6
+night,occlusion-stress,cam-03,3,3,accepted,C2 C3 C8,C2 C3 C8,12,1953,1979,25,1985,6
+night,occlusion-stress,cam-04,3,3,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D3 D5 D6 D7,9,1997,2023,39,2044,6
+night,occlusion-stress,cam-01,4,4,accepted,A1 A2 A4 A6 A9,A4 A6 A9,7,1979,2004,20,2007,6
+night,occlusion-stress,cam-02,4,4,accepted,B2 B4 B5,B2 B4 B8,6,1987,2011,23,2018,6
+night,occlusion-stress,cam-03,4,4,accepted,C2 C3 C8,C2 C3 C8,11,2008,2037,27,2044,7
+night,occlusion-stress,cam-04,4,4,accepted,D2 D3 D5 D6 D7 D8 D9,D3 D5 D6 D7 D9,9,2045,2071,34,2087,7
+night,occlusion-stress,cam-01,5,5,accepted,A1 A2 A4 A6 A9,A4 A6 A9,7,2084,2111,22,2115,7
+night,occlusion-stress,cam-02,5,5,accepted,B2 B4 B5 B7,B1 B2 B4 B7,10,2122,2161,21,2153,6
+night,occlusion-stress,cam-03,5,5,accepted,C2 C3 C5 C8,C2 C3 C8,9,2016,2041,27,2051,7
+night,occlusion-stress,cam-04,5,5,accepted,D2 D3 D5 D6 D7 D8 D9,D5 D6 D7 D8,8,2024,2050,19,2052,7
+night,occlusion-stress,cam-01,6,6,accepted,A1 A2 A4 A6 A9,A2 A4 A6 A9,8,1997,2022,22,2029,7
+night,occlusion-stress,cam-02,6,6,accepted,B2 B4 B5 B7,B2 B3 B4 B6 B7,10,2070,2111,27,2105,7
+night,occlusion-stress,cam-03,6,6,accepted,C2 C3 C5 C8,C2 C3 C5 C6,9,1952,1977,42,2002,8
+night,occlusion-stress,cam-04,6,6,accepted,D2 D3 D5 D6 D7 D8 D9,D5 D6 D7 D9,8,2069,2093,35,2112,7
+night,occlusion-stress,cam-01,7,7,accepted,A1 A2 A4 A6 A9,A2 A4 A6 A7 A8 A9,10,1952,1978,25,1986,8
+night,occlusion-stress,cam-02,7,7,accepted,B2 B4 B5 B7,B1 B2 B3 B4 B5 B7,8,2108,2129,23,2140,7
+night,occlusion-stress,cam-03,7,7,accepted,C2 C3 C5 C8,C2 C3 C5,9,2250,2270,50,2309,6
+night,occlusion-stress,cam-04,7,7,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D6 D7 D8,10,1990,2016,22,2021,7
+night,occlusion-stress,cam-01,8,8,accepted,A1 A2 A4 A6 A7 A9,A2 A4 A6 A7,10,1988,2008,23,2019,7
+night,occlusion-stress,cam-02,8,8,accepted,B2 B4 B5 B7,B3 B4 B5 B7,9,1927,1947,24,1960,6
+night,occlusion-stress,cam-03,8,8,accepted,C2 C3 C4 C5 C8,C2 C3 C4 C5 C8,9,1988,2007,22,2017,6
+night,occlusion-stress,cam-04,8,8,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D3 D6,9,2287,2309,65,2362,7
+night,occlusion-stress,cam-01,9,9,accepted,A1 A2 A4 A6 A7 A9,A2 A7 A9,8,2205,2227,32,2247,7
+night,occlusion-stress,cam-02,9,9,accepted,B2 B4 B5 B7,B5 B7,9,2115,2123,30,2155,7
+night,occlusion-stress,cam-03,9,9,accepted,C2 C3 C4 C5 C8,C5 C8,7,1987,2008,43,2039,7
+night,occlusion-stress,cam-04,9,9,accepted,D2 D3 D5 D6 D7 D8 D9,D5 D8,5,2089,2098,63,2162,8
+night,occlusion-stress,cam-01,10,10,accepted,A1 A4 A6 A7 A9,A1 A6 A7 A9,7,2018,2041,26,2054,9
+night,occlusion-stress,cam-02,10,10,accepted,B2 B4 B5 B7,B2 B3 B4 B5 B6 B7,10,2163,2184,23,2194,8
+night,occlusion-stress,cam-03,10,10,accepted,C1 C2 C3 C4 C5 C8,C4 C5 C8,10,1935,1969,46,1989,9
+night,occlusion-stress,cam-04,10,10,accepted,D2 D3 D5 D6 D7 D8 D9,D2 D3 D8,9,1989,2010,17,2013,7

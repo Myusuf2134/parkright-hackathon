@@ -1,0 +1,37 @@
+Static validation scene — perception vs simulator ground truth (owned bays per camera)
+
+preset     camera  cycle equal  truth | perception
+clear_day  cam-01  0     True   A1 A3 A4 A7 A9 | A1 A3 A4 A7 A9
+clear_day  cam-02  0     True   B2 B5 B7 | B2 B5 B7
+clear_day  cam-03  0     True   C1 C3 C4 C8 | C1 C3 C4 C8
+clear_day  cam-04  0     True   D2 D5 D6 D9 | D2 D5 D6 D9
+clear_day  cam-01  1     True   A1 A3 A4 A7 A9 | A1 A3 A4 A7 A9
+clear_day  cam-02  1     True   B2 B5 B7 | B2 B5 B7
+clear_day  cam-03  1     True   C1 C3 C4 C8 | C1 C3 C4 C8
+clear_day  cam-04  1     True   D2 D5 D6 D9 | D2 D5 D6 D9
+dusk       cam-01  0     True   A1 A3 A4 A7 A9 | A1 A3 A4 A7 A9
+dusk       cam-02  0     True   B2 B5 B7 | B2 B5 B7
+dusk       cam-03  0     True   C1 C3 C4 C8 | C1 C3 C4 C8
+dusk       cam-04  0     True   D2 D5 D6 D9 | D2 D5 D6 D9
+dusk       cam-01  1     True   A1 A3 A4 A7 A9 | A1 A3 A4 A7 A9
+dusk       cam-02  1     True   B2 B5 B7 | B2 B5 B7
+dusk       cam-03  1     True   C1 C3 C4 C8 | C1 C3 C4 C8
+dusk       cam-04  1     True   D2 D5 D6 D9 | D2 D5 D6 D9
+night      cam-01  0     True   A1 A3 A4 A7 A9 | A1 A3 A4 A7 A9
+night      cam-02  0     True   B2 B5 B7 | B2 B5 B7
+night      cam-03  0     True   C1 C3 C4 C8 | C1 C3 C4 C8
+night      cam-04  0     True   D2 D5 D6 D9 | D2 D5 D6 D9
+night      cam-01  1     True   A1 A3 A4 A7 A9 | A1 A3 A4 A7 A9
+night      cam-02  1     True   B2 B5 B7 | B2 B5 B7
+night      cam-03  1     True   C1 C3 C4 C8 | C1 C3 C4 C8
+night      cam-04  1     True   D2 D5 D6 D9 | D2 D5 D6 D9
+overcast   cam-01  0     True   A1 A3 A4 A7 A9 | A1 A3 A4 A7 A9
+overcast   cam-02  0     True   B2 B5 B7 | B2 B5 B7
+overcast   cam-03  0     True   C1 C3 C4 C8 | C1 C3 C4 C8
+overcast   cam-04  0     True   D2 D5 D6 D9 | D2 D5 D6 D9
+overcast   cam-01  1     True   A1 A3 A4 A7 A9 | A1 A3 A4 A7 A9
+overcast   cam-02  1     True   B2 B5 B7 | B2 B5 B7
+overcast   cam-03  1     True   C1 C3 C4 C8 | C1 C3 C4 C8
+overcast   cam-04  1     True   D2 D5 D6 D9 | D2 D5 D6 D9
+
+frames: 32  mismatches: 0  all_equal: True

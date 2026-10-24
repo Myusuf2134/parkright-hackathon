@@ -1,0 +1,19 @@
+
+ParkRight Demo Check
+
+[PASS] API  — http://127.0.0.1:8400 healthy
+[PASS] demo mode  — hackathon-tuttle-dreese-v1 · fixture ddc4df045828…
+[PASS] A2 detector  — a2-fasterrcnn@1-5f91c1eb70450307c6eed130ce113dd8 ready
+[PASS] OPEN disabled  — allow_open=false · no bay reported OPEN
+[PASS] checkpoint hash  — 43452092…c24985
+[PASS] simulator  — http://127.0.0.1:5181
+[PASS] web  — http://127.0.0.1:5180
+[PASS] websocket  — snapshot for garage-01 (12 bays)
+[WARN] camera stream  — last frame 21.76s ago: is the simulator window still open?
+[WARN] recommendation  — skipped: needs fresh camera evidence first (open the simulator window)
+[WARN] fallback mode  — not exercised yet
+[WARN] CPU load  — load 80.2 on 8 cores: close apps / wait for indexing before recording
+[PASS] state  — epoch 0 · 2 frames since reset
+
+NOT READY (see warnings)
+

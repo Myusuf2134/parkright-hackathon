@@ -1,0 +1,28 @@
+34-space multi-camera garage showcase — test summary (2026-10-24, feat/garage-showcase, Apple M2 8 GB)
+
+Python (pytest, whole repo)                   331 passed, 2 skipped (A0 NVIDIA weights absent; optional paid live Nemotron test)
+  incl. services/api/tests/test_garage_showcase.py   14 passed: four calibrations load, overlap/duplicate refused,
+        single-camera identity unchanged, per-camera binding, owned-bays-only views, non-owner observations ignored,
+        34-bay aggregation, WebSocket per-camera updates, event log, demo status/cameras/latest frames, ground truth
+        cannot update state, frame with a truth part rejected, state only from perception, OPEN disabled
+  incl. bay-tracking pinned hashes (main.py, recommender, Nemotron, A2 provider) pass
+Experiment tests                              a2-bay-tracking 23 passed · a2-open-evidence 12 passed
+Simulator (vitest)                            109 passed (showcase.test.ts 13: 34 bays, 9/8/8/9, ownership once each,
+        calibrations from 3D corners, drift check, zero geometric spill (B6-style regression), no OPEN, scheduler
+        determinism + invariants, scenarios as named, validation scene, world switching/reset/owned truth)
+Showcase browser suite (scripts/showcase)     5 passed: 34 bays render, four CCTV cameras upload real frames
+        (metadata+image only, no ground truth, observer never uploads), CCTV selector, scenario + lighting switching,
+        driver page live over WebSocket (counts, map, events) + recommendation, presentation/engineering modes
+12-space garage browser suite                 3 passed (first attempt timed out at load average 150; passed at load 8)
+Legacy demo from this branch (alt ports)      reliability 5/5 + reset: 6 passed · demo:check DEMO READY
+Showcase demo:check                           DEMO READY (4/4 cameras reporting, OPEN disabled, recommendation)
+Stub browser suite                            2 passed, 2 skipped (unchanged)
+Real-A2 browser suite                         4/4 passed (first run)
+Calibration drift checks                      legacy pass · 12-space garage pass · showcase pass
+Typecheck 0 errors · Lint all checks passed · Build web + simulator pass (garage and showcase are lazy chunks)
+Secret scan (detect-secrets, 54 changed files) 0 hits
+
+Stable worktree (feat/hackathon-demo-mode, untouched): npm run demo:hackathon starts every service and A2;
+its demo:check ran twice during swap-driven load spikes (swap 12.2 / 13.3 GB used, load 55–150) and reported
+NOT READY (stale camera frames → recommendation skipped/409). Its code is byte-identical to 8bc94dd, which was
+DEMO READY in its own milestone; the same legacy path from this branch was DEMO READY at load ~7.

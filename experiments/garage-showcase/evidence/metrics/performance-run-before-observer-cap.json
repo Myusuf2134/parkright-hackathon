@@ -1,0 +1,95 @@
+{
+  "schema": "parkright-showcase-perf-v1",
+  "created_at": "2026-10-24T23:01:42.650Z",
+  "machine": {
+    "cpu": "Apple M2",
+    "cores": 8,
+    "memory_gb": 8
+  },
+  "note": "Measured on this machine (Apple M2, 8 GB), not an M5. Load average is recorded because macOS background work changes A2 latency a lot.",
+  "load_average": [
+    7.9,
+    5.8
+  ],
+  "observer_fps": 58.8,
+  "simulation_loop_fps": 59,
+  "cctv_preview_fps": 15.4,
+  "cctv_render_ms": {
+    "n": 533,
+    "mean": 3.9,
+    "p50": 3.800000011920929,
+    "p95": 5.199999988079071
+  },
+  "jpeg_encode_ms": {
+    "n": 20,
+    "mean": 58.7,
+    "p50": 56.19999998807907,
+    "p95": 111.10000002384186
+  },
+  "camera_schedule": "round robin CAM-01 → CAM-02 → CAM-03 → CAM-04, one frame in flight, no extra wait (interval = A2 time)",
+  "accepted_frames_per_second": 0.32,
+  "camera_to_driver_update_ms": {
+    "n": 19,
+    "mean": 3049.6,
+    "p50": 2791,
+    "p95": 4235
+  },
+  "from_live_measurement": {
+    "frames": 376,
+    "a2_inference_ms": {
+      "n": 376,
+      "mean": 2184,
+      "p50": 2138,
+      "p95": 2498
+    },
+    "a2_inference_ms_by_camera": {
+      "cam-01": {
+        "n": 94,
+        "mean": 2176,
+        "p50": 2121,
+        "p95": 2498
+      },
+      "cam-02": {
+        "n": 94,
+        "mean": 2183,
+        "p50": 2132,
+        "p95": 2559
+      },
+      "cam-03": {
+        "n": 94,
+        "mean": 2182,
+        "p50": 2143,
+        "p95": 2630
+      },
+      "cam-04": {
+        "n": 94,
+        "mean": 2196,
+        "p50": 2153,
+        "p95": 2452
+      }
+    },
+    "ingest_ms": {
+      "n": 376,
+      "mean": 2207,
+      "p50": 2159,
+      "p95": 2538
+    },
+    "camera_to_websocket_ms": {
+      "n": 376,
+      "mean": 2231,
+      "p50": 2184,
+      "p95": 2598
+    },
+    "facility_refresh_cycle_ms": {
+      "n": 94,
+      "mean": 9122,
+      "p50": 8918,
+      "p95": 10592
+    }
+  },
+  "compared_with_m2_12_space_garage": {
+    "a2_mean_ms": 1900,
+    "accepted_fps": 0.42,
+    "preview_fps": 13
+  }
+}

@@ -1,0 +1,1082 @@
+{
+  "schema": "parkright-showcase-validation-v1",
+  "created_at": "2026-10-24T22:36:17.052Z",
+  "mode": "validation",
+  "mapper": "production A2 mapper, unchanged: occupied conf 0.65, coverage 0.45, allow_open false; each camera evaluates only its owned bays",
+  "overall": {
+    "frames": 32,
+    "tp": 128,
+    "fp": 0,
+    "fn": 0,
+    "tn": 144,
+    "open_reported": 0,
+    "occupied_precision": 1,
+    "occupied_recall": 1,
+    "false_occupied_rate": 0,
+    "false_occupied_by_bay": {},
+    "missed_by_bay": {},
+    "a2_ms": {
+      "n": 32,
+      "mean": 2508,
+      "p50": 2510,
+      "p95": 3539
+    },
+    "ingest_ms": {
+      "n": 32,
+      "mean": 2539,
+      "p50": 2537,
+      "p95": 3600
+    },
+    "encode_ms": {
+      "n": 32,
+      "mean": 37,
+      "p50": 29,
+      "p95": 92
+    },
+    "ws_latency_ms": {
+      "n": 32,
+      "mean": 2571,
+      "p50": 2553,
+      "p95": 3727
+    }
+  },
+  "by_preset": {
+    "clear_day": {
+      "frames": 8,
+      "tp": 32,
+      "fp": 0,
+      "fn": 0,
+      "tn": 36,
+      "open_reported": 0,
+      "occupied_precision": 1,
+      "occupied_recall": 1,
+      "false_occupied_rate": 0,
+      "false_occupied_by_bay": {},
+      "missed_by_bay": {},
+      "a2_ms": {
+        "n": 8,
+        "mean": 2239,
+        "p50": 2128,
+        "p95": 3054
+      },
+      "ingest_ms": {
+        "n": 8,
+        "mean": 2262,
+        "p50": 2142,
+        "p95": 3108
+      },
+      "encode_ms": {
+        "n": 8,
+        "mean": 31,
+        "p50": 24,
+        "p95": 92
+      },
+      "ws_latency_ms": {
+        "n": 8,
+        "mean": 2287,
+        "p50": 2164,
+        "p95": 3191
+      }
+    },
+    "dusk": {
+      "frames": 8,
+      "tp": 32,
+      "fp": 0,
+      "fn": 0,
+      "tn": 36,
+      "open_reported": 0,
+      "occupied_precision": 1,
+      "occupied_recall": 1,
+      "false_occupied_rate": 0,
+      "false_occupied_by_bay": {},
+      "missed_by_bay": {},
+      "a2_ms": {
+        "n": 8,
+        "mean": 2502,
+        "p50": 2493,
+        "p95": 3539
+      },
+      "ingest_ms": {
+        "n": 8,
+        "mean": 2530,
+        "p50": 2527,
+        "p95": 3570
+      },
+      "encode_ms": {
+        "n": 8,
+        "mean": 38,
+        "p50": 32,
+        "p95": 75
+      },
+      "ws_latency_ms": {
+        "n": 8,
+        "mean": 2559,
+        "p50": 2532,
+        "p95": 3602
+      }
+    },
+    "night": {
+      "frames": 8,
+      "tp": 32,
+      "fp": 0,
+      "fn": 0,
+      "tn": 36,
+      "open_reported": 0,
+      "occupied_precision": 1,
+      "occupied_recall": 1,
+      "false_occupied_rate": 0,
+      "false_occupied_by_bay": {},
+      "missed_by_bay": {},
+      "a2_ms": {
+        "n": 8,
+        "mean": 2727,
+        "p50": 2710,
+        "p95": 3703
+      },
+      "ingest_ms": {
+        "n": 8,
+        "mean": 2776,
+        "p50": 2727,
+        "p95": 3751
+      },
+      "encode_ms": {
+        "n": 8,
+        "mean": 45,
+        "p50": 35,
+        "p95": 124
+      },
+      "ws_latency_ms": {
+        "n": 8,
+        "mean": 2820,
+        "p50": 2760,
+        "p95": 3797
+      }
+    },
+    "overcast": {
+      "frames": 8,
+      "tp": 32,
+      "fp": 0,
+      "fn": 0,
+      "tn": 36,
+      "open_reported": 0,
+      "occupied_precision": 1,
+      "occupied_recall": 1,
+      "false_occupied_rate": 0,
+      "false_occupied_by_bay": {},
+      "missed_by_bay": {},
+      "a2_ms": {
+        "n": 8,
+        "mean": 2564,
+        "p50": 2703,
+        "p95": 3503
+      },
+      "ingest_ms": {
+        "n": 8,
+        "mean": 2588,
+        "p50": 2725,
+        "p95": 3533
+      },
+      "encode_ms": {
+        "n": 8,
+        "mean": 35,
+        "p50": 29,
+        "p95": 63
+      },
+      "ws_latency_ms": {
+        "n": 8,
+        "mean": 2617,
+        "p50": 2754,
+        "p95": 3584
+      }
+    }
+  },
+  "by_scenario": {
+    "validation": {
+      "clear_day": {
+        "frames": 8,
+        "tp": 32,
+        "fp": 0,
+        "fn": 0,
+        "tn": 36,
+        "open_reported": 0,
+        "occupied_precision": 1,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0,
+        "false_occupied_by_bay": {},
+        "missed_by_bay": {},
+        "a2_ms": {
+          "n": 8,
+          "mean": 2239,
+          "p50": 2128,
+          "p95": 3054
+        },
+        "ingest_ms": {
+          "n": 8,
+          "mean": 2262,
+          "p50": 2142,
+          "p95": 3108
+        },
+        "encode_ms": {
+          "n": 8,
+          "mean": 31,
+          "p50": 24,
+          "p95": 92
+        },
+        "ws_latency_ms": {
+          "n": 8,
+          "mean": 2287,
+          "p50": 2164,
+          "p95": 3191
+        }
+      },
+      "dusk": {
+        "frames": 8,
+        "tp": 32,
+        "fp": 0,
+        "fn": 0,
+        "tn": 36,
+        "open_reported": 0,
+        "occupied_precision": 1,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0,
+        "false_occupied_by_bay": {},
+        "missed_by_bay": {},
+        "a2_ms": {
+          "n": 8,
+          "mean": 2502,
+          "p50": 2493,
+          "p95": 3539
+        },
+        "ingest_ms": {
+          "n": 8,
+          "mean": 2530,
+          "p50": 2527,
+          "p95": 3570
+        },
+        "encode_ms": {
+          "n": 8,
+          "mean": 38,
+          "p50": 32,
+          "p95": 75
+        },
+        "ws_latency_ms": {
+          "n": 8,
+          "mean": 2559,
+          "p50": 2532,
+          "p95": 3602
+        }
+      },
+      "night": {
+        "frames": 8,
+        "tp": 32,
+        "fp": 0,
+        "fn": 0,
+        "tn": 36,
+        "open_reported": 0,
+        "occupied_precision": 1,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0,
+        "false_occupied_by_bay": {},
+        "missed_by_bay": {},
+        "a2_ms": {
+          "n": 8,
+          "mean": 2727,
+          "p50": 2710,
+          "p95": 3703
+        },
+        "ingest_ms": {
+          "n": 8,
+          "mean": 2776,
+          "p50": 2727,
+          "p95": 3751
+        },
+        "encode_ms": {
+          "n": 8,
+          "mean": 45,
+          "p50": 35,
+          "p95": 124
+        },
+        "ws_latency_ms": {
+          "n": 8,
+          "mean": 2820,
+          "p50": 2760,
+          "p95": 3797
+        }
+      },
+      "overcast": {
+        "frames": 8,
+        "tp": 32,
+        "fp": 0,
+        "fn": 0,
+        "tn": 36,
+        "open_reported": 0,
+        "occupied_precision": 1,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0,
+        "false_occupied_by_bay": {},
+        "missed_by_bay": {},
+        "a2_ms": {
+          "n": 8,
+          "mean": 2564,
+          "p50": 2703,
+          "p95": 3503
+        },
+        "ingest_ms": {
+          "n": 8,
+          "mean": 2588,
+          "p50": 2725,
+          "p95": 3533
+        },
+        "encode_ms": {
+          "n": 8,
+          "mean": 35,
+          "p50": 29,
+          "p95": 63
+        },
+        "ws_latency_ms": {
+          "n": 8,
+          "mean": 2617,
+          "p50": 2754,
+          "p95": 3584
+        }
+      }
+    }
+  },
+  "by_camera": {
+    "cam-01": {
+      "frames": 8,
+      "tp": 40,
+      "fp": 0,
+      "fn": 0,
+      "tn": 32,
+      "open_reported": 0,
+      "occupied_precision": 1,
+      "occupied_recall": 1,
+      "false_occupied_rate": 0,
+      "false_occupied_by_bay": {},
+      "missed_by_bay": {},
+      "a2_ms": {
+        "n": 8,
+        "mean": 2531,
+        "p50": 2703,
+        "p95": 3503
+      },
+      "ingest_ms": {
+        "n": 8,
+        "mean": 2558,
+        "p50": 2725,
+        "p95": 3533
+      },
+      "encode_ms": {
+        "n": 8,
+        "mean": 50,
+        "p50": 42,
+        "p95": 92
+      },
+      "ws_latency_ms": {
+        "n": 8,
+        "mean": 2602,
+        "p50": 2754,
+        "p95": 3584
+      }
+    },
+    "cam-02": {
+      "frames": 8,
+      "tp": 24,
+      "fp": 0,
+      "fn": 0,
+      "tn": 40,
+      "open_reported": 0,
+      "occupied_precision": 1,
+      "occupied_recall": 1,
+      "false_occupied_rate": 0,
+      "false_occupied_by_bay": {},
+      "missed_by_bay": {},
+      "a2_ms": {
+        "n": 8,
+        "mean": 2519,
+        "p50": 2558,
+        "p95": 3703
+      },
+      "ingest_ms": {
+        "n": 8,
+        "mean": 2548,
+        "p50": 2580,
+        "p95": 3751
+      },
+      "encode_ms": {
+        "n": 8,
+        "mean": 30,
+        "p50": 24,
+        "p95": 60
+      },
+      "ws_latency_ms": {
+        "n": 8,
+        "mean": 2572,
+        "p50": 2586,
+        "p95": 3797
+      }
+    },
+    "cam-03": {
+      "frames": 8,
+      "tp": 32,
+      "fp": 0,
+      "fn": 0,
+      "tn": 32,
+      "open_reported": 0,
+      "occupied_precision": 1,
+      "occupied_recall": 1,
+      "false_occupied_rate": 0,
+      "false_occupied_by_bay": {},
+      "missed_by_bay": {},
+      "a2_ms": {
+        "n": 8,
+        "mean": 2620,
+        "p50": 2634,
+        "p95": 3539
+      },
+      "ingest_ms": {
+        "n": 8,
+        "mean": 2665,
+        "p50": 2661,
+        "p95": 3600
+      },
+      "encode_ms": {
+        "n": 8,
+        "mean": 39,
+        "p50": 29,
+        "p95": 124
+      },
+      "ws_latency_ms": {
+        "n": 8,
+        "mean": 2699,
+        "p50": 2674,
+        "p95": 3727
+      }
+    },
+    "cam-04": {
+      "frames": 8,
+      "tp": 32,
+      "fp": 0,
+      "fn": 0,
+      "tn": 40,
+      "open_reported": 0,
+      "occupied_precision": 1,
+      "occupied_recall": 1,
+      "false_occupied_rate": 0,
+      "false_occupied_by_bay": {},
+      "missed_by_bay": {},
+      "a2_ms": {
+        "n": 8,
+        "mean": 2361,
+        "p50": 2297,
+        "p95": 2964
+      },
+      "ingest_ms": {
+        "n": 8,
+        "mean": 2384,
+        "p50": 2335,
+        "p95": 2990
+      },
+      "encode_ms": {
+        "n": 8,
+        "mean": 31,
+        "p50": 25,
+        "p95": 57
+      },
+      "ws_latency_ms": {
+        "n": 8,
+        "mean": 2410,
+        "p50": 2372,
+        "p95": 3047
+      }
+    }
+  },
+  "facility_refresh": {
+    "cycle_ms": {
+      "n": 8,
+      "mean": 10439,
+      "p50": 9820,
+      "p95": 13134
+    }
+  },
+  "validation": [
+    {
+      "preset": "clear_day",
+      "camera": "cam-01",
+      "cycle": 0,
+      "truth": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "perception": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "clear_day",
+      "camera": "cam-02",
+      "cycle": 0,
+      "truth": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "perception": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "clear_day",
+      "camera": "cam-03",
+      "cycle": 0,
+      "truth": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "perception": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "clear_day",
+      "camera": "cam-04",
+      "cycle": 0,
+      "truth": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "perception": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "clear_day",
+      "camera": "cam-01",
+      "cycle": 1,
+      "truth": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "perception": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "clear_day",
+      "camera": "cam-02",
+      "cycle": 1,
+      "truth": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "perception": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "clear_day",
+      "camera": "cam-03",
+      "cycle": 1,
+      "truth": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "perception": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "clear_day",
+      "camera": "cam-04",
+      "cycle": 1,
+      "truth": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "perception": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "dusk",
+      "camera": "cam-01",
+      "cycle": 0,
+      "truth": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "perception": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "dusk",
+      "camera": "cam-02",
+      "cycle": 0,
+      "truth": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "perception": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "dusk",
+      "camera": "cam-03",
+      "cycle": 0,
+      "truth": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "perception": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "dusk",
+      "camera": "cam-04",
+      "cycle": 0,
+      "truth": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "perception": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "dusk",
+      "camera": "cam-01",
+      "cycle": 1,
+      "truth": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "perception": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "dusk",
+      "camera": "cam-02",
+      "cycle": 1,
+      "truth": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "perception": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "dusk",
+      "camera": "cam-03",
+      "cycle": 1,
+      "truth": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "perception": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "dusk",
+      "camera": "cam-04",
+      "cycle": 1,
+      "truth": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "perception": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "night",
+      "camera": "cam-01",
+      "cycle": 0,
+      "truth": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "perception": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "night",
+      "camera": "cam-02",
+      "cycle": 0,
+      "truth": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "perception": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "night",
+      "camera": "cam-03",
+      "cycle": 0,
+      "truth": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "perception": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "night",
+      "camera": "cam-04",
+      "cycle": 0,
+      "truth": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "perception": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "night",
+      "camera": "cam-01",
+      "cycle": 1,
+      "truth": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "perception": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "night",
+      "camera": "cam-02",
+      "cycle": 1,
+      "truth": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "perception": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "night",
+      "camera": "cam-03",
+      "cycle": 1,
+      "truth": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "perception": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "night",
+      "camera": "cam-04",
+      "cycle": 1,
+      "truth": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "perception": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "overcast",
+      "camera": "cam-01",
+      "cycle": 0,
+      "truth": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "perception": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "overcast",
+      "camera": "cam-02",
+      "cycle": 0,
+      "truth": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "perception": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "overcast",
+      "camera": "cam-03",
+      "cycle": 0,
+      "truth": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "perception": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "overcast",
+      "camera": "cam-04",
+      "cycle": 0,
+      "truth": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "perception": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "overcast",
+      "camera": "cam-01",
+      "cycle": 1,
+      "truth": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "perception": [
+        "A1",
+        "A3",
+        "A4",
+        "A7",
+        "A9"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "overcast",
+      "camera": "cam-02",
+      "cycle": 1,
+      "truth": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "perception": [
+        "B2",
+        "B5",
+        "B7"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "overcast",
+      "camera": "cam-03",
+      "cycle": 1,
+      "truth": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "perception": [
+        "C1",
+        "C3",
+        "C4",
+        "C8"
+      ],
+      "equal": true
+    },
+    {
+      "preset": "overcast",
+      "camera": "cam-04",
+      "cycle": 1,
+      "truth": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "perception": [
+        "D2",
+        "D5",
+        "D6",
+        "D9"
+      ],
+      "equal": true
+    }
+  ],
+  "all_equal": true
+}

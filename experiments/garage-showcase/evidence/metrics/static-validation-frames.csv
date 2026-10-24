@@ -1,0 +1,33 @@
+preset,scenario,camera,cycle,seq,status,truth,predicted,vehicles,a2_ms,ingest_ms,encode_ms,ws_latency_ms,moving
+clear_day,validation,cam-01,0,0,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,6,3054,3108,92,3191,0
+clear_day,validation,cam-02,0,0,accepted,B2 B5 B7,B2 B5 B7,13,1702,1718,24,1742,0
+clear_day,validation,cam-03,0,0,accepted,C1 C3 C4 C8,C1 C3 C4 C8,12,1882,1907,20,1919,0
+clear_day,validation,cam-04,0,0,accepted,D2 D5 D6 D9,D2 D5 D6 D9,7,2128,2142,21,2164,0
+clear_day,validation,cam-01,1,1,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,6,1891,1900,22,1923,0
+clear_day,validation,cam-02,1,1,accepted,B2 B5 B7,B2 B5 B7,13,2558,2580,19,2586,0
+clear_day,validation,cam-03,1,1,accepted,C1 C3 C4 C8,C1 C3 C4 C8,12,2634,2661,26,2674,0
+clear_day,validation,cam-04,1,1,accepted,D2 D5 D6 D9,D2 D5 D6 D9,7,2060,2082,26,2098,0
+dusk,validation,cam-01,0,0,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,6,1970,1997,75,2061,0
+dusk,validation,cam-02,0,0,accepted,B2 B5 B7,B2 B5 B7,10,2493,2527,23,2532,0
+dusk,validation,cam-03,0,0,accepted,C1 C3 C4 C8,C1 C3 C4 C8,12,3539,3570,32,3602,0
+dusk,validation,cam-04,0,0,accepted,D2 D5 D6 D9,D2 D5 D6 D9,6,2964,2990,57,3047,0
+dusk,validation,cam-01,1,1,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,6,2150,2178,39,2206,0
+dusk,validation,cam-02,1,1,accepted,B2 B5 B7,B2 B5 B7,10,2156,2193,24,2192,0
+dusk,validation,cam-03,1,1,accepted,C1 C3 C4 C8,C1 C3 C4 C8,12,2130,2148,29,2178,0
+dusk,validation,cam-04,1,1,accepted,D2 D5 D6 D9,D2 D5 D6 D9,6,2611,2634,22,2651,0
+night,validation,cam-01,0,0,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,6,2906,2946,42,2991,0
+night,validation,cam-02,0,0,accepted,B2 B5 B7,B2 B5 B7,10,3703,3751,35,3797,0
+night,validation,cam-03,0,0,accepted,C1 C3 C4 C8,C1 C3 C4 C8,11,3413,3600,124,3727,0
+night,validation,cam-04,0,0,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,2297,2335,48,2372,0
+night,validation,cam-01,1,1,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,6,2068,2079,22,2103,0
+night,validation,cam-02,1,1,accepted,B2 B5 B7,B2 B5 B7,10,2639,2665,34,2692,0
+night,validation,cam-03,1,1,accepted,C1 C3 C4 C8,C1 C3 C4 C8,11,2710,2727,31,2760,0
+night,validation,cam-04,1,1,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,2079,2101,25,2118,0
+overcast,validation,cam-01,0,0,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,7,3503,3533,63,3584,0
+overcast,validation,cam-02,0,0,accepted,B2 B5 B7,B2 B5 B7,11,2762,2800,60,2861,0
+overcast,validation,cam-03,0,0,accepted,C1 C3 C4 C8,C1 C3 C4 C8,12,2510,2537,29,2553,0
+overcast,validation,cam-04,0,0,accepted,D2 D5 D6 D9,D2 D5 D6 D9,6,2734,2751,22,2775,0
+overcast,validation,cam-01,1,1,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,7,2703,2725,41,2754,0
+overcast,validation,cam-02,1,1,accepted,B2 B5 B7,B2 B5 B7,11,2138,2148,22,2172,0
+overcast,validation,cam-03,1,1,accepted,C1 C3 C4 C8,C1 C3 C4 C8,12,2145,2172,21,2180,0
+overcast,validation,cam-04,1,1,accepted,D2 D5 D6 D9,D2 D5 D6 D9,6,2013,2040,25,2055,0
