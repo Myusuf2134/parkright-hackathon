@@ -128,8 +128,8 @@ async def ingest_frame(request: Request, camera_id: Annotated[CameraId, Path()])
     if metadata.camera_id != camera_id:
         raise _bad("camera_mismatch", f'metadata.camera_id "{metadata.camera_id}" does not match the URL')
 
-    calibration = request.app.state.calibration
-    if calibration and camera_id == calibration.data['camera_id']:
+    calibration = request.app.state.calibration.for_camera(camera_id) if request.app.state.calibration else None
+    if calibration:
         if metadata.session_id not in calibration.sessions:
             raise ApiError(409, 'calibration_required', 'Bind this session to the canonical camera calibration before uploading')
         import io
@@ -180,7 +180,7 @@ async def ingest_frame(request: Request, camera_id: Annotated[CameraId, Path()])
         demo = getattr(request.app.state, "demo", None)
         if demo is not None:  # demo mode only: keep the processed frame for the driver demo view
             diagnostics = getattr(provider, "diagnostics", lambda: {})()
-            demo.record_frame(camera_id, metadata.session_id, metadata.seq, received_at, jpeg, diagnostics)
+            demo.record_frame(camera_id, metadata.session_id, metadata.seq, received_at, jpeg, diagnostics, changes)
 
     body = FrameIngestResult(**base | {"observations": observations, "model": provider.model, "changed": len(changes)}, outcome=FrameOutcome.ACCEPTED, gap=verdict.gap, detail=verdict.detail)
     return JSONResponse(body.model_dump(mode="json"), status_code=202)

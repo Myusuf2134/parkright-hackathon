@@ -45,6 +45,12 @@ class FacilityState:
         self.config = config
         self._stale_after = timedelta(milliseconds=stale_after_ms)
         self._spaces = {s.space_id: s for s in config.spaces}
+        # A space watched by exactly one camera is owned by it: no other camera may update it.
+        watchers: dict[str, list[str]] = {}
+        for c in config.cameras:
+            for space_id in c.watches:
+                watchers.setdefault(space_id, []).append(c.camera_id)
+        self._owner = {sid: cams[0] for sid, cams in watchers.items() if len(cams) == 1}
         self._beliefs: dict[str, _Belief] = {}
         self._last_frame_at: dict[str, datetime] = {}
         self._announced_stale: set[str] = set()
@@ -115,6 +121,8 @@ class FacilityState:
     def apply(self, observations: list[OccupancyObservation], received_at: datetime) -> list[OccupancyChange]:
         """Records a frame's observations (timestamped with server receive time) and returns
         the driver-visible changes they caused."""
+        # Only a space's owning camera may change it (single-camera facilities: always that camera).
+        observations = [o for o in observations if self._owner.get(o.space_id, o.camera_id) == o.camera_id]
         before = {o.space_id: self.space(o.space_id, received_at) for o in observations if o.space_id in self._spaces}
         for o in observations:
             if o.space_id not in self._spaces:

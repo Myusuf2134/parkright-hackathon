@@ -20,7 +20,17 @@ def create_demo_app(settings: Settings | None = None, perception=None) -> FastAP
     settings = settings or Settings()
     if not settings.demo_mode:
         raise ValueError("create_demo_app requires PARKRIGHT_DEMO_MODE=1")
+    if settings.showcase_dir is not None and settings.calibration_file is not None:
+        raise ValueError("use either PARKRIGHT_SHOWCASE_DIR (several cameras) or PARKRIGHT_CALIBRATION_FILE (one)")
     app = create_app(settings, perception)
+    if settings.showcase_dir is not None:
+        # Showcase garage: one calibration per CCTV camera; each bay owned by exactly one camera.
+        from ..calibration import CalibrationSet
+
+        calibrations = CalibrationSet(sorted(settings.showcase_dir.glob("cam-*.json")))
+        for facility in app.state.registry.all():
+            calibrations.check_facility(facility.config)
+        app.state.calibration = calibrations
     from ..routes import demo
 
     app.state.demo = DemoRuntime(nemotron_mode=settings.demo_nemotron)

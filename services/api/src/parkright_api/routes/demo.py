@@ -40,6 +40,45 @@ def _perception(request: Request) -> dict:
     }
 
 
+def _is_showcase(request: Request) -> bool:
+    from ..calibration import CalibrationSet
+
+    return isinstance(request.app.state.calibration, CalibrationSet)
+
+
+def _single_polygons(request: Request) -> dict | None:
+    cal = request.app.state.calibration
+    return None if cal is None or _is_showcase(request) else cal.data["polygons"]
+
+
+def _cameras(request: Request, t) -> list[dict]:
+    """Every camera of the demo facility: owned bays, its polygons and its latest processed frame."""
+    demo = _demo(request)
+    facility = facility_or_404(request, demo.scenario.simulator.facility_id)
+    out = []
+    for c in facility.config.cameras:
+        cal = request.app.state.calibration.for_camera(c.camera_id) if request.app.state.calibration else None
+        f = demo.latest_by_camera.get(c.camera_id)
+        out.append({
+            "camera_id": c.camera_id,
+            "name": c.name,
+            "owned": list(c.watches),
+            "polygons": cal.data["polygons"] if cal else None,
+            "last_frame": None if f is None else {
+                "seq": f.seq, "received_at": f.received_at.isoformat(), "age_s": round((t - f.received_at).total_seconds(), 2),
+                "detections": f.detections, "timings": f.timings,
+            },
+        })
+    return out
+
+
+@router.get("/events")
+def events(request: Request, after: int = 0) -> dict:
+    """Perception events since `after` (one per processed frame: camera, vehicles, bay changes)."""
+    demo = _demo(request)
+    return {"epoch": demo.epoch, "events": [e for e in demo.events if e["id"] > after]}
+
+
 @router.get("/status")
 def status(request: Request) -> dict:
     demo = _demo(request)
@@ -62,7 +101,9 @@ def status(request: Request) -> dict:
             "will_call_nemotron": demo.nemotron_mode == "live" and client.configured,
         },
         "perception": _perception(request),
-        "calibration": request.app.state.calibration.data["polygons"] if request.app.state.calibration else None,
+        "calibration": _single_polygons(request),
+        "showcase": _is_showcase(request),
+        "cameras": _cameras(request, t),
         "camera": {
             **cam.model_dump(mode="json"),
             "fresh": cam.observed_at is not None,
@@ -90,8 +131,9 @@ def scenario(request: Request) -> dict:
 
 
 @router.get("/camera/latest.jpg", responses={404: {"model": ErrorResponse}})
-def latest_frame(request: Request) -> Response:
-    latest = _demo(request).latest
+def latest_frame(request: Request, camera_id: str | None = None) -> Response:
+    demo = _demo(request)
+    latest = demo.latest_by_camera.get(camera_id) if camera_id else demo.latest
     if latest is None:
         raise ApiError(404, "no_frame", "No frame has been processed since the last reset")
     return Response(latest.jpeg, media_type="image/jpeg", headers={"cache-control": "no-store", "x-frame-seq": str(latest.seq)})

@@ -36,8 +36,8 @@ def status(request: Request):
     "/cameras/{camera_id}/calibration", dependencies=[Depends(require_ingest_token)]
 )
 def bind(camera_id: str, body: CalibrationBinding, request: Request):
-    calibration = request.app.state.calibration
-    if calibration is None or camera_id != calibration.data["camera_id"]:
+    calibration = request.app.state.calibration.for_camera(camera_id) if request.app.state.calibration else None
+    if calibration is None:
         raise ApiError(
             409, "calibration_unavailable", "This camera has no active calibration"
         )

@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5180", "http://127.0.0.1:5180"])
 
     demo_mode: bool = Field(default=False, description="Hackathon demo mode: fixed scenario, demo routes, reset.")
+    showcase_dir: Path | None = Field(
+        default=None, description="Demo only: a directory of per-camera calibrations (cam-*.json) for the multi-camera showcase.",
+    )
     demo_nemotron: Literal["live", "fallback"] = Field(
         default="fallback", description="Demo only. live calls Nemotron when NEBIUS_API_KEY is set; fallback never calls it.",
     )
