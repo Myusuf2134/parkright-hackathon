@@ -28,3 +28,4 @@ experiments/**/datasets/
 # Playwright
 test-results/
 playwright-report/
+experiments/3d-garage-simulator/work/

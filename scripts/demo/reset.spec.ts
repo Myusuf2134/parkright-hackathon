@@ -8,7 +8,11 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '../..');
-const API = 'http://127.0.0.1:8400';
+const API = `http://127.0.0.1:${process.env.PARKRIGHT_DEMO_API_PORT ?? 8400}`;
+// PARKRIGHT_DEMO_SIM=garage runs the same checks against the 3D garage simulator.
+const GARAGE = process.env.PARKRIGHT_DEMO_SIM === 'garage';
+const SIM = `http://127.0.0.1:${process.env.PARKRIGHT_DEMO_SIM_PORT ?? 5181}`;
+const WEB = `http://127.0.0.1:${process.env.PARKRIGHT_DEMO_WEB_PORT ?? 5180}`;
 const fixture = JSON.parse(readFileSync(resolve(root, 'packages/shared/fixtures/hackathon-demo.json'), 'utf8'));
 
 test('demo:reset returns both windows to the starting state', async ({ browser, request }) => {
@@ -16,8 +20,8 @@ test('demo:reset returns both windows to the starting state', async ({ browser, 
   const ctx = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
   const sim = await ctx.newPage();
   const driver = await ctx.newPage();
-  await sim.goto(`http://127.0.0.1:5181/?demo=1#${fixture.simulator.hash}`);
-  await driver.goto('http://127.0.0.1:5180/?record=1');
+  await sim.goto(GARAGE ? `${SIM}/?demo=1&sim=garage` : `${SIM}/?demo=1#${fixture.simulator.hash}`);
+  await driver.goto(`${WEB}/?record=1`);
   await expect(driver.getByTestId('find-parking')).toBeEnabled({ timeout: 60_000 });
   await driver.getByTestId('find-parking').click();
   await expect(driver.getByTestId('result-space')).toHaveText(`${fixture.expected.level} · Space ${fixture.expected.space_id}`);
@@ -30,7 +34,8 @@ test('demo:reset returns both windows to the starting state', async ({ browser, 
   await reloaded;
 
   // Same scene, new session; the driver result is gone until asked again.
-  expect(decodeURIComponent(sim.url())).toContain(fixture.simulator.hash); // the simulator canonicalises (and appends the camera pose)
+  if (GARAGE) expect(sim.url()).toMatch(/sim=garage.*scenario=static|scenario=static.*sim=garage/);
+  else expect(decodeURIComponent(sim.url())).toContain(fixture.simulator.hash); // the simulator canonicalises (and appends the camera pose)
   await expect(sim.getByTestId('session-id')).not.toHaveText(sessionBefore ?? '');
   await expect(driver.getByTestId('result')).toHaveCount(0);
   const status = await (await request.get(`${API}/api/v1/demo/status`)).json();

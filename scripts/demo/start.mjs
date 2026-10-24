@@ -12,6 +12,9 @@ import {
 
 const args = new Set(process.argv.slice(2));
 const live = args.has('--live');
+// --garage: the 3D garage simulator and its CAM-01 calibration; default is the legacy simulator.
+const garage = args.has('--garage');
+const calibrationDir = join(ROOT, garage ? 'packages/shared/calibration/garage' : 'packages/shared/calibration');
 const fail = (msg) => {
   console.error(`\n✗ ${msg}\n`);
   process.exit(1);
@@ -46,8 +49,8 @@ const services = [
       PARKRIGHT_PERCEPTION_PROVIDER: 'a2',
       PARKRIGHT_A2_CHECKPOINT: CHECKPOINT,
       PARKRIGHT_A2_DEVICE: process.env.PARKRIGHT_A2_DEVICE ?? 'cpu',
-      PARKRIGHT_CALIBRATION_FILE: join(ROOT, 'packages/shared/calibration/cam-01.json'),
-      PARKRIGHT_FACILITY_FIXTURES: JSON.stringify([join(ROOT, 'packages/shared/calibration/facility.json')]),
+      PARKRIGHT_CALIBRATION_FILE: join(calibrationDir, 'cam-01.json'),
+      PARKRIGHT_FACILITY_FIXTURES: JSON.stringify([join(calibrationDir, 'facility.json')]),
       PARKRIGHT_EVALUATION_ENABLED: 'false',
       // Under heavy CPU load one A2 frame can exceed the default 10 s. A late frame is already stale
       // (its bays read UNCERTAIN), so a longer limit only avoids dropped frames; it gates nothing.
@@ -85,7 +88,7 @@ function stopAll(code = 0) {
 process.on('SIGINT', () => stopAll(0));
 process.on('SIGTERM', () => stopAll(0));
 
-console.log(`ParkRight hackathon demo · Nemotron mode: ${live ? 'LIVE (Nebius Token Factory)' : 'local fallback'}`);
+console.log(`ParkRight hackathon demo · simulator: ${garage ? '3D garage' : 'legacy'} · Nemotron mode: ${live ? 'LIVE (Nebius Token Factory)' : 'local fallback'}`);
 for (const s of services) {
   const log = createWriteStream(join(LOG_DIR, `${s.name}.log`), { flags: 'w' });
   const child = spawn(s.cmd, s.args, { cwd: ROOT, env: s.env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -103,7 +106,7 @@ for (const s of services) {
   children.push({ name: s.name, pid: child.pid });
 }
 mkdirSync(STATE_DIR, { recursive: true });
-writeFileSync(PID_FILE, JSON.stringify({ started_at: new Date().toISOString(), live, children }, null, 2), { mode: 0o600 });
+writeFileSync(PID_FILE, JSON.stringify({ started_at: new Date().toISOString(), live, garage, children }, null, 2), { mode: 0o600 });
 
 const step = async (label, fn, timeout) => {
   process.stdout.write(`  … ${label}`);
@@ -124,14 +127,14 @@ await step(`Driver app on :${PORTS.web}`, () => reachable(WEB), 60000);
 console.log(`
 Ready. Open these two windows (or start with -- --open):
 
-  Simulator (camera):  ${simulatorUrl()}
+  Simulator (camera):  ${simulatorUrl(undefined, garage)}
   Driver app:          ${driverUrl()}
 
 Before recording: npm run demo:check   ·   Fresh take: npm run demo:reset   ·   Stop: Ctrl-C or npm run demo:stop
 Logs: ${LOG_DIR}
 `);
 if (args.has('--open')) {
-  spawn('open', [simulatorUrl()], { stdio: 'ignore' });
+  spawn('open', [simulatorUrl(undefined, garage)], { stdio: 'ignore' });
   spawn('open', [driverUrl()], { stdio: 'ignore' });
 }
 await new Promise(() => {});

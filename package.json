@@ -31,6 +31,10 @@
     "demo:check": "node scripts/demo/check.mjs",
     "demo:reset": "node scripts/demo/reset.mjs",
     "demo:stop": "node scripts/demo/stop.mjs",
-    "test:demo:reliability": "PARKRIGHT_DEMO_RUNS=5 playwright test -c scripts/demo/playwright.config.ts"
+    "test:demo:reliability": "PARKRIGHT_DEMO_RUNS=5 playwright test -c scripts/demo/playwright.config.ts",
+    "demo:hackathon:garage": "node scripts/demo/start.mjs --garage",
+    "calibration:garage": "node scripts/generate-garage-calibration.mjs",
+    "calibration:garage:check": "node scripts/generate-garage-calibration.mjs --check",
+    "test:garage": "playwright test -c scripts/garage/playwright.config.ts"
   }
 }

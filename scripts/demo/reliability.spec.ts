@@ -10,9 +10,11 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '../..');
-const API = 'http://127.0.0.1:8400';
-const SIM = 'http://127.0.0.1:5181';
-const WEB = 'http://127.0.0.1:5180';
+const API = `http://127.0.0.1:${process.env.PARKRIGHT_DEMO_API_PORT ?? 8400}`;
+// PARKRIGHT_DEMO_SIM=garage runs the same checks against the 3D garage simulator.
+const GARAGE = process.env.PARKRIGHT_DEMO_SIM === 'garage';
+const SIM = `http://127.0.0.1:${process.env.PARKRIGHT_DEMO_SIM_PORT ?? 5181}`;
+const WEB = `http://127.0.0.1:${process.env.PARKRIGHT_DEMO_WEB_PORT ?? 5180}`;
 const fixture = JSON.parse(readFileSync(resolve(root, 'packages/shared/fixtures/hackathon-demo.json'), 'utf8'));
 const RUNS = Number(process.env.PARKRIGHT_DEMO_RUNS ?? 5);
 const OUT = resolve(root, 'experiments/hackathon-demo/runs');
@@ -48,7 +50,7 @@ for (let run = 1; run <= RUNS; run++) {
     const failedApi: string[] = [];
     driver.on('response', (r) => r.url().includes('/api/') && r.status() >= 500 && failedApi.push(`${r.status()} ${r.url()}`));
 
-    await sim.goto(`${SIM}/?demo=1#${fixture.simulator.hash}`);
+    await sim.goto(GARAGE ? `${SIM}/?demo=1&sim=garage` : `${SIM}/?demo=1#${fixture.simulator.hash}`);
     await sim.waitForSelector('body[data-lab-ready="1"]');
     await expect(sim.getByTestId('demo-badge')).toBeVisible();
 

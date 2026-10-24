@@ -6,11 +6,13 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-export const STATE_DIR = join(homedir(), '.cache/parkright/demo');
+// Overridable so a second demo (for example the 3D garage under development) can run beside the stable one.
+export const STATE_DIR = process.env.PARKRIGHT_DEMO_STATE_DIR || join(homedir(), '.cache/parkright/demo');
 export const PID_FILE = join(STATE_DIR, 'processes.json');
 export const LOG_DIR = join(STATE_DIR, 'logs');
 
-export const PORTS = { api: 8400, sim: 5181, web: 5180 };
+const port = (name, fallback) => Number(process.env[name] || fallback);
+export const PORTS = { api: port('PARKRIGHT_DEMO_API_PORT', 8400), sim: port('PARKRIGHT_DEMO_SIM_PORT', 5181), web: port('PARKRIGHT_DEMO_WEB_PORT', 5180) };
 export const API = `http://127.0.0.1:${PORTS.api}`;
 export const SIM = `http://127.0.0.1:${PORTS.sim}`;
 export const WEB = `http://127.0.0.1:${PORTS.web}`;
@@ -23,7 +25,7 @@ export const FIXTURE = join(ROOT, 'packages/shared/fixtures/hackathon-demo.json'
 export const scenario = () => JSON.parse(readFileSync(FIXTURE, 'utf8'));
 export const fixtureSha256 = () => createHash('sha256').update(readFileSync(FIXTURE)).digest('hex');
 
-export const simulatorUrl = (hash = scenario().simulator.hash) => `${SIM}/?demo=1#${hash}`;
+export const simulatorUrl = (hash = scenario().simulator.hash, garage = false) => (garage ? `${SIM}/?demo=1&sim=garage` : `${SIM}/?demo=1#${hash}`);
 export const driverUrl = (extra = 'record=1') => `${WEB}/${extra ? `?${extra}` : ''}`;
 
 export async function getJson(url, { timeout = 3000, method = 'GET' } = {}) {
