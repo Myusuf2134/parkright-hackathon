@@ -13,8 +13,10 @@ import {
 const args = new Set(process.argv.slice(2));
 const live = args.has('--live');
 // --garage: the 3D garage simulator and its CAM-01 calibration; default is the legacy simulator.
-const garage = args.has('--garage');
-const calibrationDir = join(ROOT, garage ? 'packages/shared/calibration/garage' : 'packages/shared/calibration');
+const showcase = args.has('--showcase');
+const garage = args.has('--garage') || showcase;
+// --showcase: the 34-space, four-camera garage (one calibration per camera); --garage: the 12-space garage.
+const calibrationDir = join(ROOT, showcase ? 'packages/shared/calibration/garage-showcase' : garage ? 'packages/shared/calibration/garage' : 'packages/shared/calibration');
 const fail = (msg) => {
   console.error(`\n✗ ${msg}\n`);
   process.exit(1);
@@ -49,7 +51,7 @@ const services = [
       PARKRIGHT_PERCEPTION_PROVIDER: 'a2',
       PARKRIGHT_A2_CHECKPOINT: CHECKPOINT,
       PARKRIGHT_A2_DEVICE: process.env.PARKRIGHT_A2_DEVICE ?? 'cpu',
-      PARKRIGHT_CALIBRATION_FILE: join(calibrationDir, 'cam-01.json'),
+      ...(showcase ? { PARKRIGHT_SHOWCASE_DIR: calibrationDir } : { PARKRIGHT_CALIBRATION_FILE: join(calibrationDir, 'cam-01.json') }),
       PARKRIGHT_FACILITY_FIXTURES: JSON.stringify([join(calibrationDir, 'facility.json')]),
       PARKRIGHT_EVALUATION_ENABLED: 'false',
       // Under heavy CPU load one A2 frame can exceed the default 10 s. A late frame is already stale
@@ -88,7 +90,7 @@ function stopAll(code = 0) {
 process.on('SIGINT', () => stopAll(0));
 process.on('SIGTERM', () => stopAll(0));
 
-console.log(`ParkRight hackathon demo · simulator: ${garage ? '3D garage' : 'legacy'} · Nemotron mode: ${live ? 'LIVE (Nebius Token Factory)' : 'local fallback'}`);
+console.log(`ParkRight hackathon demo · simulator: ${showcase ? '34-space showcase (4 cameras)' : garage ? '3D garage' : 'legacy'} · Nemotron mode: ${live ? 'LIVE (Nebius Token Factory)' : 'local fallback'}`);
 for (const s of services) {
   const log = createWriteStream(join(LOG_DIR, `${s.name}.log`), { flags: 'w' });
   const child = spawn(s.cmd, s.args, { cwd: ROOT, env: s.env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -106,7 +108,7 @@ for (const s of services) {
   children.push({ name: s.name, pid: child.pid });
 }
 mkdirSync(STATE_DIR, { recursive: true });
-writeFileSync(PID_FILE, JSON.stringify({ started_at: new Date().toISOString(), live, garage, children }, null, 2), { mode: 0o600 });
+writeFileSync(PID_FILE, JSON.stringify({ started_at: new Date().toISOString(), live, garage, showcase, children }, null, 2), { mode: 0o600 });
 
 const step = async (label, fn, timeout) => {
   process.stdout.write(`  … ${label}`);
@@ -127,14 +129,14 @@ await step(`Driver app on :${PORTS.web}`, () => reachable(WEB), 60000);
 console.log(`
 Ready. Open these two windows (or start with -- --open):
 
-  Simulator (camera):  ${simulatorUrl(undefined, garage)}
+  Simulator (camera):  ${showcase ? `${SIM}/?showcase=1&sim=garage` : simulatorUrl(undefined, garage)}
   Driver app:          ${driverUrl()}
 
 Before recording: npm run demo:check   ·   Fresh take: npm run demo:reset   ·   Stop: Ctrl-C or npm run demo:stop
 Logs: ${LOG_DIR}
 `);
 if (args.has('--open')) {
-  spawn('open', [simulatorUrl(undefined, garage)], { stdio: 'ignore' });
+  spawn('open', [showcase ? `${SIM}/?showcase=1&sim=garage&present=1` : simulatorUrl(undefined, garage)], { stdio: 'ignore' });
   spawn('open', [driverUrl()], { stdio: 'ignore' });
 }
 await new Promise(() => {});

@@ -35,6 +35,10 @@
     "demo:hackathon:garage": "node scripts/demo/start.mjs --garage",
     "calibration:garage": "node scripts/generate-garage-calibration.mjs",
     "calibration:garage:check": "node scripts/generate-garage-calibration.mjs --check",
-    "test:garage": "playwright test -c scripts/garage/playwright.config.ts"
+    "test:garage": "playwright test -c scripts/garage/playwright.config.ts",
+    "demo:showcase": "node scripts/demo/start.mjs --showcase",
+    "demo:showcase:live": "node scripts/demo/start.mjs --showcase --live",
+    "calibration:showcase": "node scripts/generate-showcase-calibration.mjs",
+    "calibration:showcase:check": "node scripts/generate-showcase-calibration.mjs --check"
   }
 }

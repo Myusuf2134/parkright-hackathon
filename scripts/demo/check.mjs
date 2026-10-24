@@ -95,7 +95,16 @@ const snap = await websocketSnapshot(WEB.replace('http', 'ws'), fx.simulator.fac
 snap ? pass('websocket', `snapshot for ${fx.simulator.facility_id} (${snap.spaces.length} bays)`) : fail('websocket', 'no facility_snapshot over /api/v1/realtime');
 
 // 8. Camera stream: the simulator tab is open and A2 has processed fresh frames
-if (st) {
+if (st?.showcase) {
+  // 34-space showcase: traffic is live, so there is no fixed occupied set; every camera must be reporting.
+  const cams = st.cameras ?? [];
+  const fresh = cams.filter((c) => c.last_frame && c.last_frame.age_s < 20);
+  const ms = cams.map((c) => c.last_frame?.timings?.total_ms).filter(Boolean);
+  if (fresh.length === cams.length && cams.length === 4)
+    pass('camera stream', `4/4 cameras reporting · A2 ${Math.round(ms.reduce((a, b) => a + b, 0) / ms.length)} ms mean · ${st.camera.occupied.length} occupied, ${st.camera.uncertain.length} uncertain of 34`);
+  else if (!fresh.length) warn('camera stream', 'no camera frames yet: open the showcase simulator (?showcase=1&sim=garage)');
+  else fail('camera stream', `only ${fresh.map((c) => c.camera_id).join(', ')} reporting`);
+} else if (st) {
   const f = st.camera.last_frame;
   if (!f) warn('camera stream', `no frame since the last reset: open the simulator window (npm run demo:hackathon prints the URL)`);
   else if (!st.camera.fresh || f.age_s > 8) warn('camera stream', `last frame ${f.age_s}s ago: is the simulator window still open?`);
@@ -145,7 +154,8 @@ if (st?.camera.fresh) {
 if (st) {
   const f = st.camera.last_frame;
   const problems = [];
-  if (st.camera.live_bays && st.camera.live_bays !== 12) problems.push(`${st.camera.live_bays}/12 bays live`);
+  const bays = st.showcase ? 34 : 12;
+  if (st.camera.live_bays && st.camera.live_bays !== bays) problems.push(`${st.camera.live_bays}/${bays} bays live`);
   if (f && f.age_s > 30) problems.push(`last frame ${f.age_s}s old`);
   problems.length ? warn('state', `${problems.join(' · ')}: run npm run demo:reset`) : pass('state', `epoch ${st.epoch} · ${st.frames_since_reset} frames since reset`);
 }
