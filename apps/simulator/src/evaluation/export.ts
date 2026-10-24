@@ -1,13 +1,12 @@
 /** Evaluation-only artifact collector. Nothing here feeds the uploader or detector. */
 import type { FrameMetadata, FrameIngestResult } from '@parkright/contracts';
 import type { CapturedFrame } from '../lab.ts';
-import type { SceneSpec } from '../sim/spec.ts';
 import { toGroundTruthRecord } from './groundTruth.ts';
 
 export class DatasetExport {
   records: unknown[]=[];
   omitted=0;
-  async add(frame: CapturedFrame, metadata: FrameMetadata, result: FrameIngestResult, scenario: SceneSpec, diagnostics: unknown, latencyMs: number) {
+  async add(frame: CapturedFrame, metadata: FrameMetadata, result: FrameIngestResult, scenario: object, diagnostics: unknown, latencyMs: number) {
     if(this.records.length>=200) { this.omitted++; return; }
     const bytes=new Uint8Array(await frame.jpeg.arrayBuffer());
     let binary=''; for(const byte of bytes) binary+=String.fromCharCode(byte);

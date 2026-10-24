@@ -7,6 +7,8 @@ import type { Object3D } from 'three';
  */
 export const WORLD_LAYER = 0;
 export const OPERATOR_LAYER = 1;
+/** Garage ceiling: rendered by CAM-01 and cast into shadows, hidden from the observer's cutaway view. */
+export const CEILING_LAYER = 2;
 
 export function setLayerDeep(root: Object3D, layer: number): void {
   root.traverse((o) => o.layers.set(layer));

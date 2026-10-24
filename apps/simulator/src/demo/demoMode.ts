@@ -25,7 +25,20 @@ export function isDemoScene(hash: string, fixtureHash: string): boolean {
   return encodeSpec(decodeSpec(hash)) === encodeSpec(decodeSpec(fixtureHash));
 }
 
-export function startDemoMode(streamer: FrameStreamer, apiBase = ''): () => void {
+/** How demo mode checks and loads the fixture's scene. Default: the legacy lab's URL hash. */
+export interface DemoScene {
+  matches(fixtureHash: string): boolean;
+  load(fixtureHash: string): void;
+}
+
+const hashScene: DemoScene = {
+  matches: (fixtureHash) => isDemoScene(location.hash, fixtureHash),
+  load: (fixtureHash) => {
+    location.hash = fixtureHash; // App's hashchange handler loads it in a new session
+  },
+};
+
+export function startDemoMode(streamer: FrameStreamer, apiBase = '', scene: DemoScene = hashScene): () => void {
   let epoch: number | null = null;
   let stopped = false;
 
@@ -40,12 +53,10 @@ export function startDemoMode(streamer: FrameStreamer, apiBase = ''): () => void
         location.reload();
         return;
       }
-      if (!isDemoScene(location.hash, status.simulator.hash)) {
-        location.hash = status.simulator.hash; // App's hashchange handler loads it in a new session
-      }
+      if (!scene.matches(status.simulator.hash)) scene.load(status.simulator.hash);
       const ready = streamer.health?.inference?.inference_ready === true;
       const fps = (STREAM_RATES as readonly number[]).includes(status.simulator.stream_fps) ? (status.simulator.stream_fps as StreamRate) : 1;
-      if (ready && streamer.rate === 0 && isDemoScene(location.hash, status.simulator.hash)) streamer.setRate(fps);
+      if (ready && streamer.rate === 0 && scene.matches(status.simulator.hash)) streamer.setRate(fps);
     }
     document.body.dataset.demo = status ? 'on' : 'unreachable';
   };

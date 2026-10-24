@@ -12,7 +12,8 @@
 import type { FrameMetadata, FrameOutcome, ModelRef } from '@parkright/contracts';
 import { DatasetExport } from '../evaluation/export.ts';
 import { postGroundTruth, toGroundTruthRecord } from '../evaluation/groundTruth.ts';
-import type { Lab } from '../lab.ts';
+import type { CameraPose } from '../camera/pose.ts';
+import type { CapturedFrame } from '../lab.ts';
 import { CAMERA_ID } from '../sim/facility.ts';
 import { uploadFrame } from './frameUpload.ts';
 import { newSessionId } from './session.ts';
@@ -48,6 +49,12 @@ export interface ApiHealth {
 
 export type ApiState = 'unknown' | 'connected' | 'disconnected';
 
+/** Anything that renders a fixed camera and captures frames: the legacy Lab or the GarageLab. */
+export interface FrameSource {
+  world: { spec: { camera: CameraPose } };
+  captureFrame(): Promise<CapturedFrame>;
+}
+
 type Listener = () => void;
 
 export class FrameStreamer {
@@ -70,7 +77,7 @@ export class FrameStreamer {
   private listeners = new Set<Listener>();
 
   constructor(
-    private readonly lab: Lab,
+    private readonly lab: FrameSource,
     private readonly apiBase = '',
   ) {}
 

@@ -1,0 +1,41 @@
+/* 3D garage Vision Lab. Reuses the lab's tokens (ui/styles.css). */
+.garage-app .tnum { font-variant-numeric: tabular-nums; }
+.g-work { display: grid; grid-template-columns: minmax(0, 1fr) 320px; min-height: 0; }
+.g-stage { display: grid; grid-template-rows: auto 1fr; gap: 10px; padding: 12px; min-height: 0; overflow: auto; }
+.g-feed { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: calc(100vh - 120px); background: #000; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.g-feed > canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+.g-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.g-bay polygon { fill: rgba(40, 224, 255, 0.08); stroke: #28e0ff; stroke-width: 2.5; }
+.g-bay.truth polygon { fill: rgba(245, 158, 11, 0.25); }
+.g-bay text { fill: #fff; font: 700 20px ui-sans-serif, system-ui; text-anchor: middle; dominant-baseline: middle; paint-order: stroke; stroke: #000; stroke-width: 4px; }
+.g-truth { fill: rgba(245, 158, 11, 0.28); stroke: #f59e0b; stroke-width: 2; }
+.g-det rect { fill: none; stroke: #ffd84d; stroke-width: 3; }
+.g-det text { fill: #ffd84d; font: 600 17px ui-sans-serif, system-ui; paint-order: stroke; stroke: #000; stroke-width: 3px; }
+.g-hud { position: absolute; left: 10px; top: 10px; display: flex; gap: 8px; }
+.g-hud span { padding: 3px 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.6); color: #e6edf5; font: 600 11px var(--mono); letter-spacing: 0.06em; }
+.g-hud .rec { color: #fca5a5; }
+.g-calib-note { position: absolute; left: 10px; bottom: 10px; padding: 4px 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.65); color: #9eeaff; font: 600 12px var(--mono); }
+.g-observer { position: relative; min-height: 300px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.g-observer canvas { display: block; width: 100%; height: 100%; }
+.g-observer-label { position: absolute; left: 10px; top: 10px; padding: 3px 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.6); font: 600 11px var(--mono); letter-spacing: 0.06em; }
+.g-side { display: grid; align-content: start; gap: 10px; padding: 12px; border-left: 1px solid var(--line); background: var(--panel); overflow: auto; }
+.g-panel { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); display: grid; gap: 8px; }
+.g-panel h2 { margin: 0; font-size: 11px; letter-spacing: 0.14em; color: var(--muted); }
+.g-field { display: grid; gap: 4px; }
+.g-field span { color: var(--muted); font-size: 11px; }
+.g-field select { padding: 6px 8px; border: 1px solid var(--line-2); border-radius: 6px; background: var(--panel); }
+.g-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.g-row button, .g-primary { padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 6px; background: var(--panel); cursor: pointer; }
+.g-row button.on { background: var(--accent-dim); border-color: var(--accent); }
+.g-primary { background: var(--accent-dim); border-color: var(--accent); font-weight: 600; }
+.g-primary:disabled { opacity: 0.5; cursor: default; }
+.g-panel input[type='range'] { width: 100%; }
+.g-stats { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; }
+.g-stats dt { color: var(--muted); }
+.g-stats dd { margin: 0; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.g-check { display: flex; gap: 8px; align-items: center; }
+.g-muted { margin: 0; color: var(--muted); font-size: 12px; }
+.g-truth-list { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.g-truth-list li { padding: 4px; border-radius: 4px; background: var(--panel); text-align: center; font: 600 12px var(--mono); }
+.g-truth-list li.occ { background: #4a3206; color: #fcd34d; }
+.garage-app.record .g-work { grid-template-columns: minmax(0, 1fr) 280px; }

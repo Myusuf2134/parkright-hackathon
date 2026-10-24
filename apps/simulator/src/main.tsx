@@ -10,19 +10,28 @@ import { isDemoMode, startDemoMode } from './demo/demoMode.ts';
 import { LabContext } from './ui/context.ts';
 import './ui/styles.css';
 
-const lab = new Lab(decodeSpec(location.hash));
-const streamer = new FrameStreamer(lab);
-const backend = new BackendView(FACILITY.facility_id);
-streamer.start();
-backend.start();
-if (isDemoMode()) startDemoMode(streamer);
+// ?sim=garage loads the 3D garage simulator; anything else is the legacy Vision Lab, unchanged.
+if (new URLSearchParams(location.search).get('sim') === 'garage') {
+  void import('./garage/boot.tsx').then((m) => m.boot());
+} else {
+  bootLegacy();
+}
 
-if (import.meta.env.DEV) Object.assign(window, { __visionLab: { lab, streamer, backend } });
+function bootLegacy() {
+  const lab = new Lab(decodeSpec(location.hash));
+  const streamer = new FrameStreamer(lab);
+  const backend = new BackendView(FACILITY.facility_id);
+  streamer.start();
+  backend.start();
+  if (isDemoMode()) startDemoMode(streamer);
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <LabContext.Provider value={{ lab, streamer, backend }}>
-      <App />
-    </LabContext.Provider>
-  </StrictMode>,
-);
+  if (import.meta.env.DEV) Object.assign(window, { __visionLab: { lab, streamer, backend } });
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <LabContext.Provider value={{ lab, streamer, backend }}>
+        <App />
+      </LabContext.Provider>
+    </StrictMode>,
+  );
+}
