@@ -12,7 +12,8 @@
 import type { ParkingSpace } from '@parkright/contracts';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLiveFacility } from '../live.ts';
-import { type DemoRecommendation, type DemoStatus, type Scenario, flags, requestRecommendation, useDemoStatus } from './api.ts';
+import { type DemoRecommendation, type DemoStatus, type Scenario, flags, requestRecommendation, useDemoStatus, useEvents } from './api.ts';
+import { EventFeed, LiveGarageCard, liveCounts, ShowcaseCameraCard } from './Showcase.tsx';
 import './demo.css';
 
 type Phase = 'idle' | 'loading' | 'done' | 'error';
@@ -31,6 +32,8 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
   const wsUpdates = useRef(0);
 
   const s = status && status !== 'down' ? status : null;
+  const showcase = !!s?.showcase;
+  const events = useEvents(20);
 
   // A demo reset (new epoch) clears the result so the next take starts clean.
   useEffect(() => {
@@ -71,7 +74,7 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
     phase === 'done' ? 7 : phase === 'loading' ? 6 : cameraReady && occupied.length ? 5 : occupied.length ? 4 : detections.length ? 3 : s?.camera.last_frame ? 2 : 1;
 
   return (
-    <div className={`demo${opts.record ? ' record' : ''}`} data-step={step} data-phase={phase} data-ws={live.connection}>
+    <div className={`demo${opts.record ? ' record' : ''}${showcase ? ' showcase' : ''}`} data-step={step} data-phase={phase} data-ws={live.connection} data-updates={live.updates}>
       <header className="d-top">
         <div className="d-brand">
           <span className="d-mark" aria-hidden="true">P</span>
@@ -111,6 +114,8 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
             </p>
           </article>
 
+          {showcase && <LiveGarageCard spaces={live.spaces} changedAt={live.changedAt} connection={live.connection} status={s} debug={!opts.record} />}
+
           <article className="d-card" data-testid="comparison">
             <div className="d-card-head">
               <h2>Comparing garages near {scenario.next_class.destination_short}</h2>
@@ -122,7 +127,14 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
                 available_spaces: c.demo_available_spaces, traffic: c.traffic, chosen: false,
               }))).map((g) => (
                 <li key={g.facility_id} className={g.chosen ? 'chosen' : ''} data-testid={`garage-${g.facility_id}`}>
-                  <strong>{g.name}</strong>
+                  <strong>
+                    {g.name}
+                    {showcase && g.facility_id === scenario.camera_garage && (
+                      <small className="d-live-label" data-testid="tuttle-live">
+                        Simulated garage · live perception · {liveCounts(live.spaces).occupied}/{live.spaces.length} occupied
+                      </small>
+                    )}
+                  </strong>
                   <span><b className="tnum">{g.walking_minutes}</b> min walk</span>
                   <span><b className="tnum">{g.available_spaces}</b> spaces confirmed</span>
                   <span className={`d-traffic ${g.traffic}`}>{g.traffic} traffic</span>
@@ -140,7 +152,14 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
         </section>
 
         <section className="d-col">
-          <CameraCard status={s} spaces={live.spaces} />
+          {showcase ? (
+            <>
+              <ShowcaseCameraCard status={s} spaces={live.spaces} />
+              <EventFeed events={events} />
+            </>
+          ) : (
+            <CameraCard status={s} spaces={live.spaces} />
+          )}
         </section>
       </main>
 

@@ -108,3 +108,31 @@
 }
 /* The classic app's global `main` and `header` rules must not constrain the demo screen. */
 .demo main.d-grid { max-width: none; margin: 0; padding: 0; }
+
+/* ---- 34-space showcase ---- */
+.d-live { display: grid; gap: 10px; }
+.d-live-counts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.d-live-counts div { display: grid; padding: 8px 10px; border-radius: 12px; background: var(--card-2); }
+.d-live-counts b { font-size: 28px; font-weight: 800; line-height: 1.1; }
+.d-live-counts span { color: var(--muted); font-size: 12.5px; }
+.d-live-counts .occ b { color: #ff9a9a; }
+.d-live-counts .opn b { color: var(--green); }
+.d-live-map { display: grid; gap: 4px; }
+.d-live-row { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; }
+.d-live-row.row-B, .d-live-row.row-D { margin-top: 8px; }
+.d-live-bay { display: grid; place-items: center; min-height: 32px; border-radius: 7px; background: var(--card-2); color: var(--muted); font-size: 12px; font-weight: 800; transition: background-color 400ms ease, box-shadow 400ms ease; }
+.d-live-bay small { font-size: 9.5px; color: var(--faint); font-weight: 600; }
+.d-live-bay.occupied { background: #4a1719; color: #ffd1d1; }
+.d-live-bay.open { background: #0f3a22; color: #b7f5ca; }
+.d-live-bay.flash { box-shadow: 0 0 0 2px #ffd84d inset; }
+.d-live-label { display: block; margin-top: 2px; color: #f6d27a; font-size: 11.5px; font-weight: 600; }
+.d-cam-tabs { display: flex; gap: 4px; }
+.d-cam-tabs button { padding: 4px 9px; border: 0; border-radius: 999px; background: var(--card-2); color: var(--muted); font-size: 12px; font-weight: 700; }
+.d-cam-tabs button.on { background: var(--green); color: var(--ink); }
+.d-events ol { display: grid; gap: 5px; max-height: 300px; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.d-events li { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; font-size: 13px; }
+.d-events time { color: var(--faint); }
+.d-events em { padding: 0 7px; border-radius: 5px; background: var(--card-2); font-style: normal; font-weight: 700; font-size: 12px; }
+.d-events em.occupied { background: #4a1719; color: #ffd1d1; }
+.d-tag-plain { color: var(--faint); font-size: 12px; }
+.demo.showcase .d-garages li { grid-template-columns: 1.7fr 0.9fr 1.2fr 0.9fr; }

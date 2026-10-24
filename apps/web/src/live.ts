@@ -13,6 +13,10 @@ export interface LiveFacility {
   facility: Facility | null;
   spaces: ParkingSpace[];
   lastFrame: OccupancyUpdateMessage['frame'];
+  /** space_id → when its driver-visible state last changed (ms since epoch), for highlighting. */
+  changedAt: Record<string, number>;
+  /** Number of occupancy updates received since connecting. */
+  updates: number;
 }
 
 type Message = FacilitySnapshotMessage | OccupancyUpdateMessage;
@@ -21,7 +25,7 @@ const blind = (spaces: ParkingSpace[]): ParkingSpace[] =>
   spaces.map((s) => ({ ...s, current_state: 'UNCERTAIN', confidence: null }));
 
 export function useLiveFacility(facilityId: string): LiveFacility {
-  const [state, setState] = useState<LiveFacility>({ connection: 'connecting', facility: null, spaces: [], lastFrame: null });
+  const [state, setState] = useState<LiveFacility>({ connection: 'connecting', facility: null, spaces: [], lastFrame: null, changedAt: {}, updates: 0 });
 
   useEffect(() => {
     let socket: WebSocket | null = null;
@@ -36,7 +40,7 @@ export function useLiveFacility(facilityId: string): LiveFacility {
         const msg = JSON.parse(String(event.data)) as Message;
         attempt = 0;
         if (msg.type === 'facility_snapshot') {
-          setState({ connection: 'live', facility: msg.facility, spaces: msg.spaces, lastFrame: null });
+          setState((s) => ({ ...s, connection: 'live', facility: msg.facility, spaces: msg.spaces, lastFrame: null }));
         } else {
           setState((s) => ({
             ...s,
@@ -44,6 +48,8 @@ export function useLiveFacility(facilityId: string): LiveFacility {
             spaces: msg.spaces,
             facility: s.facility && { ...s.facility, counts: msg.counts },
             lastFrame: msg.frame ?? s.lastFrame,
+            changedAt: msg.changes.length ? { ...s.changedAt, ...Object.fromEntries(msg.changes.map((c) => [c.space_id, Date.now()])) } : s.changedAt,
+            updates: s.updates + 1,
           }));
         }
       };

@@ -29,6 +29,14 @@ export interface DemoStatus {
   nemotron: { mode: 'live' | 'fallback'; model: string; provider: string; live_configured: boolean; will_call_nemotron: boolean };
   perception: { provider: string; phase: string | null; inference_ready: boolean; loaded: boolean; allow_open: boolean; artifact_error: string | null };
   calibration: Record<string, { x: number; y: number }[]> | null;
+  showcase?: boolean;
+  cameras?: {
+    camera_id: string;
+    name: string;
+    owned: string[];
+    polygons: Record<string, { x: number; y: number }[]> | null;
+    last_frame: null | { seq: number; received_at: string; age_s: number; detections: Detection[]; timings: Record<string, number> };
+  }[];
   camera: {
     fresh: boolean;
     live_bays: number;
@@ -99,3 +107,41 @@ export const flags = (search = location.search) => {
   const q = new URLSearchParams(search);
   return { record: q.get('record') === '1', autoplay: q.get('autoplay') === '1', tech: q.get('tech') === '1' };
 };
+
+export interface PerceptionEvent {
+  id: number;
+  at: string;
+  camera_id: string;
+  seq: number;
+  vehicles: number;
+  a2_ms: number;
+  changes: { space_id: string; from: string | null; to: string }[];
+}
+
+/** Real perception events from the API (one per processed frame), newest last, at most `keep`. */
+export function useEvents(keep = 20): PerceptionEvent[] {
+  const [events, setEvents] = useState<PerceptionEvent[]>([]);
+  useEffect(() => {
+    let after = 0;
+    let epoch: number | null = null;
+    let alive = true;
+    const t = setInterval(async () => {
+      const r = await fetch(`/api/v1/demo/events?after=${after}`).then((x) => (x.ok ? x.json() : null)).catch(() => null);
+      if (!alive || !r) return;
+      if (epoch !== null && r.epoch !== epoch) {
+        after = 0;
+        setEvents([]);
+      }
+      epoch = r.epoch;
+      if (r.events.length) {
+        after = r.events[r.events.length - 1].id;
+        setEvents((e) => [...e, ...r.events].slice(-keep));
+      }
+    }, 1000);
+    return () => {
+      alive = false;
+      clearInterval(t);
+    };
+  }, [keep]);
+  return events;
+}
