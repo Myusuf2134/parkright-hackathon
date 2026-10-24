@@ -1,0 +1,1003 @@
+{
+  "schema": "parkright-garage-a2-baseline-v1",
+  "created_at": "2026-10-23T14:35:39.681Z",
+  "sim_step_ms": 1500,
+  "mapper": "production A2 mapper, unchanged: occupied conf 0.65, coverage 0.45, allow_open false",
+  "duration_s": 645,
+  "overall": {
+    "frames": 330,
+    "bay_frames": 3960,
+    "tp": 1318,
+    "fp": 751,
+    "fn": 59,
+    "tn": 1832,
+    "occupied_precision": 0.637,
+    "occupied_recall": 0.957,
+    "false_occupied_rate": 0.291,
+    "open_reported": 0,
+    "vehicle_detections_per_frame": 7.51,
+    "mean_vehicle_confidence": 0.9,
+    "a2_ms": {
+      "mean": 1793.4,
+      "p50": 1658,
+      "p95": 2691
+    },
+    "ingest_ms": {
+      "mean": 1804.4,
+      "p50": 1667,
+      "p95": 2703
+    },
+    "encode_ms": {
+      "mean": 25.9,
+      "p95": 43
+    }
+  },
+  "by_preset": {
+    "clear_day": {
+      "frames": 110,
+      "bay_frames": 1320,
+      "tp": 447,
+      "fp": 233,
+      "fn": 12,
+      "tn": 628,
+      "occupied_precision": 0.657,
+      "occupied_recall": 0.974,
+      "false_occupied_rate": 0.271,
+      "open_reported": 0,
+      "vehicle_detections_per_frame": 7.29,
+      "mean_vehicle_confidence": 0.9,
+      "a2_ms": {
+        "mean": 1610.3,
+        "p50": 1508,
+        "p95": 2264
+      },
+      "ingest_ms": {
+        "mean": 1619.1,
+        "p50": 1516,
+        "p95": 2300
+      },
+      "encode_ms": {
+        "mean": 24.8,
+        "p95": 45
+      }
+    },
+    "dusk": {
+      "frames": 110,
+      "bay_frames": 1320,
+      "tp": 439,
+      "fp": 238,
+      "fn": 20,
+      "tn": 623,
+      "occupied_precision": 0.648,
+      "occupied_recall": 0.956,
+      "false_occupied_rate": 0.276,
+      "open_reported": 0,
+      "vehicle_detections_per_frame": 6.27,
+      "mean_vehicle_confidence": 0.9,
+      "a2_ms": {
+        "mean": 1893.5,
+        "p50": 1677,
+        "p95": 2913
+      },
+      "ingest_ms": {
+        "mean": 1904.8,
+        "p50": 1685,
+        "p95": 2936
+      },
+      "encode_ms": {
+        "mean": 27.2,
+        "p95": 46
+      }
+    },
+    "night": {
+      "frames": 110,
+      "bay_frames": 1320,
+      "tp": 432,
+      "fp": 280,
+      "fn": 27,
+      "tn": 581,
+      "occupied_precision": 0.607,
+      "occupied_recall": 0.941,
+      "false_occupied_rate": 0.325,
+      "open_reported": 0,
+      "vehicle_detections_per_frame": 8.96,
+      "mean_vehicle_confidence": 0.9,
+      "a2_ms": {
+        "mean": 1876.3,
+        "p50": 1779,
+        "p95": 2525
+      },
+      "ingest_ms": {
+        "mean": 1889.2,
+        "p50": 1786,
+        "p95": 2537
+      },
+      "encode_ms": {
+        "mean": 25.7,
+        "p95": 37
+      }
+    }
+  },
+  "by_scenario": {
+    "static": {
+      "clear_day": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 24,
+        "fp": 12,
+        "fn": 0,
+        "tn": 36,
+        "occupied_precision": 0.667,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.25,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 7,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1452.3,
+          "p50": 1411,
+          "p95": 1697
+        },
+        "ingest_ms": {
+          "mean": 1462.3,
+          "p50": 1418,
+          "p95": 1722
+        },
+        "encode_ms": {
+          "mean": 20.7,
+          "p95": 25
+        }
+      },
+      "dusk": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 24,
+        "fp": 12,
+        "fn": 0,
+        "tn": 36,
+        "occupied_precision": 0.667,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.25,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 5,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1658.5,
+          "p50": 1668,
+          "p95": 1941
+        },
+        "ingest_ms": {
+          "mean": 1668.3,
+          "p50": 1677,
+          "p95": 1952
+        },
+        "encode_ms": {
+          "mean": 23.3,
+          "p95": 28
+        }
+      },
+      "night": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 24,
+        "fp": 12,
+        "fn": 0,
+        "tn": 36,
+        "occupied_precision": 0.667,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.25,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 9,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1836.5,
+          "p50": 1913,
+          "p95": 1961
+        },
+        "ingest_ms": {
+          "mean": 1845.2,
+          "p50": 1924,
+          "p95": 1971
+        },
+        "encode_ms": {
+          "mean": 27.5,
+          "p95": 43
+        }
+      }
+    },
+    "entering": {
+      "clear_day": {
+        "frames": 13,
+        "bay_frames": 156,
+        "tp": 29,
+        "fp": 25,
+        "fn": 1,
+        "tn": 101,
+        "occupied_precision": 0.537,
+        "occupied_recall": 0.967,
+        "false_occupied_rate": 0.198,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 4.23,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1507.8,
+          "p50": 1419,
+          "p95": 1970
+        },
+        "ingest_ms": {
+          "mean": 1514.5,
+          "p50": 1424,
+          "p95": 1980
+        },
+        "encode_ms": {
+          "mean": 23.8,
+          "p95": 48
+        }
+      },
+      "dusk": {
+        "frames": 13,
+        "bay_frames": 156,
+        "tp": 29,
+        "fp": 24,
+        "fn": 1,
+        "tn": 102,
+        "occupied_precision": 0.547,
+        "occupied_recall": 0.967,
+        "false_occupied_rate": 0.19,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 3.46,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1565.5,
+          "p50": 1516,
+          "p95": 1940
+        },
+        "ingest_ms": {
+          "mean": 1573,
+          "p50": 1521,
+          "p95": 1952
+        },
+        "encode_ms": {
+          "mean": 21.1,
+          "p95": 30
+        }
+      },
+      "night": {
+        "frames": 13,
+        "bay_frames": 156,
+        "tp": 30,
+        "fp": 25,
+        "fn": 0,
+        "tn": 101,
+        "occupied_precision": 0.545,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.198,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 5.92,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1923.8,
+          "p50": 1960,
+          "p95": 2319
+        },
+        "ingest_ms": {
+          "mean": 1932.7,
+          "p50": 1965,
+          "p95": 2330
+        },
+        "encode_ms": {
+          "mean": 24.4,
+          "p95": 37
+        }
+      }
+    },
+    "exiting": {
+      "clear_day": {
+        "frames": 14,
+        "bay_frames": 168,
+        "tp": 45,
+        "fp": 25,
+        "fn": 1,
+        "tn": 97,
+        "occupied_precision": 0.643,
+        "occupied_recall": 0.978,
+        "false_occupied_rate": 0.205,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 6.86,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1394.9,
+          "p50": 1380,
+          "p95": 1550
+        },
+        "ingest_ms": {
+          "mean": 1400.4,
+          "p50": 1385,
+          "p95": 1555
+        },
+        "encode_ms": {
+          "mean": 19,
+          "p95": 26
+        }
+      },
+      "dusk": {
+        "frames": 14,
+        "bay_frames": 168,
+        "tp": 45,
+        "fp": 22,
+        "fn": 1,
+        "tn": 100,
+        "occupied_precision": 0.672,
+        "occupied_recall": 0.978,
+        "false_occupied_rate": 0.18,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 5.79,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1629.1,
+          "p50": 1634,
+          "p95": 1782
+        },
+        "ingest_ms": {
+          "mean": 1637.1,
+          "p50": 1639,
+          "p95": 1794
+        },
+        "encode_ms": {
+          "mean": 21.1,
+          "p95": 27
+        }
+      },
+      "night": {
+        "frames": 14,
+        "bay_frames": 168,
+        "tp": 45,
+        "fp": 25,
+        "fn": 1,
+        "tn": 97,
+        "occupied_precision": 0.643,
+        "occupied_recall": 0.978,
+        "false_occupied_rate": 0.205,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 8.79,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1704.3,
+          "p50": 1657,
+          "p95": 2037
+        },
+        "ingest_ms": {
+          "mean": 1711.6,
+          "p50": 1663,
+          "p95": 2046
+        },
+        "encode_ms": {
+          "mean": 21.5,
+          "p95": 32
+        }
+      }
+    },
+    "pass-by": {
+      "clear_day": {
+        "frames": 11,
+        "bay_frames": 132,
+        "tp": 44,
+        "fp": 23,
+        "fn": 0,
+        "tn": 65,
+        "occupied_precision": 0.657,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.261,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 7.36,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1838.9,
+          "p50": 1771,
+          "p95": 3112
+        },
+        "ingest_ms": {
+          "mean": 1850.5,
+          "p50": 1782,
+          "p95": 3150
+        },
+        "encode_ms": {
+          "mean": 35.5,
+          "p95": 92
+        }
+      },
+      "dusk": {
+        "frames": 11,
+        "bay_frames": 132,
+        "tp": 43,
+        "fp": 24,
+        "fn": 1,
+        "tn": 64,
+        "occupied_precision": 0.642,
+        "occupied_recall": 0.977,
+        "false_occupied_rate": 0.273,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 5.45,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1611.9,
+          "p50": 1596,
+          "p95": 1796
+        },
+        "ingest_ms": {
+          "mean": 1620,
+          "p50": 1604,
+          "p95": 1802
+        },
+        "encode_ms": {
+          "mean": 21.9,
+          "p95": 31
+        }
+      },
+      "night": {
+        "frames": 11,
+        "bay_frames": 132,
+        "tp": 44,
+        "fp": 31,
+        "fn": 0,
+        "tn": 57,
+        "occupied_precision": 0.587,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.352,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 9.27,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1701.5,
+          "p50": 1612,
+          "p95": 2372
+        },
+        "ingest_ms": {
+          "mean": 1708.8,
+          "p50": 1622,
+          "p95": 2384
+        },
+        "encode_ms": {
+          "mean": 24.2,
+          "p95": 55
+        }
+      }
+    },
+    "crossing": {
+      "clear_day": {
+        "frames": 13,
+        "bay_frames": 156,
+        "tp": 52,
+        "fp": 34,
+        "fn": 0,
+        "tn": 70,
+        "occupied_precision": 0.605,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.327,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 7.77,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1718.4,
+          "p50": 1574,
+          "p95": 2400
+        },
+        "ingest_ms": {
+          "mean": 1727.2,
+          "p50": 1584,
+          "p95": 2409
+        },
+        "encode_ms": {
+          "mean": 24.5,
+          "p95": 45
+        }
+      },
+      "dusk": {
+        "frames": 13,
+        "bay_frames": 156,
+        "tp": 52,
+        "fp": 33,
+        "fn": 0,
+        "tn": 71,
+        "occupied_precision": 0.612,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.317,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 6.23,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1528.9,
+          "p50": 1515,
+          "p95": 1677
+        },
+        "ingest_ms": {
+          "mean": 1536.1,
+          "p50": 1522,
+          "p95": 1685
+        },
+        "encode_ms": {
+          "mean": 22.2,
+          "p95": 36
+        }
+      },
+      "night": {
+        "frames": 13,
+        "bay_frames": 156,
+        "tp": 52,
+        "fp": 39,
+        "fn": 0,
+        "tn": 65,
+        "occupied_precision": 0.571,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.375,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 9.54,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1657.9,
+          "p50": 1609,
+          "p95": 1906
+        },
+        "ingest_ms": {
+          "mean": 1664.8,
+          "p50": 1615,
+          "p95": 1915
+        },
+        "encode_ms": {
+          "mean": 20.4,
+          "p95": 28
+        }
+      }
+    },
+    "neighbor-approach": {
+      "clear_day": {
+        "frames": 14,
+        "bay_frames": 168,
+        "tp": 57,
+        "fp": 37,
+        "fn": 2,
+        "tn": 72,
+        "occupied_precision": 0.606,
+        "occupied_recall": 0.966,
+        "false_occupied_rate": 0.339,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 7.5,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1874.1,
+          "p50": 1661,
+          "p95": 3129
+        },
+        "ingest_ms": {
+          "mean": 1887.4,
+          "p50": 1681,
+          "p95": 3144
+        },
+        "encode_ms": {
+          "mean": 26.4,
+          "p95": 45
+        }
+      },
+      "dusk": {
+        "frames": 14,
+        "bay_frames": 168,
+        "tp": 56,
+        "fp": 38,
+        "fn": 3,
+        "tn": 71,
+        "occupied_precision": 0.596,
+        "occupied_recall": 0.949,
+        "false_occupied_rate": 0.349,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 6.14,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1861.6,
+          "p50": 1644,
+          "p95": 2913
+        },
+        "ingest_ms": {
+          "mean": 1874.2,
+          "p50": 1649,
+          "p95": 2936
+        },
+        "encode_ms": {
+          "mean": 32.9,
+          "p95": 120
+        }
+      },
+      "night": {
+        "frames": 14,
+        "bay_frames": 168,
+        "tp": 56,
+        "fp": 54,
+        "fn": 3,
+        "tn": 55,
+        "occupied_precision": 0.509,
+        "occupied_recall": 0.949,
+        "false_occupied_rate": 0.495,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 9.29,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1710.4,
+          "p50": 1706,
+          "p95": 2124
+        },
+        "ingest_ms": {
+          "mean": 1719.4,
+          "p50": 1716,
+          "p95": 2149
+        },
+        "encode_ms": {
+          "mean": 23.7,
+          "p95": 31
+        }
+      }
+    },
+    "fast-approach": {
+      "clear_day": {
+        "frames": 9,
+        "bay_frames": 108,
+        "tp": 38,
+        "fp": 25,
+        "fn": 1,
+        "tn": 44,
+        "occupied_precision": 0.603,
+        "occupied_recall": 0.974,
+        "false_occupied_rate": 0.362,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 7.67,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1483.7,
+          "p50": 1470,
+          "p95": 1607
+        },
+        "ingest_ms": {
+          "mean": 1490.7,
+          "p50": 1476,
+          "p95": 1620
+        },
+        "encode_ms": {
+          "mean": 20.3,
+          "p95": 26
+        }
+      },
+      "dusk": {
+        "frames": 9,
+        "bay_frames": 108,
+        "tp": 38,
+        "fp": 24,
+        "fn": 1,
+        "tn": 45,
+        "occupied_precision": 0.613,
+        "occupied_recall": 0.974,
+        "false_occupied_rate": 0.348,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 6.56,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 3503.1,
+          "p50": 2844,
+          "p95": 6101
+        },
+        "ingest_ms": {
+          "mean": 3523.4,
+          "p50": 2859,
+          "p95": 6153
+        },
+        "encode_ms": {
+          "mean": 53.6,
+          "p95": 156
+        }
+      },
+      "night": {
+        "frames": 9,
+        "bay_frames": 108,
+        "tp": 37,
+        "fp": 26,
+        "fn": 2,
+        "tn": 43,
+        "occupied_precision": 0.587,
+        "occupied_recall": 0.949,
+        "false_occupied_rate": 0.377,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 9.67,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1814.7,
+          "p50": 1663,
+          "p95": 2683
+        },
+        "ingest_ms": {
+          "mean": 1822.6,
+          "p50": 1670,
+          "p95": 2693
+        },
+        "encode_ms": {
+          "mean": 21.1,
+          "p95": 27
+        }
+      }
+    },
+    "occlusion": {
+      "clear_day": {
+        "frames": 18,
+        "bay_frames": 216,
+        "tp": 80,
+        "fp": 46,
+        "fn": 1,
+        "tn": 89,
+        "occupied_precision": 0.635,
+        "occupied_recall": 0.988,
+        "false_occupied_rate": 0.341,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 7.72,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1510.1,
+          "p50": 1510,
+          "p95": 1596
+        },
+        "ingest_ms": {
+          "mean": 1517.7,
+          "p50": 1518,
+          "p95": 1611
+        },
+        "encode_ms": {
+          "mean": 22.2,
+          "p95": 37
+        }
+      },
+      "dusk": {
+        "frames": 18,
+        "bay_frames": 216,
+        "tp": 74,
+        "fp": 55,
+        "fn": 7,
+        "tn": 80,
+        "occupied_precision": 0.574,
+        "occupied_recall": 0.914,
+        "false_occupied_rate": 0.407,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 7.78,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 2137.2,
+          "p50": 2048,
+          "p95": 3288
+        },
+        "ingest_ms": {
+          "mean": 2155.1,
+          "p50": 2066,
+          "p95": 3380
+        },
+        "encode_ms": {
+          "mean": 28.3,
+          "p95": 51
+        }
+      },
+      "night": {
+        "frames": 18,
+        "bay_frames": 216,
+        "tp": 72,
+        "fp": 62,
+        "fn": 9,
+        "tn": 73,
+        "occupied_precision": 0.537,
+        "occupied_recall": 0.889,
+        "false_occupied_rate": 0.459,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 9.72,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 2348.8,
+          "p50": 2082,
+          "p95": 4564
+        },
+        "ingest_ms": {
+          "mean": 2384.5,
+          "p50": 2094,
+          "p95": 4931
+        },
+        "encode_ms": {
+          "mean": 38.7,
+          "p95": 156
+        }
+      }
+    },
+    "full-garage": {
+      "clear_day": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 66,
+        "fp": 0,
+        "fn": 6,
+        "tn": 0,
+        "occupied_precision": 1,
+        "occupied_recall": 0.917,
+        "false_occupied_rate": null,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 17,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1552.3,
+          "p50": 1580,
+          "p95": 1671
+        },
+        "ingest_ms": {
+          "mean": 1559.8,
+          "p50": 1588,
+          "p95": 1681
+        },
+        "encode_ms": {
+          "mean": 22.3,
+          "p95": 29
+        }
+      },
+      "dusk": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 66,
+        "fp": 0,
+        "fn": 6,
+        "tn": 0,
+        "occupied_precision": 1,
+        "occupied_recall": 0.917,
+        "false_occupied_rate": null,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 15,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 1826.5,
+          "p50": 1813,
+          "p95": 1967
+        },
+        "ingest_ms": {
+          "mean": 1836,
+          "p50": 1820,
+          "p95": 1977
+        },
+        "encode_ms": {
+          "mean": 27,
+          "p95": 36
+        }
+      },
+      "night": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 60,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0,
+        "occupied_precision": 1,
+        "occupied_recall": 0.833,
+        "false_occupied_rate": null,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 15,
+        "mean_vehicle_confidence": 0.9,
+        "a2_ms": {
+          "mean": 2076.7,
+          "p50": 2000,
+          "p95": 2525
+        },
+        "ingest_ms": {
+          "mean": 2088.7,
+          "p50": 2019,
+          "p95": 2537
+        },
+        "encode_ms": {
+          "mean": 23.5,
+          "p95": 27
+        }
+      }
+    },
+    "sparse-garage": {
+      "clear_day": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 12,
+        "fp": 6,
+        "fn": 0,
+        "tn": 54,
+        "occupied_precision": 0.667,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.1,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 2,
+        "mean_vehicle_confidence": 1,
+        "a2_ms": {
+          "mean": 1773.5,
+          "p50": 1688,
+          "p95": 2176
+        },
+        "ingest_ms": {
+          "mean": 1783.8,
+          "p50": 1697,
+          "p95": 2185
+        },
+        "encode_ms": {
+          "mean": 38.7,
+          "p95": 85
+        }
+      },
+      "dusk": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 12,
+        "fp": 6,
+        "fn": 0,
+        "tn": 54,
+        "occupied_precision": 0.667,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.1,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 3,
+        "mean_vehicle_confidence": 1,
+        "a2_ms": {
+          "mean": 1759.3,
+          "p50": 1725,
+          "p95": 1978
+        },
+        "ingest_ms": {
+          "mean": 1767.7,
+          "p50": 1735,
+          "p95": 1987
+        },
+        "encode_ms": {
+          "mean": 23.7,
+          "p95": 31
+        }
+      },
+      "night": {
+        "frames": 6,
+        "bay_frames": 72,
+        "tp": 12,
+        "fp": 6,
+        "fn": 0,
+        "tn": 54,
+        "occupied_precision": 0.667,
+        "occupied_recall": 1,
+        "false_occupied_rate": 0.1,
+        "open_reported": 0,
+        "vehicle_detections_per_frame": 4,
+        "mean_vehicle_confidence": 0.8,
+        "a2_ms": {
+          "mean": 1869,
+          "p50": 1927,
+          "p95": 2035
+        },
+        "ingest_ms": {
+          "mean": 1881,
+          "p50": 1939,
+          "p95": 2051
+        },
+        "encode_ms": {
+          "mean": 26.3,
+          "p95": 31
+        }
+      }
+    }
+  },
+  "false_occupied_by_bay": {
+    "B3": 294,
+    "B6": 240,
+    "A2": 34,
+    "A3": 6,
+    "A4": 54,
+    "A5": 84,
+    "A6": 25,
+    "B1": 7,
+    "B4": 7
+  },
+  "missed_occupied_by_bay": {
+    "A5": 2,
+    "B5": 3,
+    "A4": 29,
+    "B4": 3,
+    "A6": 18,
+    "A1": 4
+  },
+  "frames_failed": []
+}

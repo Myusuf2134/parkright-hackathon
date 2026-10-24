@@ -1,0 +1,42 @@
+{
+  "schema": "parkright-garage-perf-v1",
+  "created_at": "2026-10-23T14:54:01.819Z",
+  "seconds": 40,
+  "attempted_fps": 1,
+  "load_average_start": 7.9,
+  "load_average_end": 7.9,
+  "simulator_preview_fps": {
+    "n": 41,
+    "mean": 13,
+    "p50": 13,
+    "p95": 14
+  },
+  "frames_attempted": 40,
+  "frames_accepted": 17,
+  "ticks_skipped_while_busy": 23,
+  "accepted_capture_rate_fps": 0.42,
+  "jpeg_encode_ms": {
+    "n": 17,
+    "mean": 27,
+    "p50": 25,
+    "p95": 37
+  },
+  "ingest_ms_capture_to_202": {
+    "n": 17,
+    "mean": 1915,
+    "p50": 1816,
+    "p95": 2889
+  },
+  "a2_inference_ms": {
+    "n": 17,
+    "mean": 1899,
+    "p50": 1803,
+    "p95": 2798
+  },
+  "camera_to_state_ms_capture_to_websocket": {
+    "n": 17,
+    "mean": 1959,
+    "p50": 1859,
+    "p95": 2928
+  }
+}
