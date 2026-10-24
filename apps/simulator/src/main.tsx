@@ -10,8 +10,12 @@ import { isDemoMode, startDemoMode } from './demo/demoMode.ts';
 import { LabContext } from './ui/context.ts';
 import './ui/styles.css';
 
-// ?sim=garage loads the 3D garage simulator; anything else is the legacy Vision Lab, unchanged.
-if (new URLSearchParams(location.search).get('sim') === 'garage') {
+// ?showcase=1&sim=garage: the 34-space showcase. ?sim=garage: the 12-space 3D garage. Otherwise the legacy Vision Lab, unchanged.
+const params = new URLSearchParams(location.search);
+if (params.get('sim') === 'garage' && params.get('showcase') === '1') {
+  // 34-space multi-camera showcase.
+  void import('./showcase/boot.tsx').then((m) => m.boot());
+} else if (params.get('sim') === 'garage') {
   void import('./garage/boot.tsx').then((m) => m.boot());
 } else {
   bootLegacy();
