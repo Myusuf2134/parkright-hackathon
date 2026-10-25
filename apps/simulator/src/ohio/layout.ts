@@ -20,7 +20,7 @@
  *   x −4 west wall (gates) · 1.0–26.0 west module · 26.4–33.0 spine (southbound) ·
  *     33.4–58.4 east module · 59–65 east turnaround (southbound) · 65.6–72.4 ramp bay · 73 east wall
  *
- * 72 bays, 8 fixed CCTV cameras; each camera owns one half-row of 9 bays exclusively.
+ * 72 bays, 8 fixed CCTV cameras on the girder faces; each camera owns one half-row of 9 bays exclusively.
  */
 import type { CameraPose } from '../camera/pose.ts';
 import type { SiteBay, Vec3 } from '../showcase/schedule.ts';
@@ -78,7 +78,7 @@ export const ohioBay = (id: string): OhioBay => {
   return bay;
 };
 
-/** Structure and circulation. A low deck: the slab soffit is 3.5 m, girders hang to 2.9 m. */
+/** Structure and circulation. A low deck: the slab soffit is 3.7 m, girders hang to 3.1 m, stems to 3.28 m. */
 export const OHIO = {
   westWallX: -4,
   eastWallX: 73,
@@ -86,7 +86,7 @@ export const OHIO = {
   southWallZ: 38.6,
   walkwayZ: 35.8,
   /** Underside of the slab (level 2's floor). */
-  ceiling: 3.5,
+  ceiling: 3.7,
   /** Precast girders on the column lines (along x) and double-tee stems between them (along z). */
   girderDepth: 0.6,
   stemDepth: 0.42,
@@ -101,7 +101,7 @@ export const OHIO = {
   /** East turnaround, southbound. */
   loop: { x0: 59.0, x1: 65.0, lane: 62.0 },
   /** Two-way ramp to level 2 in the east bay: foot at z0 (floor), top at z1 (level 2's floor, the slab top). */
-  ramp: { x0: 65.6, x1: 72.4, z0: 12.0, z1: 36.0, rise: 3.75, upLane: 67.3, downLane: 70.7 },
+  ramp: { x0: 65.6, x1: 72.4, z0: 12.0, z1: 36.0, rise: 3.95, upLane: 67.3, downLane: 70.7 },
   /** Column grid: x lines (every three bays, at the spine and the ramp bay) × z lines. */
   columnX: [0.8, 9.2, 17.6, 26.2, 33.2, 41.6, 50.0, 58.6, 65.3, 72.7],
   columnZ: [0.15, 18.1, 36.0],
@@ -127,23 +127,25 @@ export interface OhioCamera {
   pose: CameraPose;
 }
 
-/** Eight fixed CCTV cameras, each owning one half-row and hung 2.8 m up under a girder on the far
- * side of that row's aisle, looking across at it (the 34-space showcase's proven arrangement, at
- * this low deck's mounting height). Checked by experiments/ohio-union-garage/camera-search.mjs:
+/** Eight fixed CCTV cameras, each owning one half-row, mounted 3.2 m up on the face of a girder, just under the double-tee stems, on
+ * the far side of that row's aisle and looking across at it (the 34-space showcase's proven
+ * arrangement, under this deck's girders). Checked by experiments/ohio-union-garage/camera-search.mjs:
  * zero owned-bay pairs where a parked SUV's 2D box covers >= 45% of a neighbouring owned bay
- * (worst 0.43), zero cases where a car parked in a bay the camera does not own covers an owned bay
- * (worst 0.34), every owned bay in frame and >= 84% covered by its own car. */
+ * (worst 0.43), zero cases where a car parked in a bay the camera does not own covers an owned bay,
+ * every owned bay in frame and >= 84% covered by its own car. Mounting height matters to A2 beyond
+ * that check: in the static validation scene recall was 0.79 at 2.8 m and 0.85 at 3.0 m (cars parked
+ * under a camera hide its far row), 0.93 at 3.1 m; see docs/ohio-union-garage.md. */
 const pose = (position: Vec3, yaw: number, pitch: number, fov: number): CameraPose => ({ position, yaw, pitch, roll: 0, fov, width: 1280, height: 720 });
-export const CAMERA_HEIGHT = 2.8;
+export const CAMERA_HEIGHT = 3.2;
 export const OHIO_CAMERAS: readonly OhioCamera[] = [
-  { id: 'cam-01', label: 'CAM-01', row: 'A', module: 'west', mount: 'under the west island girder, facing north', pose: pose([13.5, CAMERA_HEIGHT, 17.8], 0, -8, 62) },
-  { id: 'cam-02', label: 'CAM-02', row: 'B', module: 'west', mount: 'under the north girder, facing south', pose: pose([13.5, CAMERA_HEIGHT, 0.45], 180, -8, 62) },
-  { id: 'cam-03', label: 'CAM-03', row: 'C', module: 'west', mount: 'under the south girder, facing north', pose: pose([13.5, CAMERA_HEIGHT, 35.7], 0, -8, 62) },
-  { id: 'cam-04', label: 'CAM-04', row: 'D', module: 'west', mount: 'under the west island girder, facing south', pose: pose([13.5, CAMERA_HEIGHT, 18.4], 180, -8, 62) },
-  { id: 'cam-05', label: 'CAM-05', row: 'A', module: 'east', mount: 'under the east island girder, facing north', pose: pose([45.9, CAMERA_HEIGHT, 17.8], 0, -8, 62) },
-  { id: 'cam-06', label: 'CAM-06', row: 'B', module: 'east', mount: 'under the north girder, facing south', pose: pose([45.9, CAMERA_HEIGHT, 0.45], 180, -8, 62) },
-  { id: 'cam-07', label: 'CAM-07', row: 'C', module: 'east', mount: 'under the south girder, facing north', pose: pose([45.9, CAMERA_HEIGHT, 35.7], 0, -8, 62) },
-  { id: 'cam-08', label: 'CAM-08', row: 'D', module: 'east', mount: 'under the east island girder, facing south', pose: pose([45.9, CAMERA_HEIGHT, 18.4], 180, -8, 62) },
+  { id: 'cam-01', label: 'CAM-01', row: 'A', module: 'west', mount: 'west island girder, north face', pose: pose([13.5, CAMERA_HEIGHT, 17.8], 0, -8, 62) },
+  { id: 'cam-02', label: 'CAM-02', row: 'B', module: 'west', mount: 'north girder, south face', pose: pose([13.5, CAMERA_HEIGHT, 0.45], 180, -8, 62) },
+  { id: 'cam-03', label: 'CAM-03', row: 'C', module: 'west', mount: 'south girder, north face', pose: pose([13.5, CAMERA_HEIGHT, 35.7], 0, -8, 62) },
+  { id: 'cam-04', label: 'CAM-04', row: 'D', module: 'west', mount: 'west island girder, south face', pose: pose([13.5, CAMERA_HEIGHT, 18.4], 180, -8, 62) },
+  { id: 'cam-05', label: 'CAM-05', row: 'A', module: 'east', mount: 'east island girder, north face', pose: pose([45.9, CAMERA_HEIGHT, 17.8], 0, -8, 62) },
+  { id: 'cam-06', label: 'CAM-06', row: 'B', module: 'east', mount: 'north girder, south face', pose: pose([45.9, CAMERA_HEIGHT, 0.45], 180, -8, 62) },
+  { id: 'cam-07', label: 'CAM-07', row: 'C', module: 'east', mount: 'south girder, north face', pose: pose([45.9, CAMERA_HEIGHT, 35.7], 0, -8, 62) },
+  { id: 'cam-08', label: 'CAM-08', row: 'D', module: 'east', mount: 'east island girder, south face', pose: pose([45.9, CAMERA_HEIGHT, 18.4], 180, -8, 62) },
 ];
 
 export const ohioCamera = (id: string): OhioCamera => {

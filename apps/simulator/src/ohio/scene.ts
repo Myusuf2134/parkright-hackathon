@@ -495,7 +495,8 @@ export function buildOhioGarage(): GarageHandles {
     over.box(soffit, end - x0, G.girderDepth, 0.45, (end + x0) / 2, G.ceiling - G.girderDepth / 2, z);
   }
   const stems: Matrix4[] = [];
-  for (let x = x0 + 0.8; x < voidX - 0.3; x += G.stemPitch) for (const [za, zb] of [[0.4, 17.85], [18.35, 35.75]] as const) stems.push(at(x, G.ceiling - G.stemDepth / 2, (za + zb) / 2, 1, 1, zb - za));
+  // Stems on a 1.2 m pitch from x0 + 0.2: no stem sits directly over a camera (x 13.5 and 45.9).
+  for (let x = x0 + 0.2; x < voidX - 0.3; x += G.stemPitch) for (const [za, zb] of [[0.4, 17.85], [18.35, 35.75]] as const) stems.push(at(x, G.ceiling - G.stemDepth / 2, (za + zb) / 2, 1, 1, zb - za));
   overhead.add(instanced(new BoxGeometry(0.16, G.stemDepth, 1), soffit, stems));
   for (const [z, mat, rad] of [[6.4, sprinkler, 0.05], [24.4, sprinkler, 0.05], [12.2, conduit, 0.035], [30.2, conduit, 0.035]] as const) {
     const g = new CylinderGeometry(rad, rad, voidX - x0, 8);
@@ -514,7 +515,7 @@ export function buildOhioGarage(): GarageHandles {
   for (const x of [3.7, 13.3, 22.9, 37.3, 46.9, 56.5]) lit.push([x, G.aisle1.lane], [x, G.aisle2.lane]);
   lit.push([G.spine.lane, 18.1], [G.loop.lane, 18.1], [-1.5, G.aisle1.lane], [-1.5, G.aisle2.lane]);
   for (const [x, z] of lit) {
-    const light = new PointLight('#f3f6ff', 9, 17, 1.5);
+    const light = new PointLight('#f3f6ff', 9, 22, 1.5);
     light.position.set(x, G.ceiling - 0.7, z);
     fixtures.push(light);
     root.add(light);
@@ -533,10 +534,11 @@ export function buildOhioGarage(): GarageHandles {
   }
   for (const cam of OHIO_CAMERAS) {
     const [x, y, z] = cam.pose.position;
-    // Housing just behind the lens; the bracket goes up to the girder above it.
+    // Housing just behind the lens, set into the girder face it is mounted on (back-to-back island
+    // cameras are separated by the girder, so neither sees the other).
     const back = cam.pose.yaw === 0 ? 0.14 : -0.14;
-    over.box(dome, 0.18, 0.16, 0.12, x, y + 0.04, z + back);
-    over.box(housing, 0.05, G.ceiling - G.girderDepth - y + 0.05, 0.05, x, (G.ceiling - G.girderDepth + y) / 2 + 0.06, z + back);
+    over.box(dome, 0.18, 0.16, 0.12, x, y + 0.02, z + back);
+    over.box(housing, 0.26, 0.26, 0.03, x, y + 0.02, z + back * 0.62);
   }
   over.into(overhead);
 

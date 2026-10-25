@@ -50,6 +50,8 @@ export interface Site extends TrafficSite {
   freshS: number;
   /** Scales the lighting preset's haze distances (a larger site is seen from further away). */
   fogScale?: number;
+  /** Scales the preset's ceiling-fixture intensity (a larger deck with fewer lights per square metre). */
+  fixtureScale?: number;
 }
 
 export const SHOWCASE_SITE: Site = {
@@ -100,6 +102,7 @@ export const OHIO_SITE: Site = {
   elevation: ohioElevation,
   freshS: 25,
   fogScale: 2,
+  fixtureScale: 1.6,
 };
 
 export const SITES: Record<SiteId, Site> = { 'showcase-34': SHOWCASE_SITE, 'ohio-union': OHIO_SITE };

@@ -79,6 +79,8 @@ export class ShowcaseLab {
       this.exposure = applyGaragePreset(preset, this.scene, this.handles);
       const k = this.site.fogScale;
       if (k && this.scene.fog instanceof Fog) Object.assign(this.scene.fog, { near: this.scene.fog.near * k, far: this.scene.fog.far * k });
+      const f = this.site.fixtureScale;
+      if (f) for (const light of this.handles.fixtures) light.intensity *= f;
       this.cctv.setExposure(this.exposure);
       this.appliedPreset = preset;
     }

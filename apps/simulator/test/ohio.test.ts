@@ -57,10 +57,21 @@ describe('Ohio Union-inspired layout', () => {
     }
   });
 
-  it('a low deck: girders hang to 2.9 m, cameras at 2.8 m below them, vans (2.15 m) clear', () => {
-    expect(OHIO.ceiling - OHIO.girderDepth).toBeCloseTo(2.9, 6);
-    for (const c of OHIO_CAMERAS) expect(c.pose.position[1]).toBeLessThan(OHIO.ceiling - OHIO.girderDepth);
+  it('a low deck: girders hang to 3.1 m, vans (2.15 m) clear; cameras sit on a girder face, outside it', () => {
+    expect(OHIO.ceiling - OHIO.girderDepth).toBeCloseTo(3.1, 6);
     expect(OHIO.ceiling - OHIO.girderDepth).toBeGreaterThan(2.15 + 0.5);
+    for (const c of OHIO_CAMERAS) {
+      const [x, y, z] = c.pose.position;
+      expect(y).toBeGreaterThan(OHIO.ceiling - OHIO.girderDepth);
+      expect(y).toBeLessThan(OHIO.ceiling - OHIO.stemDepth); // under the double-tee stems
+      // Within 0.2 m of a girder face (girders are 0.45 m wide on the z column lines), never inside one.
+      const d = Math.min(...OHIO.columnZ.map((g) => Math.abs(z - g)));
+      expect(d).toBeGreaterThan(0.225);
+      expect(d).toBeLessThan(0.225 + 0.2);
+      // No stem directly over the camera (pitch 1.2 m from x = westWallX + 0.2).
+      const off = (((x - (OHIO.westWallX + 0.2)) % OHIO.stemPitch) + OHIO.stemPitch) % OHIO.stemPitch;
+      expect(Math.min(off, OHIO.stemPitch - off)).toBeGreaterThan(0.4);
+    }
   });
 
   it('ramp surface rises from the floor to level 2', () => {
