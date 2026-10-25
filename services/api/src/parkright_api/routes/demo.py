@@ -103,6 +103,8 @@ def status(request: Request) -> dict:
         "perception": _perception(request),
         "calibration": _single_polygons(request),
         "showcase": _is_showcase(request),
+        "site": getattr(request.app.state, "demo_site", None),
+        "stale_after_s": request.app.state.settings.stale_after_ms / 1000,
         "cameras": _cameras(request, t),
         "camera": {
             **cam.model_dump(mode="json"),

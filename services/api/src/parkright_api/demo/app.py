@@ -5,6 +5,7 @@
 ``create_app`` (main.py) is not modified; demo mode only adds state and routes on top of it.
 """
 
+import json
 import logging
 
 from fastapi import FastAPI
@@ -31,6 +32,10 @@ def create_demo_app(settings: Settings | None = None, perception=None) -> FastAP
         for facility in app.state.registry.all():
             calibrations.check_facility(facility.config)
         app.state.calibration = calibrations
+    # Which simulated site this is (site.json next to the calibrations; the 34-space garage has none).
+    # Description only: it labels the driver page and never touches perception or state.
+    site_file = settings.showcase_dir / "site.json" if settings.showcase_dir is not None else None
+    app.state.demo_site = json.loads(site_file.read_text()) if site_file is not None and site_file.exists() else None
     from ..routes import demo
 
     app.state.demo = DemoRuntime(nemotron_mode=settings.demo_nemotron)

@@ -1,5 +1,6 @@
 /**
- * Driver-screen parts for the 34-space showcase garage. Everything here is live: bay states and
+ * Driver-screen parts for the showcase garages (the 34-space garage or the Ohio Union North
+ * Garage-inspired simulation, named by the demo status). Everything here is live: bay states and
  * counts from the WebSocket, camera frames and detections from the API, events from the API's
  * perception log. Nothing is computed from simulator ground truth.
  */
@@ -24,19 +25,22 @@ export function LiveGarageCard({ spaces, changedAt, connection, status, debug }:
   const c = liveCounts(spaces);
   const now = Date.now();
   const cams = status?.cameras ?? [];
+  const site = status?.site ?? null;
+  const fresh = Math.max(15, status?.stale_after_s ?? 0);
   return (
-    <article className="d-card d-live" data-testid="live-garage">
+    <article className={`d-card d-live${site ? ` site-${site.site_id}` : ''}`} data-testid="live-garage" data-site={site?.site_id ?? 'showcase-34'}>
       <div className="d-card-head">
-        <h2>Tuttle Garage · live</h2>
-        <span className="d-tag">Simulated garage · live perception</span>
+        <h2 data-testid="live-title">{site ? `${site.title} · live` : 'Tuttle Garage · live'}</h2>
+        <span className="d-tag" data-testid="live-tag">{site ? site.tag : 'Simulated garage · live perception'}</span>
       </div>
+      {site && <p className="d-note d-disclaimer" data-testid="site-disclaimer">{site.disclaimer}</p>}
       <div className="d-live-counts" data-testid="live-counts">
         <div><b className="tnum" data-testid="live-total">{c.total}</b><span>spaces</span></div>
         <div className="occ"><b className="tnum" data-testid="live-occupied">{c.occupied}</b><span>occupied</span></div>
         <div className="unc"><b className="tnum" data-testid="live-uncertain">{c.uncertain}</b><span>uncertain</span></div>
         <div className="opn"><b className="tnum" data-testid="live-open">{c.open}</b><span>confirmed open</span></div>
       </div>
-      <div className="d-live-map" data-testid="live-map">
+      <div className={`d-live-map n${spaces.length}`} data-testid="live-map">
         {ROWS.map((row) => (
           <div key={row} className={`d-live-row row-${row}`}>
             {spaces.filter((s) => s.space_id.startsWith(row)).map((s) => {
@@ -53,7 +57,7 @@ export function LiveGarageCard({ spaces, changedAt, connection, status, debug }:
         ))}
       </div>
       <p className="d-note">
-        {connection === 'live' ? 'Updating live over WebSocket' : 'Reconnecting: nothing is shown as available'} · {cams.filter((x) => x.last_frame && x.last_frame.age_s < 15).length}/{cams.length} cameras reporting · OPEN detection disabled, so empty bays stay uncertain.
+        {connection === 'live' ? 'Updating live over WebSocket' : 'Reconnecting: nothing is shown as available'} · {cams.filter((x) => x.last_frame && x.last_frame.age_s < fresh).length}/{cams.length} cameras reporting · OPEN detection disabled, so empty bays stay uncertain.
       </p>
     </article>
   );

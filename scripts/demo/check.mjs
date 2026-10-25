@@ -96,13 +96,16 @@ snap ? pass('websocket', `snapshot for ${fx.simulator.facility_id} (${snap.space
 
 // 8. Camera stream: the simulator tab is open and A2 has processed fresh frames
 if (st?.showcase) {
-  // 34-space showcase: traffic is live, so there is no fixed occupied set; every camera must be reporting.
+  // Multi-camera showcase (34-space garage, or the Ohio Union-inspired site): traffic is live, so
+  // there is no fixed occupied set; every camera must be reporting within one round-robin cycle.
   const cams = st.cameras ?? [];
-  const fresh = cams.filter((c) => c.last_frame && c.last_frame.age_s < 20);
+  const want = st.site?.cameras ?? 4;
+  const spaces = st.site?.spaces ?? 34;
+  const fresh = cams.filter((c) => c.last_frame && c.last_frame.age_s < Math.max(20, st.stale_after_s ?? 0));
   const ms = cams.map((c) => c.last_frame?.timings?.total_ms).filter(Boolean);
-  if (fresh.length === cams.length && cams.length === 4)
-    pass('camera stream', `4/4 cameras reporting · A2 ${Math.round(ms.reduce((a, b) => a + b, 0) / ms.length)} ms mean · ${st.camera.occupied.length} occupied, ${st.camera.uncertain.length} uncertain of 34`);
-  else if (!fresh.length) warn('camera stream', 'no camera frames yet: open the showcase simulator (?showcase=1&sim=garage)');
+  if (fresh.length === cams.length && cams.length === want)
+    pass('camera stream', `${want}/${want} cameras reporting · A2 ${Math.round(ms.reduce((a, b) => a + b, 0) / ms.length)} ms mean · ${st.camera.occupied.length} occupied, ${st.camera.uncertain.length} uncertain of ${spaces}${st.site ? ` · ${st.site.title}` : ''}`);
+  else if (!fresh.length) warn('camera stream', `no camera frames yet: open the showcase simulator (${st.site?.site_id === 'ohio-union' ? '?sim=ohio-union' : '?showcase=1&sim=garage'})`);
   else fail('camera stream', `only ${fresh.map((c) => c.camera_id).join(', ')} reporting`);
 } else if (st) {
   const f = st.camera.last_frame;
@@ -154,7 +157,7 @@ if (st?.camera.fresh) {
 if (st) {
   const f = st.camera.last_frame;
   const problems = [];
-  const bays = st.showcase ? 34 : 12;
+  const bays = st.showcase ? st.site?.spaces ?? 34 : 12;
   if (st.camera.live_bays && st.camera.live_bays !== bays) problems.push(`${st.camera.live_bays}/${bays} bays live`);
   if (f && f.age_s > 30) problems.push(`last frame ${f.age_s}s old`);
   problems.length ? warn('state', `${problems.join(' · ')}: run npm run demo:reset`) : pass('state', `epoch ${st.epoch} · ${st.frames_since_reset} frames since reset`);

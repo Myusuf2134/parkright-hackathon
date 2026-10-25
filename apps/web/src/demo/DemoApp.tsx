@@ -129,7 +129,8 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
                 <li key={g.facility_id} className={g.chosen ? 'chosen' : ''} data-testid={`garage-${g.facility_id}`}>
                   <strong>
                     {g.name}
-                    {showcase && g.facility_id === scenario.camera_garage && (
+                    {/* The live count belongs to Tuttle only when the live garage IS the Tuttle stand-in (34-space site). */}
+                    {showcase && !s?.site && g.facility_id === scenario.camera_garage && (
                       <small className="d-live-label" data-testid="tuttle-live">
                         Simulated garage · live perception · {liveCounts(live.spaces).occupied}/{live.spaces.length} occupied
                       </small>
@@ -165,6 +166,7 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
 
       <footer className="d-foot">
         {scenario.disclaimer} Camera, detections and bay states are live from the simulator; OPEN detection stays disabled.
+        {s?.site && ` The live garage is the ${s.site.title}: not an official or exact digital twin. The garage comparison and recommendation use the demo feed.`}
       </footer>
     </div>
   );

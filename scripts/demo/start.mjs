@@ -13,10 +13,16 @@ import {
 const args = new Set(process.argv.slice(2));
 const live = args.has('--live');
 // --garage: the 3D garage simulator and its CAM-01 calibration; default is the legacy simulator.
-const showcase = args.has('--showcase');
+// --ohio: the Ohio Union North Garage-inspired simulation (72 spaces, eight cameras), a showcase site.
+const ohio = args.has('--ohio');
+const showcase = args.has('--showcase') || ohio;
 const garage = args.has('--garage') || showcase;
 // --showcase: the 34-space, four-camera garage (one calibration per camera); --garage: the 12-space garage.
-const calibrationDir = join(ROOT, showcase ? 'packages/shared/calibration/garage-showcase' : garage ? 'packages/shared/calibration/garage' : 'packages/shared/calibration');
+const calibrationDir = join(
+  ROOT,
+  ohio ? 'packages/shared/calibration/ohio-union' : showcase ? 'packages/shared/calibration/garage-showcase' : garage ? 'packages/shared/calibration/garage' : 'packages/shared/calibration',
+);
+const showcaseUrl = ohio ? `${SIM}/?sim=ohio-union` : `${SIM}/?showcase=1&sim=garage`;
 const fail = (msg) => {
   console.error(`\n✗ ${msg}\n`);
   process.exit(1);
@@ -58,6 +64,10 @@ const services = [
       // (its bays read UNCERTAIN), so a longer limit only avoids dropped frames; it gates nothing.
       PARKRIGHT_PERCEPTION_TIMEOUT_S: '20',
       PARKRIGHT_INGEST_TOKEN: ingestToken,
+      // Eight cameras share one A2 in round robin (~2 s a frame here), so each camera reports about
+      // every 16–20 s. Bays go UNCERTAIN after 30 s without evidence instead of 12 s; this is the
+      // facility's freshness window, not an A2 or mapper threshold.
+      ...(ohio ? { PARKRIGHT_STALE_AFTER_MS: '30000' } : {}),
     },
   },
   {
@@ -90,7 +100,7 @@ function stopAll(code = 0) {
 process.on('SIGINT', () => stopAll(0));
 process.on('SIGTERM', () => stopAll(0));
 
-console.log(`ParkRight hackathon demo · simulator: ${showcase ? '34-space showcase (4 cameras)' : garage ? '3D garage' : 'legacy'} · Nemotron mode: ${live ? 'LIVE (Nebius Token Factory)' : 'local fallback'}`);
+console.log(`ParkRight hackathon demo · simulator: ${ohio ? 'Ohio Union North Garage-inspired simulation (72 spaces, 8 cameras)' : showcase ? '34-space showcase (4 cameras)' : garage ? '3D garage' : 'legacy'} · Nemotron mode: ${live ? 'LIVE (Nebius Token Factory)' : 'local fallback'}`);
 for (const s of services) {
   const log = createWriteStream(join(LOG_DIR, `${s.name}.log`), { flags: 'w' });
   const child = spawn(s.cmd, s.args, { cwd: ROOT, env: s.env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -108,7 +118,7 @@ for (const s of services) {
   children.push({ name: s.name, pid: child.pid });
 }
 mkdirSync(STATE_DIR, { recursive: true });
-writeFileSync(PID_FILE, JSON.stringify({ started_at: new Date().toISOString(), live, garage, showcase, children }, null, 2), { mode: 0o600 });
+writeFileSync(PID_FILE, JSON.stringify({ started_at: new Date().toISOString(), live, garage, showcase, ohio, children }, null, 2), { mode: 0o600 });
 
 const step = async (label, fn, timeout) => {
   process.stdout.write(`  … ${label}`);
@@ -129,14 +139,14 @@ await step(`Driver app on :${PORTS.web}`, () => reachable(WEB), 60000);
 console.log(`
 Ready. Open these two windows (or start with -- --open):
 
-  Simulator (camera):  ${showcase ? `${SIM}/?showcase=1&sim=garage` : simulatorUrl(undefined, garage)}
+  Simulator (camera):  ${showcase ? showcaseUrl : simulatorUrl(undefined, garage)}
   Driver app:          ${driverUrl()}
 
 Before recording: npm run demo:check   ·   Fresh take: npm run demo:reset   ·   Stop: Ctrl-C or npm run demo:stop
 Logs: ${LOG_DIR}
 `);
 if (args.has('--open')) {
-  spawn('open', [showcase ? `${SIM}/?showcase=1&sim=garage&present=1` : simulatorUrl(undefined, garage)], { stdio: 'ignore' });
+  spawn('open', [showcase ? `${showcaseUrl}&present=1` : simulatorUrl(undefined, garage)], { stdio: 'ignore' });
   spawn('open', [driverUrl()], { stdio: 'ignore' });
 }
 await new Promise(() => {});

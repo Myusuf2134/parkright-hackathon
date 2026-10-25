@@ -39,6 +39,10 @@
     "demo:showcase": "node scripts/demo/start.mjs --showcase",
     "demo:showcase:live": "node scripts/demo/start.mjs --showcase --live",
     "calibration:showcase": "node scripts/generate-showcase-calibration.mjs",
-    "calibration:showcase:check": "node scripts/generate-showcase-calibration.mjs --check"
+    "calibration:showcase:check": "node scripts/generate-showcase-calibration.mjs --check",
+    "demo:ohio": "node scripts/demo/start.mjs --ohio",
+    "demo:ohio:live": "node scripts/demo/start.mjs --ohio --live",
+    "calibration:ohio": "node scripts/generate-ohio-calibration.mjs",
+    "calibration:ohio:check": "node scripts/generate-ohio-calibration.mjs --check"
   }
 }

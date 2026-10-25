@@ -30,6 +30,9 @@ export interface DemoStatus {
   perception: { provider: string; phase: string | null; inference_ready: boolean; loaded: boolean; allow_open: boolean; artifact_error: string | null };
   calibration: Record<string, { x: number; y: number }[]> | null;
   showcase?: boolean;
+  /** The simulated site, when it is not the default 34-space garage (demo label only). */
+  site?: { site_id: string; title: string; tag: string; disclaimer: string; spaces: number; cameras: number } | null;
+  stale_after_s?: number;
   cameras?: {
     camera_id: string;
     name: string;

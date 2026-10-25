@@ -136,3 +136,10 @@
 .d-events em.occupied { background: #4a1719; color: #ffd1d1; }
 .d-tag-plain { color: var(--faint); font-size: 12px; }
 .demo.showcase .d-garages li { grid-template-columns: 1.7fr 0.9fr 1.2fr 0.9fr; }
+/* ---- Ohio Union North Garage-inspired simulation (72 spaces, 8 cameras) ---- */
+.d-disclaimer { margin: -4px 0 0; color: #f6d27a; font-size: 12px; }
+.d-live-map.n72 .d-live-row { grid-template-columns: repeat(18, 1fr); gap: 2px; }
+.d-live-map.n72 .d-live-bay { min-height: 26px; border-radius: 5px; font-size: 9px; letter-spacing: -0.02em; }
+.d-live-map.n72 .d-live-bay small { font-size: 7.5px; }
+.d-live-map.n72 .d-live-bay:nth-child(10) { margin-left: 8px; }
+.d-cam-tabs { flex-wrap: wrap; justify-content: flex-end; }
