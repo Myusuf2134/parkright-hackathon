@@ -1,0 +1,16 @@
+{
+  "site_id": "ohio-union",
+  "title": "Ohio Union North Garage-inspired simulation",
+  "tag": "Simulated · inspired by, not a digital twin",
+  "disclaimer": "Inspired by a campus parking deck. Not an official or exact digital twin; no real OSU data. Bays, cameras and traffic are simulated.",
+  "spaces": 72,
+  "cameras": 8,
+  "rows": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "bays_per_row": 18,
+  "spine_after": 9
+}
