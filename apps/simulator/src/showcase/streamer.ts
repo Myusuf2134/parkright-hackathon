@@ -1,5 +1,5 @@
 /**
- * Staggered multi-camera streaming for the showcase: CAM-01 → CAM-02 → CAM-03 → CAM-04 → …,
+ * Staggered multi-camera streaming for the showcase: CAM-01 → CAM-02 → … → CAM-0N → CAM-01 …,
  * one frame in flight at a time (A2 runs one inference at a time on this machine; frames from
  * several cameras at once would only be refused as busy).
  *
@@ -10,8 +10,9 @@
 import type { FrameMetadata, OccupancyObservation } from '@parkright/contracts';
 import { newSessionId } from '../stream/session.ts';
 import { uploadFrame } from '../stream/frameUpload.ts';
-import { SHOWCASE_CAMERAS, type ShowcaseCameraId } from './layout.ts';
 import type { ShowcaseLab } from './lab.ts';
+
+type ShowcaseCameraId = string;
 
 export interface Detection { label: string; confidence: number; box: number[] }
 
@@ -46,7 +47,7 @@ export class ShowcaseStreamer {
   health: Health | null = null;
   api: 'unknown' | 'connected' | 'disconnected' = 'unknown';
   version = 0;
-  private order = SHOWCASE_CAMERAS.map((c) => c.id);
+  private readonly order: ShowcaseCameraId[];
   private next = 0;
   private epoch: number;
   private listeners = new Set<Listener>();
@@ -54,6 +55,7 @@ export class ShowcaseStreamer {
   private healthTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(private readonly lab: ShowcaseLab, private readonly apiBase = '') {
+    this.order = lab.site.cameras.map((c) => c.id);
     for (const id of this.order) this.streams.set(id, this.fresh(id));
     this.epoch = lab.world.epoch;
   }

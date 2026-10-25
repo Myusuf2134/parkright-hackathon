@@ -1,11 +1,12 @@
 /**
- * The showcase simulation: a traffic scenario, a lighting preset and sim time. Pure TypeScript.
+ * The showcase simulation: a site, a traffic scenario, a lighting preset and sim time. Pure TypeScript.
  * Time moves only through advance()/setTime(); (scenario, seed, t) always gives the same garage.
  */
 import type { GaragePresetId } from '../garage/presets.ts';
 import type { TruthSnapshot } from '../sim/world.ts';
-import { SHOWCASE_BAYS, type ShowcaseCameraId } from './layout.ts';
-import { buildSchedule, HORIZON_MS, occupiedAt, posesAt, type Schedule, type ShowcaseScenarioId, type VehiclePose } from './traffic.ts';
+import type { ShowcaseCameraId } from './layout.ts';
+import { buildSiteSchedule, HORIZON_MS, occupiedIn, posesAt, type Schedule, type ShowcaseScenarioId, type VehiclePose } from './schedule.ts';
+import { SHOWCASE_SITE, type Site } from './site.ts';
 
 export interface ShowcaseSpec {
   kind: 'showcase';
@@ -33,9 +34,9 @@ export class ShowcaseWorld {
   epoch = 0;
   private listeners = new Set<Listener>();
 
-  constructor(scenario: ShowcaseScenarioId = 'live', preset: GaragePresetId = 'clear_day', seed = 4242) {
+  constructor(scenario: ShowcaseScenarioId = 'live', preset: GaragePresetId = 'clear_day', seed = 4242, readonly site: Site = SHOWCASE_SITE) {
     this.spec = { kind: 'showcase', scenario, preset, seed };
-    this.schedule = buildSchedule(scenario, seed);
+    this.schedule = buildSiteSchedule(site, scenario, seed);
   }
 
   subscribe(fn: Listener): () => void {
@@ -50,7 +51,7 @@ export class ShowcaseWorld {
 
   load(scenario: ShowcaseScenarioId): void {
     this.spec = { ...this.spec, scenario };
-    this.schedule = buildSchedule(scenario, this.spec.seed);
+    this.schedule = buildSiteSchedule(this.site, scenario, this.spec.seed);
     this.simTimeMs = 0;
     this.epoch++;
     this.changed();
@@ -95,8 +96,8 @@ export class ShowcaseWorld {
 
   truth(owned?: readonly string[]): ShowcaseTruth {
     const poses = this.vehicles();
-    const occupied = new Set(occupiedAt(poses));
-    const bays = owned ? SHOWCASE_BAYS.filter((b) => owned.includes(b.id)) : SHOWCASE_BAYS;
+    const occupied = new Set(occupiedIn(this.site.bays, poses));
+    const bays = owned ? this.site.bays.filter((b) => owned.includes(b.id)) : this.site.bays;
     return {
       simTimeMs: this.simTimeMs,
       preset: this.spec.preset,

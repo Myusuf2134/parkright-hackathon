@@ -1,5 +1,5 @@
 /**
- * The four showcase CCTV cameras share ONE WebGL renderer (one GPU context, one copy of every
+ * The showcase CCTV cameras (four or eight, by site) share ONE WebGL renderer (one GPU context, one copy of every
  * texture and shadow map); on an 8 GB machine four separate contexts plus the observer pushed
  * the system into swapping. Each camera has its own fixed PerspectiveCamera and its own 2D canvas:
  *
@@ -13,7 +13,6 @@ import { ACESFilmicToneMapping, PCFShadowMap, PerspectiveCamera, type Scene, SRG
 import { type CameraPose, poseEuler } from '../camera/pose.ts';
 import { JPEG_QUALITY } from '../camera/virtualCamera.ts';
 import { CEILING_LAYER, WORLD_LAYER } from '../scene/layers.ts';
-import type { ShowcaseCameraId } from './layout.ts';
 
 interface Cctv {
   camera: PerspectiveCamera;
@@ -23,11 +22,11 @@ interface Cctv {
 
 export class CctvRig {
   private renderer: WebGLRenderer;
-  private cams = new Map<ShowcaseCameraId, Cctv>();
+  private cams = new Map<string, Cctv>();
   readonly width: number;
   readonly height: number;
 
-  constructor(poses: readonly { id: ShowcaseCameraId; pose: CameraPose }[]) {
+  constructor(poses: readonly { id: string; pose: CameraPose }[]) {
     this.width = poses[0]!.pose.width;
     this.height = poses[0]!.pose.height;
     this.renderer = new WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
@@ -58,18 +57,18 @@ export class CctvRig {
     this.renderer.toneMappingExposure = exposure;
   }
 
-  canvas(id: ShowcaseCameraId): HTMLCanvasElement {
+  canvas(id: string): HTMLCanvasElement {
     return this.cams.get(id)!.canvas;
   }
 
-  render(id: ShowcaseCameraId, scene: Scene): void {
+  render(id: string, scene: Scene): void {
     const c = this.cams.get(id)!;
     this.renderer.render(scene, c.camera);
     c.ctx.drawImage(this.renderer.domElement, 0, 0);
   }
 
   /** Renders camera `id` now and encodes exactly those pixels as JPEG. */
-  async capture(id: ShowcaseCameraId, scene: Scene, quality = JPEG_QUALITY): Promise<Blob> {
+  async capture(id: string, scene: Scene, quality = JPEG_QUALITY): Promise<Blob> {
     this.render(id, scene);
     const { canvas } = this.cams.get(id)!;
     return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('JPEG encoding failed'))), 'image/jpeg', quality));

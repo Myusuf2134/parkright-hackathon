@@ -1,22 +1,24 @@
 /**
- * The 34-space garage showcase (?showcase=1&sim=garage). Four fixed CCTV cameras stream real
- * rendered frames into ParkRight; the facility state shown here comes back from the API over the
- * WebSocket. The observer camera, overlays and ground truth are presentation and debug only and
- * never enter a perception frame.
+ * The garage showcase, for any site: the 34-space garage (?showcase=1&sim=garage) or the Ohio
+ * Union North Garage-inspired simulation (&site=ohio-union, or ?sim=ohio-union). The site's fixed
+ * CCTV cameras stream real rendered frames into ParkRight; the facility state shown here comes back
+ * from the API over the WebSocket. The observer camera, overlays and ground truth are presentation
+ * and debug only and never enter a perception frame.
  *
- * URL: ?showcase=1&sim=garage&scenario=live&env=night&view=cam-02&present=1&stream=0
+ * URL: ?showcase=1&sim=garage[&site=ohio-union]&scenario=live&env=night&view=cam-02&present=1&stream=0
  */
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { ACESFilmicToneMapping, PCFShadowMap, PerspectiveCamera, SRGBColorSpace, Vector3, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GARAGE_PRESET_IDS, GARAGE_PRESETS, parseGaragePreset, type GaragePresetId } from '../garage/presets.ts';
-import { OPERATOR_LAYER } from '../scene/layers.ts';
-import { OWNER_COLORS, type ShowcaseLab } from './lab.ts';
-import { SHOWCASE_BAYS, SHOWCASE_CAMERAS, type ShowcaseCameraId } from './layout.ts';
+import { CEILING_LAYER, OPERATOR_LAYER } from '../scene/layers.ts';
+import type { ShowcaseLab } from './lab.ts';
+import { isShowcaseScenario, type ShowcaseScenarioId } from './schedule.ts';
+import { parseSite, type Site } from './site.ts';
 import type { ShowcaseStreamer } from './streamer.ts';
-import { isShowcaseScenario, SHOWCASE_SCENARIO_IDS, SHOWCASE_SCENARIOS, type ShowcaseScenarioId } from './traffic.ts';
 import './showcase.css';
 
+type ShowcaseCameraId = string;
 type View = 'observer' | 'cctv-grid' | ShowcaseCameraId;
 type BayState = 'OPEN' | 'OCCUPIED' | 'UNCERTAIN';
 interface Space { space_id: string; current_state: BayState; source_camera_id: string | null; last_observed_at: string | null }
@@ -87,22 +89,13 @@ function useEvents(onEpoch: () => void) {
   return events;
 }
 
-const QUICK_VIEWS: Record<string, { pos: [number, number, number]; target: [number, number, number] }> = {
-  Overview: { pos: [42, 30, 52], target: [12, 0, 19] },
-  Entrance: { pos: [-16, 6, 4], target: [6, 0, 10] },
-  'Row A': { pos: [13, 9, 13], target: [13, 0, 2.5] },
-  'Row B': { pos: [13, 9, 4], target: [11, 0, 15.5] },
-  'Row C': { pos: [13, 9, 32], target: [11, 0, 21] },
-  'Row D': { pos: [13, 9, 22], target: [13, 0, 33.5] },
-  'CCTV overview': { pos: [13, 48, 19.5], target: [13, 0, 19.2] },
-};
-
 export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: ShowcaseStreamer }) {
+  const site = lab.site;
   useVersion(lab.world);
   useVersion(streamer);
   const [present, setPresent] = useState(q().get('present') === '1');
   const initialView = (q().get('view') as View) ?? 'observer';
-  const [view, setView] = useState<View>(['observer', 'cctv-grid', ...SHOWCASE_CAMERAS.map((c) => c.id)].includes(initialView) ? initialView : 'observer');
+  const [view, setView] = useState<View>(['observer', 'cctv-grid', ...site.cameras.map((c) => c.id)].includes(initialView) ? initialView : 'observer');
   const [boxes, setBoxes] = useState(true);
   const [polys, setPolys] = useState(true);
   const [owners, setOwners] = useState(false);
@@ -135,6 +128,7 @@ export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: Sho
     const u = q();
     u.set('showcase', '1');
     u.set('sim', 'garage');
+    if (site.id === 'ohio-union') u.set('site', 'ohio-union');
     u.set('scenario', lab.world.spec.scenario);
     u.set('env', lab.world.spec.preset === 'clear_day' ? 'day' : lab.world.spec.preset);
     u.set('view', view);
@@ -146,12 +140,12 @@ export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: Sho
 
   const spaces = Object.values(facility.spaces);
   const counts = {
-    total: SHOWCASE_BAYS.length,
+    total: site.bays.length,
     occupied: spaces.filter((s) => s.current_state === 'OCCUPIED').length,
     uncertain: spaces.filter((s) => s.current_state === 'UNCERTAIN').length,
     open: spaces.filter((s) => s.current_state === 'OPEN').length,
   };
-  if (spaces.length < SHOWCASE_BAYS.length) counts.uncertain += SHOWCASE_BAYS.length - spaces.length;
+  if (spaces.length < site.bays.length) counts.uncertain += site.bays.length - spaces.length;
   const truthNow = truth ? new Set(lab.world.truth().spaces.filter((s) => s.truth === 'occupied').map((s) => s.space_id)) : null;
   const w = lab.world;
   const loadScenario = (id: ShowcaseScenarioId) => {
@@ -160,13 +154,14 @@ export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: Sho
   };
 
   return (
-    <div className={`sc-app ${present ? 'present' : 'engineering'}`} data-mode={present ? 'present' : 'engineering'}>
+    <div className={`sc-app ${present ? 'present' : 'engineering'} site-${site.id}`} data-mode={present ? 'present' : 'engineering'} data-site={site.id}>
       <header className="sc-top">
         <div className="sc-brand">
           <span className="sc-mark">P</span>
           <div>
-            <h1>ParkRight · Live garage</h1>
-            <p>Simulated 34-space garage · 4 CCTV cameras · live A2 perception</p>
+            <h1 data-testid="site-title">{site.title}</h1>
+            <p>{site.subtitle}</p>
+            {site.disclaimer && <p className="sc-disclaimer" data-testid="site-disclaimer">{site.disclaimer}</p>}
           </div>
         </div>
         <div className="sc-top-right">
@@ -180,7 +175,7 @@ export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: Sho
       <main className="sc-main">
         <section className="sc-stage">
           <nav className="sc-tabs" aria-label="Camera">
-            {(['observer', ...SHOWCASE_CAMERAS.map((c) => c.id), ...(present ? [] : ['cctv-grid'])] as View[]).map((v) => (
+            {(['observer', ...site.cameras.map((c) => c.id), ...(present ? [] : ['cctv-grid'])] as View[]).map((v) => (
               <button key={v} className={view === v ? 'on' : ''} onClick={() => setView(v)} data-testid={`view-${v}`}>
                 {v === 'observer' ? 'Observer' : v === 'cctv-grid' ? 'All CCTV' : v.toUpperCase()}
               </button>
@@ -188,15 +183,15 @@ export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: Sho
           </nav>
           {view === 'observer' && <Observer lab={lab} owners={owners} />}
           {view === 'cctv-grid' && (
-            <div className="sc-grid">
-              {SHOWCASE_CAMERAS.map((c) => <CctvView key={c.id} lab={lab} streamer={streamer} id={c.id} spaces={facility.spaces} boxes={boxes} polys={polys} truth={truthNow} small />)}
+            <div className={`sc-grid n${site.cameras.length}`}>
+              {site.cameras.map((c) => <CctvView key={c.id} lab={lab} streamer={streamer} id={c.id} spaces={facility.spaces} boxes={boxes} polys={polys} truth={truthNow} small />)}
             </div>
           )}
           {view !== 'observer' && view !== 'cctv-grid' && (
             <CctvView lab={lab} streamer={streamer} id={view} spaces={facility.spaces} boxes={boxes || present} polys={polys || present} truth={truthNow} />
           )}
           <div className="sc-thumbs">
-            {SHOWCASE_CAMERAS.map((c) => <Thumb key={c.id} lab={lab} streamer={streamer} id={c.id} active={view === c.id} onClick={() => setView(c.id)} />)}
+            {site.cameras.map((c) => <Thumb key={c.id} lab={lab} streamer={streamer} id={c.id} active={view === c.id} onClick={() => setView(c.id)} />)}
           </div>
         </section>
 
@@ -210,14 +205,14 @@ export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: Sho
           </section>
 
           <section className="sc-card">
-            <GarageMap spaces={facility.spaces} changed={facility.changed} truth={truthNow} debug={!present} />
+            <GarageMap site={site} spaces={facility.spaces} changed={facility.changed} truth={truthNow} debug={!present} />
           </section>
 
           <section className="sc-card sc-controls">
             <label>
               <span>Scenario</span>
               <select value={w.spec.scenario} onChange={(e) => isShowcaseScenario(e.target.value) && loadScenario(e.target.value)} data-testid="scenario-select">
-                {SHOWCASE_SCENARIO_IDS.map((id) => <option key={id} value={id}>{SHOWCASE_SCENARIOS[id].title}</option>)}
+                {site.scenarioIds.map((id) => <option key={id} value={id}>{site.scenarios[id].title}</option>)}
               </select>
             </label>
             <label>
@@ -236,7 +231,7 @@ export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: Sho
             <p className="sc-note tnum">T+{fmt(w.simTimeMs)} · {w.vehicles().filter((v) => v.moving).length} moving · {w.vehicles().length} vehicles</p>
           </section>
 
-          <CameraStatus streamer={streamer} compact={present} />
+          <CameraStatus site={site} streamer={streamer} compact={present} />
 
           <section className="sc-card sc-events" data-testid="event-feed">
             <h2>Live events</h2>
@@ -271,23 +266,23 @@ export function ShowcaseApp({ lab, streamer }: { lab: ShowcaseLab; streamer: Sho
 
 const fmt = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms / 1000) % 60)).padStart(2, '0')}`;
 
-function CameraStatus({ streamer, compact }: { streamer: ShowcaseStreamer; compact: boolean }) {
+function CameraStatus({ site, streamer, compact }: { site: Site; streamer: ShowcaseStreamer; compact: boolean }) {
   return (
     <section className="sc-card sc-cams" data-testid="camera-status">
       <h2>CCTV</h2>
       <table>
         <tbody>
-          {SHOWCASE_CAMERAS.map((c) => {
+          {site.cameras.map((c) => {
             const s = streamer.streams.get(c.id)!;
             const age = s.last ? (Date.now() - s.last.at) / 1000 : null;
             return (
               <tr key={c.id} data-testid={`cam-row-${c.id}`}>
-                <th><i style={{ background: OWNER_COLORS[c.id] }} />{c.label}</th>
-                <td>row {c.row}</td>
+                <th><i style={{ background: site.ownerColors[c.id] }} />{c.label}</th>
+                <td>{c.zone}</td>
                 <td className="tnum">{s.last ? `${s.last.detections.filter((d) => d.confidence >= 0.65).length} veh` : '—'}</td>
                 <td className="tnum">{s.last?.a2Ms != null ? `${s.last.a2Ms} ms` : '—'}</td>
                 {!compact && <td className="tnum">#{s.last?.seq ?? '—'} {s.last?.status ?? ''}</td>}
-                <td className={`tnum ${age !== null && age < 10 ? 'fresh' : 'stale'}`}>{age === null ? 'no frame' : `${age.toFixed(0)} s ago`}</td>
+                <td className={`tnum ${age !== null && age < site.freshS ? 'fresh' : 'stale'}`}>{age === null ? 'no frame' : `${age.toFixed(0)} s ago`}</td>
               </tr>
             );
           })}
@@ -302,7 +297,7 @@ function CctvView({ lab, streamer, id, spaces, boxes, polys, truth, small }: {
   lab: ShowcaseLab; streamer: ShowcaseStreamer; id: ShowcaseCameraId; spaces: Record<string, Space>; boxes: boolean; polys: boolean; truth: Set<string> | null; small?: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
-  const cam = SHOWCASE_CAMERAS.find((c) => c.id === id)!;
+  const cam = lab.site.cameras.find((c) => c.id === id)!;
   useEffect(() => {
     const ctx = canvas.current!.getContext('2d')!;
     const t = setInterval(() => {
@@ -335,7 +330,7 @@ function CctvView({ lab, streamer, id, spaces, boxes, polys, truth, small }: {
       </svg>
       <figcaption>
         <b>{cam.label}</b>
-        <span>row {cam.row} · {SHOWCASE_BAYS.filter((b) => b.owner === id).map((b) => b.id).join(' ')}</span>
+        <span>{cam.zone} · {lab.site.bays.filter((b) => b.owner === id).map((b) => b.id).join(' ')}</span>
         <span className="tnum">{s.last ? `#${s.last.seq} ${s.last.status} · A2 ${s.last.a2Ms ?? '—'} ms · ingest ${s.last.ingestMs} ms` : 'no frame yet'}</span>
       </figcaption>
     </figure>
@@ -367,6 +362,7 @@ function Thumb({ lab, streamer, id, active, onClick }: { lab: ShowcaseLab; strea
 function Observer({ lab, owners }: { lab: ShowcaseLab; owners: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const api = useRef<{ go(name: string): void; owners(on: boolean): void } | null>(null);
+  const views = lab.site.quickViews;
   useEffect(() => {
     const el = host.current!;
     const renderer = new WebGLRenderer({ antialias: true });
@@ -380,13 +376,16 @@ function Observer({ lab, owners }: { lab: ShowcaseLab; owners: boolean }) {
     const controls = new OrbitControls(cam, renderer.domElement);
     controls.maxPolarAngle = Math.PI / 2.05;
     controls.enableDamping = true;
-    const first = QUICK_VIEWS.Overview!;
+    const first = views.Overview!;
     cam.position.set(...first.pos);
     controls.target.set(...first.target);
     let tween: { from: Vector3; to: Vector3; tf: Vector3; tt: Vector3; start: number } | null = null;
     api.current = {
       go(name) {
-        const v = QUICK_VIEWS[name]!;
+        const v = views[name]!;
+        // Interior views show the low ceiling; the others keep the cutaway.
+        if (v.ceiling) cam.layers.enable(CEILING_LAYER);
+        else cam.layers.disable(CEILING_LAYER);
         tween = { from: cam.position.clone(), to: new Vector3(...v.pos), tf: controls.target.clone(), tt: new Vector3(...v.target), start: performance.now() };
       },
       owners(on) {
@@ -433,20 +432,20 @@ function Observer({ lab, owners }: { lab: ShowcaseLab; owners: boolean }) {
     <div className="sc-observer" ref={host} data-testid="observer-view">
       <span className="sc-label">Observer · not sent to ParkRight</span>
       <div className="sc-quick">
-        {Object.keys(QUICK_VIEWS).map((n) => <button key={n} onClick={() => api.current?.go(n)} data-testid={`quick-${n}`}>{n}</button>)}
+        {Object.keys(views).map((n) => <button key={n} onClick={() => api.current?.go(n)} data-testid={`quick-${n}`}>{n}</button>)}
       </div>
     </div>
   );
 }
 
-/** Compact 34-bay map of the live facility state; changed bays flash briefly. */
-export function GarageMap({ spaces, changed, truth, debug }: { spaces: Record<string, Space>; changed: Record<string, number>; truth: Set<string> | null; debug: boolean }) {
+/** Compact map of the site's live facility state; changed bays flash briefly. */
+export function GarageMap({ site, spaces, changed, truth, debug }: { site: Site; spaces: Record<string, Space>; changed: Record<string, number>; truth: Set<string> | null; debug: boolean }) {
   const now = Date.now();
   return (
-    <div className="sc-map" data-testid="garage-map">
-      {(['A', 'B', 'C', 'D'] as const).map((row) => (
+    <div className={`sc-map n${site.bays.length}`} data-testid="garage-map">
+      {site.rows.map((row) => (
         <div key={row} className={`sc-maprow row-${row}`}>
-          {SHOWCASE_BAYS.filter((b) => b.row === row).map((b) => {
+          {site.bays.filter((b) => b.row === row).map((b) => {
             const s = spaces[b.id];
             const st = (s?.current_state ?? 'UNCERTAIN').toLowerCase();
             const flash = changed[b.id] && now - changed[b.id]! < 2500;
@@ -467,5 +466,5 @@ export function parseShowcaseUrl() {
   const u = q();
   const scenario = isShowcaseScenario(u.get('scenario') ?? '') ? (u.get('scenario') as ShowcaseScenarioId) : 'live';
   const preset = parseGaragePreset(u.get('env')) ?? 'clear_day';
-  return { scenario, preset, stream: u.get('stream') !== '0' };
+  return { scenario, preset, stream: u.get('stream') !== '0', site: parseSite(u) };
 }

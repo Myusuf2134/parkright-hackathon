@@ -10,10 +10,11 @@ import { isDemoMode, startDemoMode } from './demo/demoMode.ts';
 import { LabContext } from './ui/context.ts';
 import './ui/styles.css';
 
-// ?showcase=1&sim=garage: the 34-space showcase. ?sim=garage: the 12-space 3D garage. Otherwise the legacy Vision Lab, unchanged.
+// ?showcase=1&sim=garage: the 34-space showcase (add &site=ohio-union, or use ?sim=ohio-union, for the
+// Ohio Union North Garage-inspired simulation). ?sim=garage: the 12-space 3D garage. Otherwise the legacy Vision Lab, unchanged.
 const params = new URLSearchParams(location.search);
-if (params.get('sim') === 'garage' && params.get('showcase') === '1') {
-  // 34-space multi-camera showcase.
+if ((params.get('sim') === 'garage' && params.get('showcase') === '1') || params.get('sim') === 'ohio-union') {
+  // Multi-camera showcase (34-space garage or the Ohio Union-inspired level).
   void import('./showcase/boot.tsx').then((m) => m.boot());
 } else if (params.get('sim') === 'garage') {
   void import('./garage/boot.tsx').then((m) => m.boot());

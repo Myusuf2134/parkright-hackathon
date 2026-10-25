@@ -39,7 +39,8 @@ export class GarageVehicleLayer {
   readonly root = new Group();
   private meshes = new Map<string, Group>();
 
-  constructor() {
+  /** elevation(x, z): floor height for vehicles on ramps (absent: every vehicle on the level floor). */
+  constructor(private readonly elevation?: (x: number, z: number) => number) {
     this.root.name = 'garage-vehicles';
   }
 
@@ -53,8 +54,19 @@ export class GarageVehicleLayer {
         this.meshes.set(p.id, mesh);
         this.root.add(mesh);
       }
-      mesh.position.set(p.x, 0, p.z);
-      mesh.rotation.set(0, p.heading, 0);
+      if (this.elevation) {
+        // On a ramp: lift to the surface and pitch along the slope (nose up when climbing).
+        const fx = Math.sin(p.heading);
+        const fz = Math.cos(p.heading);
+        const h = p.spec.length / 2;
+        const front = this.elevation(p.x + fx * h, p.z + fz * h);
+        const back = this.elevation(p.x - fx * h, p.z - fz * h);
+        mesh.position.set(p.x, (front + back) / 2, p.z);
+        mesh.rotation.set(-Math.atan2(front - back, 2 * h), p.heading, 0, 'YXZ');
+      } else {
+        mesh.position.set(p.x, 0, p.z);
+        mesh.rotation.set(0, p.heading, 0);
+      }
     }
     for (const [id, mesh] of this.meshes) {
       if (seen.has(id)) continue;

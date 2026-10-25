@@ -1,21 +1,26 @@
 /**
- * The showcase engine: world + 34-space scene + four fixed CCTV cameras (CAM-01…CAM-04).
+ * The showcase engine: world + a site's scene (the 34-space garage or the Ohio Union North
+ * Garage-inspired level) + that site's fixed CCTV cameras (CAM-01…CAM-04 or CAM-01…CAM-08).
  *
  * capture(cameraId) is the only place a showcase camera frame is produced: in one synchronous
  * step it syncs the scene to the world, renders that camera, starts JPEG encoding of exactly those
  * pixels, and reads ground truth for the same instant (owned bays only). Ground truth never goes
  * into the frame. The free observer camera is a separate renderer in the UI and is never captured.
  */
-import { BufferGeometry, Group, Line, LineBasicMaterial, Scene, Vector3 } from 'three';
+import { BufferGeometry, Fog, Group, Line, LineBasicMaterial, Scene, Vector3 } from 'three';
 import type { GaragePresetId } from '../garage/presets.ts';
 import { applyGaragePreset, type GarageHandles } from '../garage/scene.ts';
 import { GarageVehicleLayer } from '../garage/vehicles.ts';
 import { OPERATOR_LAYER, setLayerDeep } from '../scene/layers.ts';
+import { buildOhioGarage } from '../ohio/scene.ts';
 import { CctvRig } from './cctv.ts';
-import { SHOWCASE_BAYS, SHOWCASE_CAMERAS, type ShowcaseCameraId, ownedBays } from './layout.ts';
+import type { ShowcaseScenarioId } from './schedule.ts';
 import { buildShowcaseGarage } from './scene.ts';
-import type { ShowcaseScenarioId } from './traffic.ts';
+import { SHOWCASE_SITE, type Site, type SiteId } from './site.ts';
 import { ShowcaseWorld, type ShowcaseTruth } from './world.ts';
+
+type ShowcaseCameraId = string;
+const SCENES: Record<SiteId, () => GarageHandles> = { 'showcase-34': buildShowcaseGarage, 'ohio-union': buildOhioGarage };
 
 export interface ShowcaseFrame {
   cameraId: ShowcaseCameraId;
@@ -27,7 +32,7 @@ export interface ShowcaseFrame {
   encodeMs: number;
 }
 
-const OWNER_COLORS: Record<ShowcaseCameraId, string> = { 'cam-01': '#28e0ff', 'cam-02': '#ffb020', 'cam-03': '#7cff6b', 'cam-04': '#ff6bd5' };
+const OWNER_COLORS = SHOWCASE_SITE.ownerColors;
 
 export class ShowcaseLab {
   readonly world: ShowcaseWorld;
@@ -38,18 +43,19 @@ export class ShowcaseLab {
   readonly outlines = new Group();
   exposure = 1;
   fps = 0;
-  private vehicles = new GarageVehicleLayer();
+  private vehicles: GarageVehicleLayer;
   private appliedPreset: GaragePresetId | null = null;
   private frames = 0;
   private fpsStart = 0;
 
-  constructor(scenario: ShowcaseScenarioId = 'live', preset: GaragePresetId = 'clear_day') {
-    this.world = new ShowcaseWorld(scenario, preset);
-    this.handles = buildShowcaseGarage();
-    this.cctv = new CctvRig(SHOWCASE_CAMERAS);
-    for (const b of SHOWCASE_BAYS) {
+  constructor(scenario: ShowcaseScenarioId = 'live', preset: GaragePresetId = 'clear_day', readonly site: Site = SHOWCASE_SITE) {
+    this.world = new ShowcaseWorld(scenario, preset, 4242, site);
+    this.handles = SCENES[site.id]();
+    this.cctv = new CctvRig(site.cameras);
+    this.vehicles = new GarageVehicleLayer(site.elevation);
+    for (const b of site.bays) {
       const pts = [...b.corners, b.corners[0]].map(([x, , z]) => new Vector3(x, 0.05, z));
-      this.outlines.add(new Line(new BufferGeometry().setFromPoints(pts), new LineBasicMaterial({ color: OWNER_COLORS[b.owner] })));
+      this.outlines.add(new Line(new BufferGeometry().setFromPoints(pts), new LineBasicMaterial({ color: site.ownerColors[b.owner] })));
     }
     setLayerDeep(this.outlines, OPERATOR_LAYER);
     this.scene.add(this.handles.root, this.vehicles.root, this.outlines);
@@ -71,6 +77,8 @@ export class ShowcaseLab {
     const { preset } = this.world.spec;
     if (this.appliedPreset !== preset) {
       this.exposure = applyGaragePreset(preset, this.scene, this.handles);
+      const k = this.site.fogScale;
+      if (k && this.scene.fog instanceof Fog) Object.assign(this.scene.fog, { near: this.scene.fog.near * k, far: this.scene.fog.far * k });
       this.cctv.setExposure(this.exposure);
       this.appliedPreset = preset;
     }
@@ -95,7 +103,7 @@ export class ShowcaseLab {
 
   async capture(id: ShowcaseCameraId): Promise<ShowcaseFrame> {
     this.sync();
-    const truth = this.world.truth(ownedBays(id).map((b) => b.id));
+    const truth = this.world.truth(this.site.bays.filter((b) => b.owner === id).map((b) => b.id));
     const capturedAt = new Date();
     const started = performance.now();
     const jpeg = await this.cctv.capture(id, this.scene);

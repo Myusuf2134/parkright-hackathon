@@ -96,3 +96,12 @@
 .present .sc-main { grid-template-columns: minmax(0, 1fr) 340px; }
 .present .sc-counts b { font-size: 34px; }
 @media (prefers-reduced-motion: reduce) { .sc-app * { transition: none !important; } }
+
+/* ---- Ohio Union North Garage-inspired simulation (72 bays, 8 cameras) ---- */
+.sc-disclaimer { margin: 2px 0 0; font-size: 11px; color: var(--amber); }
+.sc-grid.n8 { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr 1fr; }
+.sc-map.n72 .sc-maprow { grid-template-columns: repeat(18, 1fr); gap: 2px; }
+.sc-map.n72 .sc-bay { min-height: 24px; font-size: 8.5px; letter-spacing: -0.02em; padding: 1px; }
+.sc-map.n72 .sc-bay small { font-size: 7.5px; }
+/* The spine between bays 9 and 10. */
+.sc-map.n72 .sc-bay:nth-child(10) { margin-left: 7px; }
