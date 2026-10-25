@@ -1,0 +1,1172 @@
+{
+  "schema": "parkright-ohio-union-live-v1",
+  "site": "Ohio Union North Garage-inspired simulation (not an official or exact digital twin)",
+  "created_at": "2026-10-25T05:12:32.535Z",
+  "mode": "live",
+  "mapper": "production A2 mapper, unchanged: occupied conf 0.65, coverage 0.45, allow_open false; each camera evaluates only its owned bays",
+  "machine_load": {
+    "note": "Apple M2, 8 GB; load average at the start/end of each run is printed to stdout"
+  },
+  "overall": {
+    "frames": 224,
+    "tp": 846,
+    "fp": 76,
+    "fn": 212,
+    "tn": 882,
+    "open_reported": 0,
+    "occupied_precision": 0.918,
+    "occupied_recall": 0.8,
+    "false_occupied_rate": 0.079,
+    "false_occupied_by_bay": {
+      "A7": 1,
+      "B3": 3,
+      "A13": 2,
+      "A15": 3,
+      "B17": 1,
+      "A5": 2,
+      "C18": 2,
+      "B2": 4,
+      "C12": 1,
+      "C9": 7,
+      "D7": 3,
+      "A17": 3,
+      "C7": 3,
+      "C8": 3,
+      "D2": 2,
+      "D5": 5,
+      "B10": 1,
+      "B13": 1,
+      "D10": 1,
+      "D11": 1,
+      "D13": 2,
+      "D18": 2,
+      "A8": 4,
+      "A4": 1,
+      "C1": 3,
+      "C5": 3,
+      "D16": 2,
+      "A14": 2,
+      "B18": 3,
+      "C17": 2,
+      "A18": 1,
+      "C16": 1,
+      "D14": 1
+    },
+    "missed_by_bay": {
+      "A1": 10,
+      "D1": 13,
+      "A11": 14,
+      "D10": 12,
+      "B1": 5,
+      "A14": 5,
+      "B18": 2,
+      "A6": 3,
+      "A9": 1,
+      "B4": 12,
+      "B9": 2,
+      "D2": 5,
+      "C14": 2,
+      "B8": 3,
+      "D9": 18,
+      "C10": 13,
+      "D6": 7,
+      "A18": 6,
+      "C3": 6,
+      "C5": 2,
+      "D4": 5,
+      "C17": 2,
+      "D12": 2,
+      "D8": 10,
+      "A10": 8,
+      "D15": 5,
+      "B10": 1,
+      "B6": 10,
+      "A7": 3,
+      "A15": 1,
+      "A16": 3,
+      "D17": 3,
+      "A4": 2,
+      "C2": 3,
+      "D18": 2,
+      "A12": 5,
+      "C4": 2,
+      "D3": 1,
+      "C11": 2,
+      "A2": 1
+    },
+    "a2_ms": {
+      "n": 224,
+      "mean": 2128,
+      "p50": 2125,
+      "p95": 2558
+    },
+    "ingest_ms": {
+      "n": 224,
+      "mean": 2149,
+      "p50": 2146,
+      "p95": 2578
+    },
+    "encode_ms": {
+      "n": 224,
+      "mean": 48,
+      "p50": 40,
+      "p95": 86
+    },
+    "ws_latency_ms": {
+      "n": 224,
+      "mean": 2190,
+      "p50": 2191,
+      "p95": 2636
+    }
+  },
+  "by_preset": {
+    "clear_day": {
+      "frames": 72,
+      "tp": 291,
+      "fp": 31,
+      "fn": 47,
+      "tn": 279,
+      "open_reported": 0,
+      "occupied_precision": 0.904,
+      "occupied_recall": 0.861,
+      "false_occupied_rate": 0.1,
+      "false_occupied_by_bay": {
+        "A7": 1,
+        "B3": 2,
+        "A13": 1,
+        "A15": 2,
+        "B17": 1,
+        "A5": 2,
+        "C18": 1,
+        "B2": 2,
+        "C12": 1,
+        "C9": 2,
+        "D7": 1,
+        "A17": 1,
+        "C7": 1,
+        "C8": 2,
+        "D2": 2,
+        "D5": 2,
+        "B10": 1,
+        "B13": 1,
+        "D10": 1,
+        "D11": 1,
+        "D13": 1,
+        "D18": 1,
+        "A8": 1
+      },
+      "missed_by_bay": {
+        "A1": 4,
+        "D1": 5,
+        "A11": 5,
+        "D10": 4,
+        "B1": 1,
+        "A14": 1,
+        "B18": 1,
+        "A6": 2,
+        "A9": 1,
+        "B4": 1,
+        "B9": 2,
+        "D2": 1,
+        "C14": 1,
+        "B8": 1,
+        "D9": 4,
+        "C10": 4,
+        "D6": 2,
+        "A18": 1,
+        "C3": 1,
+        "C5": 1,
+        "D4": 2,
+        "C17": 1,
+        "D12": 1
+      },
+      "a2_ms": {
+        "n": 72,
+        "mean": 2038,
+        "p50": 2068,
+        "p95": 3002
+      },
+      "ingest_ms": {
+        "n": 72,
+        "mean": 2058,
+        "p50": 2106,
+        "p95": 3052
+      },
+      "encode_ms": {
+        "n": 72,
+        "mean": 47,
+        "p50": 38,
+        "p95": 114
+      },
+      "ws_latency_ms": {
+        "n": 72,
+        "mean": 2100,
+        "p50": 2130,
+        "p95": 3067
+      }
+    },
+    "dusk": {
+      "frames": 72,
+      "tp": 270,
+      "fp": 18,
+      "fn": 72,
+      "tn": 288,
+      "open_reported": 0,
+      "occupied_precision": 0.938,
+      "occupied_recall": 0.789,
+      "false_occupied_rate": 0.059,
+      "false_occupied_by_bay": {
+        "B2": 2,
+        "A4": 1,
+        "C1": 2,
+        "C5": 1,
+        "C7": 1,
+        "A8": 1,
+        "C9": 2,
+        "C8": 1,
+        "D7": 1,
+        "D16": 1,
+        "D18": 1,
+        "A13": 1,
+        "A14": 1,
+        "A15": 1,
+        "B18": 1
+      },
+      "missed_by_bay": {
+        "A1": 2,
+        "C3": 2,
+        "D1": 3,
+        "D8": 4,
+        "D9": 8,
+        "A10": 3,
+        "A11": 4,
+        "D10": 4,
+        "D15": 1,
+        "A6": 1,
+        "B4": 6,
+        "D2": 1,
+        "B1": 2,
+        "B10": 1,
+        "B6": 5,
+        "B8": 2,
+        "A18": 5,
+        "C10": 5,
+        "A7": 1,
+        "D6": 3,
+        "A15": 1,
+        "A16": 1,
+        "D4": 1,
+        "D17": 2,
+        "A4": 1,
+        "C2": 1,
+        "C5": 1,
+        "D18": 1
+      },
+      "a2_ms": {
+        "n": 72,
+        "mean": 2186,
+        "p50": 2168,
+        "p95": 2558
+      },
+      "ingest_ms": {
+        "n": 72,
+        "mean": 2206,
+        "p50": 2184,
+        "p95": 2583
+      },
+      "encode_ms": {
+        "n": 72,
+        "mean": 52,
+        "p50": 47,
+        "p95": 90
+      },
+      "ws_latency_ms": {
+        "n": 72,
+        "mean": 2252,
+        "p50": 2235,
+        "p95": 2639
+      }
+    },
+    "night": {
+      "frames": 80,
+      "tp": 285,
+      "fp": 27,
+      "fn": 93,
+      "tn": 315,
+      "open_reported": 0,
+      "occupied_precision": 0.913,
+      "occupied_recall": 0.754,
+      "false_occupied_rate": 0.079,
+      "false_occupied_by_bay": {
+        "A8": 2,
+        "B3": 1,
+        "C5": 2,
+        "C9": 3,
+        "C17": 2,
+        "C7": 1,
+        "D5": 3,
+        "A17": 2,
+        "A18": 1,
+        "C16": 1,
+        "C18": 1,
+        "D13": 1,
+        "D14": 1,
+        "A14": 1,
+        "B18": 2,
+        "C1": 1,
+        "D7": 1,
+        "D16": 1
+      },
+      "missed_by_bay": {
+        "A1": 4,
+        "C3": 3,
+        "D1": 5,
+        "D8": 6,
+        "D9": 6,
+        "A10": 5,
+        "A11": 5,
+        "A12": 5,
+        "A14": 4,
+        "D10": 4,
+        "D15": 4,
+        "B1": 2,
+        "C4": 2,
+        "D2": 3,
+        "A7": 2,
+        "C2": 2,
+        "D4": 2,
+        "D12": 1,
+        "D3": 1,
+        "A16": 2,
+        "B18": 1,
+        "B4": 5,
+        "B6": 5,
+        "C10": 4,
+        "D6": 2,
+        "C11": 2,
+        "C14": 1,
+        "C17": 1,
+        "A2": 1,
+        "A4": 1,
+        "D17": 1,
+        "D18": 1
+      },
+      "a2_ms": {
+        "n": 80,
+        "mean": 2158,
+        "p50": 2150,
+        "p95": 2440
+      },
+      "ingest_ms": {
+        "n": 80,
+        "mean": 2179,
+        "p50": 2161,
+        "p95": 2455
+      },
+      "encode_ms": {
+        "n": 80,
+        "mean": 44,
+        "p50": 39,
+        "p95": 81
+      },
+      "ws_latency_ms": {
+        "n": 80,
+        "mean": 2215,
+        "p50": 2195,
+        "p95": 2485
+      }
+    }
+  },
+  "by_scenario": {
+    "live": {
+      "clear_day": {
+        "frames": 40,
+        "tp": 160,
+        "fp": 10,
+        "fn": 26,
+        "tn": 164,
+        "open_reported": 0,
+        "occupied_precision": 0.941,
+        "occupied_recall": 0.86,
+        "false_occupied_rate": 0.057,
+        "false_occupied_by_bay": {
+          "A7": 1,
+          "B3": 2,
+          "A13": 1,
+          "A15": 1,
+          "B17": 1,
+          "A5": 1,
+          "C18": 1,
+          "B2": 1,
+          "C12": 1
+        },
+        "missed_by_bay": {
+          "A1": 4,
+          "D1": 4,
+          "A11": 5,
+          "D10": 4,
+          "B1": 1,
+          "A14": 1,
+          "B18": 1,
+          "A6": 1,
+          "A9": 1,
+          "B4": 1,
+          "B9": 1,
+          "D2": 1,
+          "C14": 1
+        },
+        "a2_ms": {
+          "n": 40,
+          "mean": 1770,
+          "p50": 1707,
+          "p95": 2144
+        },
+        "ingest_ms": {
+          "n": 40,
+          "mean": 1786,
+          "p50": 1726,
+          "p95": 2183
+        },
+        "encode_ms": {
+          "n": 40,
+          "mean": 42,
+          "p50": 32,
+          "p95": 57
+        },
+        "ws_latency_ms": {
+          "n": 40,
+          "mean": 1825,
+          "p50": 1749,
+          "p95": 2497
+        }
+      },
+      "dusk": {
+        "frames": 32,
+        "tp": 118,
+        "fp": 6,
+        "fn": 32,
+        "tn": 132,
+        "open_reported": 0,
+        "occupied_precision": 0.952,
+        "occupied_recall": 0.787,
+        "false_occupied_rate": 0.043,
+        "false_occupied_by_bay": {
+          "B2": 2,
+          "A4": 1,
+          "C1": 1,
+          "C5": 1,
+          "C7": 1
+        },
+        "missed_by_bay": {
+          "A1": 2,
+          "C3": 2,
+          "D1": 3,
+          "D8": 4,
+          "D9": 4,
+          "A10": 3,
+          "A11": 4,
+          "D10": 4,
+          "D15": 1,
+          "A6": 1,
+          "B4": 1,
+          "D2": 1,
+          "B1": 1,
+          "B10": 1
+        },
+        "a2_ms": {
+          "n": 32,
+          "mean": 2259,
+          "p50": 2236,
+          "p95": 2558
+        },
+        "ingest_ms": {
+          "n": 32,
+          "mean": 2286,
+          "p50": 2258,
+          "p95": 2583
+        },
+        "encode_ms": {
+          "n": 32,
+          "mean": 56,
+          "p50": 52,
+          "p95": 97
+        },
+        "ws_latency_ms": {
+          "n": 32,
+          "mean": 2332,
+          "p50": 2299,
+          "p95": 2781
+        }
+      },
+      "night": {
+        "frames": 40,
+        "tp": 122,
+        "fp": 17,
+        "fn": 64,
+        "tn": 157,
+        "open_reported": 0,
+        "occupied_precision": 0.878,
+        "occupied_recall": 0.656,
+        "false_occupied_rate": 0.098,
+        "false_occupied_by_bay": {
+          "A8": 2,
+          "B3": 1,
+          "C5": 2,
+          "C9": 2,
+          "C17": 2,
+          "C7": 1,
+          "D5": 1,
+          "A17": 1,
+          "A18": 1,
+          "C16": 1,
+          "C18": 1,
+          "D13": 1,
+          "D14": 1
+        },
+        "missed_by_bay": {
+          "A1": 4,
+          "C3": 3,
+          "D1": 5,
+          "D8": 5,
+          "D9": 5,
+          "A10": 5,
+          "A11": 5,
+          "A12": 5,
+          "A14": 4,
+          "D10": 4,
+          "D15": 4,
+          "B1": 1,
+          "C4": 2,
+          "D2": 3,
+          "A7": 2,
+          "C2": 1,
+          "D4": 2,
+          "D12": 1,
+          "D3": 1,
+          "A16": 1,
+          "B18": 1
+        },
+        "a2_ms": {
+          "n": 40,
+          "mean": 2175,
+          "p50": 2152,
+          "p95": 2494
+        },
+        "ingest_ms": {
+          "n": 40,
+          "mean": 2193,
+          "p50": 2163,
+          "p95": 2505
+        },
+        "encode_ms": {
+          "n": 40,
+          "mean": 41,
+          "p50": 36,
+          "p95": 80
+        },
+        "ws_latency_ms": {
+          "n": 40,
+          "mean": 2229,
+          "p50": 2192,
+          "p95": 2552
+        }
+      }
+    },
+    "occlusion-stress": {
+      "clear_day": {
+        "frames": 32,
+        "tp": 131,
+        "fp": 21,
+        "fn": 21,
+        "tn": 115,
+        "open_reported": 0,
+        "occupied_precision": 0.862,
+        "occupied_recall": 0.862,
+        "false_occupied_rate": 0.154,
+        "false_occupied_by_bay": {
+          "A5": 1,
+          "C9": 2,
+          "D7": 1,
+          "A15": 1,
+          "A17": 1,
+          "C7": 1,
+          "C8": 2,
+          "D2": 2,
+          "D5": 2,
+          "B10": 1,
+          "B13": 1,
+          "D10": 1,
+          "D11": 1,
+          "D13": 1,
+          "D18": 1,
+          "A8": 1,
+          "B2": 1
+        },
+        "missed_by_bay": {
+          "B8": 1,
+          "D9": 4,
+          "C10": 4,
+          "A6": 1,
+          "D6": 2,
+          "A18": 1,
+          "B9": 1,
+          "C3": 1,
+          "C5": 1,
+          "D4": 2,
+          "C17": 1,
+          "D12": 1,
+          "D1": 1
+        },
+        "a2_ms": {
+          "n": 32,
+          "mean": 2373,
+          "p50": 2225,
+          "p95": 3138
+        },
+        "ingest_ms": {
+          "n": 32,
+          "mean": 2399,
+          "p50": 2248,
+          "p95": 3167
+        },
+        "encode_ms": {
+          "n": 32,
+          "mean": 54,
+          "p50": 43,
+          "p95": 123
+        },
+        "ws_latency_ms": {
+          "n": 32,
+          "mean": 2443,
+          "p50": 2271,
+          "p95": 3315
+        }
+      },
+      "dusk": {
+        "frames": 40,
+        "tp": 152,
+        "fp": 12,
+        "fn": 40,
+        "tn": 156,
+        "open_reported": 0,
+        "occupied_precision": 0.927,
+        "occupied_recall": 0.792,
+        "false_occupied_rate": 0.071,
+        "false_occupied_by_bay": {
+          "A8": 1,
+          "C9": 2,
+          "C8": 1,
+          "D7": 1,
+          "D16": 1,
+          "D18": 1,
+          "C1": 1,
+          "A13": 1,
+          "A14": 1,
+          "A15": 1,
+          "B18": 1
+        },
+        "missed_by_bay": {
+          "B4": 5,
+          "B6": 5,
+          "B8": 2,
+          "D9": 4,
+          "A18": 5,
+          "C10": 5,
+          "A7": 1,
+          "D6": 3,
+          "A15": 1,
+          "A16": 1,
+          "D4": 1,
+          "D17": 2,
+          "A4": 1,
+          "C2": 1,
+          "B1": 1,
+          "C5": 1,
+          "D18": 1
+        },
+        "a2_ms": {
+          "n": 40,
+          "mean": 2127,
+          "p50": 2122,
+          "p95": 2588
+        },
+        "ingest_ms": {
+          "n": 40,
+          "mean": 2143,
+          "p50": 2138,
+          "p95": 2606
+        },
+        "encode_ms": {
+          "n": 40,
+          "mean": 48,
+          "p50": 40,
+          "p95": 90
+        },
+        "ws_latency_ms": {
+          "n": 40,
+          "mean": 2188,
+          "p50": 2170,
+          "p95": 2636
+        }
+      },
+      "night": {
+        "frames": 40,
+        "tp": 163,
+        "fp": 10,
+        "fn": 29,
+        "tn": 158,
+        "open_reported": 0,
+        "occupied_precision": 0.942,
+        "occupied_recall": 0.849,
+        "false_occupied_rate": 0.06,
+        "false_occupied_by_bay": {
+          "A14": 1,
+          "A17": 1,
+          "B18": 2,
+          "D5": 2,
+          "C1": 1,
+          "C9": 1,
+          "D7": 1,
+          "D16": 1
+        },
+        "missed_by_bay": {
+          "B4": 5,
+          "B6": 5,
+          "C10": 4,
+          "D6": 2,
+          "D8": 1,
+          "D9": 1,
+          "C11": 2,
+          "C14": 1,
+          "C17": 1,
+          "A2": 1,
+          "A4": 1,
+          "C2": 1,
+          "A16": 1,
+          "B1": 1,
+          "D17": 1,
+          "D18": 1
+        },
+        "a2_ms": {
+          "n": 40,
+          "mean": 2142,
+          "p50": 2122,
+          "p95": 2404
+        },
+        "ingest_ms": {
+          "n": 40,
+          "mean": 2166,
+          "p50": 2148,
+          "p95": 2413
+        },
+        "encode_ms": {
+          "n": 40,
+          "mean": 47,
+          "p50": 42,
+          "p95": 89
+        },
+        "ws_latency_ms": {
+          "n": 40,
+          "mean": 2201,
+          "p50": 2199,
+          "p95": 2450
+        }
+      }
+    }
+  },
+  "by_camera": {
+    "cam-01": {
+      "frames": 28,
+      "tp": 113,
+      "fp": 8,
+      "fn": 20,
+      "tn": 111,
+      "open_reported": 0,
+      "occupied_precision": 0.934,
+      "occupied_recall": 0.85,
+      "false_occupied_rate": 0.067,
+      "false_occupied_by_bay": {
+        "A7": 1,
+        "A5": 2,
+        "A8": 4,
+        "A4": 1
+      },
+      "missed_by_bay": {
+        "A1": 10,
+        "A6": 3,
+        "A9": 1,
+        "A7": 3,
+        "A4": 2,
+        "A2": 1
+      },
+      "a2_ms": {
+        "n": 28,
+        "mean": 2104,
+        "p50": 2152,
+        "p95": 2416
+      },
+      "ingest_ms": {
+        "n": 28,
+        "mean": 2127,
+        "p50": 2168,
+        "p95": 2450
+      },
+      "encode_ms": {
+        "n": 28,
+        "mean": 66,
+        "p50": 43,
+        "p95": 243
+      },
+      "ws_latency_ms": {
+        "n": 28,
+        "mean": 2186,
+        "p50": 2209,
+        "p95": 2497
+      }
+    },
+    "cam-02": {
+      "frames": 28,
+      "tp": 107,
+      "fp": 7,
+      "fn": 32,
+      "tn": 106,
+      "open_reported": 0,
+      "occupied_precision": 0.939,
+      "occupied_recall": 0.77,
+      "false_occupied_rate": 0.062,
+      "false_occupied_by_bay": {
+        "B3": 3,
+        "B2": 4
+      },
+      "missed_by_bay": {
+        "B1": 5,
+        "B4": 12,
+        "B9": 2,
+        "B8": 3,
+        "B6": 10
+      },
+      "a2_ms": {
+        "n": 28,
+        "mean": 2102,
+        "p50": 2163,
+        "p95": 2484
+      },
+      "ingest_ms": {
+        "n": 28,
+        "mean": 2122,
+        "p50": 2175,
+        "p95": 2504
+      },
+      "encode_ms": {
+        "n": 28,
+        "mean": 43,
+        "p50": 34,
+        "p95": 77
+      },
+      "ws_latency_ms": {
+        "n": 28,
+        "mean": 2159,
+        "p50": 2235,
+        "p95": 2603
+      }
+    },
+    "cam-03": {
+      "frames": 28,
+      "tp": 88,
+      "fp": 19,
+      "fn": 13,
+      "tn": 132,
+      "open_reported": 0,
+      "occupied_precision": 0.822,
+      "occupied_recall": 0.871,
+      "false_occupied_rate": 0.126,
+      "false_occupied_by_bay": {
+        "C9": 7,
+        "C7": 3,
+        "C8": 3,
+        "C1": 3,
+        "C5": 3
+      },
+      "missed_by_bay": {
+        "C3": 6,
+        "C5": 2,
+        "C2": 3,
+        "C4": 2
+      },
+      "a2_ms": {
+        "n": 28,
+        "mean": 2152,
+        "p50": 2125,
+        "p95": 2623
+      },
+      "ingest_ms": {
+        "n": 28,
+        "mean": 2176,
+        "p50": 2148,
+        "p95": 2698
+      },
+      "encode_ms": {
+        "n": 28,
+        "mean": 50,
+        "p50": 47,
+        "p95": 72
+      },
+      "ws_latency_ms": {
+        "n": 28,
+        "mean": 2215,
+        "p50": 2200,
+        "p95": 2682
+      }
+    },
+    "cam-04": {
+      "frames": 28,
+      "tp": 113,
+      "fp": 10,
+      "fn": 59,
+      "tn": 70,
+      "open_reported": 0,
+      "occupied_precision": 0.919,
+      "occupied_recall": 0.657,
+      "false_occupied_rate": 0.125,
+      "false_occupied_by_bay": {
+        "D7": 3,
+        "D2": 2,
+        "D5": 5
+      },
+      "missed_by_bay": {
+        "D1": 13,
+        "D2": 5,
+        "D9": 18,
+        "D6": 7,
+        "D4": 5,
+        "D8": 10,
+        "D3": 1
+      },
+      "a2_ms": {
+        "n": 28,
+        "mean": 2137,
+        "p50": 2121,
+        "p95": 2689
+      },
+      "ingest_ms": {
+        "n": 28,
+        "mean": 2158,
+        "p50": 2139,
+        "p95": 2711
+      },
+      "encode_ms": {
+        "n": 28,
+        "mean": 47,
+        "p50": 39,
+        "p95": 89
+      },
+      "ws_latency_ms": {
+        "n": 28,
+        "mean": 2198,
+        "p50": 2183,
+        "p95": 2766
+      }
+    },
+    "cam-05": {
+      "frames": 28,
+      "tp": 74,
+      "fp": 11,
+      "fn": 42,
+      "tn": 125,
+      "open_reported": 0,
+      "occupied_precision": 0.871,
+      "occupied_recall": 0.638,
+      "false_occupied_rate": 0.081,
+      "false_occupied_by_bay": {
+        "A13": 2,
+        "A15": 3,
+        "A17": 3,
+        "A14": 2,
+        "A18": 1
+      },
+      "missed_by_bay": {
+        "A11": 14,
+        "A14": 5,
+        "A18": 6,
+        "A10": 8,
+        "A15": 1,
+        "A16": 3,
+        "A12": 5
+      },
+      "a2_ms": {
+        "n": 28,
+        "mean": 2127,
+        "p50": 2160,
+        "p95": 2435
+      },
+      "ingest_ms": {
+        "n": 28,
+        "mean": 2150,
+        "p50": 2189,
+        "p95": 2443
+      },
+      "encode_ms": {
+        "n": 28,
+        "mean": 43,
+        "p50": 33,
+        "p95": 90
+      },
+      "ws_latency_ms": {
+        "n": 28,
+        "mean": 2184,
+        "p50": 2204,
+        "p95": 2477
+      }
+    },
+    "cam-06": {
+      "frames": 28,
+      "tp": 123,
+      "fp": 6,
+      "fn": 3,
+      "tn": 120,
+      "open_reported": 0,
+      "occupied_precision": 0.953,
+      "occupied_recall": 0.976,
+      "false_occupied_rate": 0.048,
+      "false_occupied_by_bay": {
+        "B17": 1,
+        "B10": 1,
+        "B13": 1,
+        "B18": 3
+      },
+      "missed_by_bay": {
+        "B18": 2,
+        "B10": 1
+      },
+      "a2_ms": {
+        "n": 28,
+        "mean": 2157,
+        "p50": 2144,
+        "p95": 2713
+      },
+      "ingest_ms": {
+        "n": 28,
+        "mean": 2179,
+        "p50": 2181,
+        "p95": 2768
+      },
+      "encode_ms": {
+        "n": 28,
+        "mean": 43,
+        "p50": 41,
+        "p95": 67
+      },
+      "ws_latency_ms": {
+        "n": 28,
+        "mean": 2214,
+        "p50": 2208,
+        "p95": 2781
+      }
+    },
+    "cam-07": {
+      "frames": 28,
+      "tp": 141,
+      "fp": 6,
+      "fn": 19,
+      "tn": 86,
+      "open_reported": 0,
+      "occupied_precision": 0.959,
+      "occupied_recall": 0.881,
+      "false_occupied_rate": 0.065,
+      "false_occupied_by_bay": {
+        "C18": 2,
+        "C12": 1,
+        "C17": 2,
+        "C16": 1
+      },
+      "missed_by_bay": {
+        "C14": 2,
+        "C10": 13,
+        "C17": 2,
+        "C11": 2
+      },
+      "a2_ms": {
+        "n": 28,
+        "mean": 2129,
+        "p50": 2105,
+        "p95": 2480
+      },
+      "ingest_ms": {
+        "n": 28,
+        "mean": 2146,
+        "p50": 2115,
+        "p95": 2516
+      },
+      "encode_ms": {
+        "n": 28,
+        "mean": 50,
+        "p50": 44,
+        "p95": 89
+      },
+      "ws_latency_ms": {
+        "n": 28,
+        "mean": 2192,
+        "p50": 2160,
+        "p95": 2555
+      }
+    },
+    "cam-08": {
+      "frames": 28,
+      "tp": 87,
+      "fp": 9,
+      "fn": 24,
+      "tn": 132,
+      "open_reported": 0,
+      "occupied_precision": 0.906,
+      "occupied_recall": 0.784,
+      "false_occupied_rate": 0.064,
+      "false_occupied_by_bay": {
+        "D10": 1,
+        "D11": 1,
+        "D13": 2,
+        "D18": 2,
+        "D16": 2,
+        "D14": 1
+      },
+      "missed_by_bay": {
+        "D10": 12,
+        "D12": 2,
+        "D15": 5,
+        "D17": 3,
+        "D18": 2
+      },
+      "a2_ms": {
+        "n": 28,
+        "mean": 2119,
+        "p50": 2144,
+        "p95": 2445
+      },
+      "ingest_ms": {
+        "n": 28,
+        "mean": 2135,
+        "p50": 2163,
+        "p95": 2455
+      },
+      "encode_ms": {
+        "n": 28,
+        "mean": 40,
+        "p50": 35,
+        "p95": 65
+      },
+      "ws_latency_ms": {
+        "n": 28,
+        "mean": 2173,
+        "p50": 2190,
+        "p95": 2485
+      }
+    }
+  },
+  "facility_refresh": {
+    "cycle_ms": {
+      "n": 28,
+      "mean": 18128,
+      "p50": 18335,
+      "p95": 20202
+    }
+  }
+}

@@ -1,0 +1,65 @@
+preset,scenario,camera,cycle,seq,status,truth,predicted,vehicles,a2_ms,ingest_ms,encode_ms,ws_latency_ms,moving
+clear_day,validation,cam-01,0,0,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,5,1882,2005,61,2067,0
+clear_day,validation,cam-02,0,0,accepted,B2 B5 B7 B9,B2 B5 B7 B9,14,1486,1509,28,1528,0
+clear_day,validation,cam-03,0,0,accepted,C1 C3 C4 C8,C1 C3 C4 C8,14,1593,1616,27,1633,0
+clear_day,validation,cam-04,0,0,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,1452,1476,19,1484,0
+clear_day,validation,cam-05,0,0,accepted,A10 A12 A13 A16 A18,A10 A12 A13 A16 A18,6,1502,1527,23,1538,0
+clear_day,validation,cam-06,0,0,accepted,B10 B11 B14 B17,B11 B14 B17,11,1618,1654,26,1667,0
+clear_day,validation,cam-07,0,0,accepted,C11 C12 C15 C18,C11 C12 C15 C18,11,1457,1481,21,1492,0
+clear_day,validation,cam-08,0,0,accepted,D10 D13 D14 D17,D10 D13 D14 D17,5,1550,1576,24,1587,0
+clear_day,validation,cam-01,1,1,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,5,1571,1594,23,1604,0
+clear_day,validation,cam-02,1,1,accepted,B2 B5 B7 B9,B2 B5 B7 B9,14,1540,1550,33,1583,0
+clear_day,validation,cam-03,1,1,accepted,C1 C3 C4 C8,C1 C3 C4 C8,14,1592,1612,23,1623,0
+clear_day,validation,cam-04,1,1,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,1542,1562,54,1603,0
+clear_day,validation,cam-05,1,1,accepted,A10 A12 A13 A16 A18,A10 A12 A13 A16 A18,6,1620,1645,19,1648,0
+clear_day,validation,cam-06,1,1,accepted,B10 B11 B14 B17,B11 B14 B17,11,1651,1677,21,1685,0
+clear_day,validation,cam-07,1,1,accepted,C11 C12 C15 C18,C11 C12 C15 C18,11,1473,1495,19,1503,0
+clear_day,validation,cam-08,1,1,accepted,D10 D13 D14 D17,D10 D13 D14 D17,5,1595,1615,21,1625,0
+dusk,validation,cam-01,0,0,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,5,1759,1788,200,1976,0
+dusk,validation,cam-02,0,0,accepted,B2 B5 B7 B9,B2 B5 B7 B9,11,1491,1503,19,1524,0
+dusk,validation,cam-03,0,0,accepted,C1 C3 C4 C8,C1 C4 C8,10,1566,1594,48,1630,0
+dusk,validation,cam-04,0,0,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,1686,1715,22,1723,0
+dusk,validation,cam-05,0,0,accepted,A10 A12 A13 A16 A18,A10 A12 A13 A16,4,1632,1658,24,1668,0
+dusk,validation,cam-06,0,0,accepted,B10 B11 B14 B17,B11 B14 B17,9,1503,1528,44,1559,0
+dusk,validation,cam-07,0,0,accepted,C11 C12 C15 C18,C11 C12 C15 C18,9,1735,1759,37,1783,0
+dusk,validation,cam-08,0,0,accepted,D10 D13 D14 D17,D10 D13 D14 D17,4,1551,1578,25,1592,0
+dusk,validation,cam-01,1,1,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,5,1515,1534,24,1546,0
+dusk,validation,cam-02,1,1,accepted,B2 B5 B7 B9,B2 B5 B7 B9,11,1708,1731,34,1752,0
+dusk,validation,cam-03,1,1,accepted,C1 C3 C4 C8,C1 C4 C8,10,1819,1841,27,1855,0
+dusk,validation,cam-04,1,1,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,1755,1776,34,1798,0
+dusk,validation,cam-05,1,1,accepted,A10 A12 A13 A16 A18,A10 A12 A13 A16,4,1691,1700,25,1727,0
+dusk,validation,cam-06,1,1,accepted,B10 B11 B14 B17,B11 B14 B17,9,1555,1565,29,1594,0
+dusk,validation,cam-07,1,1,accepted,C11 C12 C15 C18,C11 C12 C15 C18,9,1730,1739,40,1780,0
+dusk,validation,cam-08,1,1,accepted,D10 D13 D14 D17,D10 D13 D14 D17,4,1573,1601,22,1607,0
+night,validation,cam-01,0,0,accepted,A1 A3 A4 A7 A9,A1 A4 A7,4,1755,1777,144,1922,0
+night,validation,cam-02,0,0,accepted,B2 B5 B7 B9,B2 B5 B7 B9,11,1532,1556,42,1585,0
+night,validation,cam-03,0,0,accepted,C1 C3 C4 C8,C1 C3 C4 C8,12,1561,1594,38,1619,0
+night,validation,cam-04,0,0,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,1616,1642,27,1656,0
+night,validation,cam-05,0,0,accepted,A10 A12 A13 A16 A18,A10 A13 A16 A18,4,1610,1635,36,1658,0
+night,validation,cam-06,0,0,accepted,B10 B11 B14 B17,B11 B14 B17,10,1675,1689,26,1715,0
+night,validation,cam-07,0,0,accepted,C11 C12 C15 C18,C11 C12 C15 C18,8,1584,1594,40,1636,0
+night,validation,cam-08,0,0,accepted,D10 D13 D14 D17,D10 D13 D14 D17,4,1590,1613,29,1630,0
+night,validation,cam-01,1,1,accepted,A1 A3 A4 A7 A9,A1 A4 A7,4,1573,1581,29,1611,0
+night,validation,cam-02,1,1,accepted,B2 B5 B7 B9,B2 B5 B7 B9,11,1558,1568,23,1592,0
+night,validation,cam-03,1,1,accepted,C1 C3 C4 C8,C1 C3 C4 C8,12,1619,1643,48,1678,0
+night,validation,cam-04,1,1,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,1600,1607,22,1631,0
+night,validation,cam-05,1,1,accepted,A10 A12 A13 A16 A18,A10 A13 A16 A18,4,1568,1578,34,1612,0
+night,validation,cam-06,1,1,accepted,B10 B11 B14 B17,B11 B14 B17,10,1685,1714,30,1724,0
+night,validation,cam-07,1,1,accepted,C11 C12 C15 C18,C11 C12 C15 C18,8,1587,1594,60,1654,0
+night,validation,cam-08,1,1,accepted,D10 D13 D14 D17,D10 D13 D14 D17,4,1759,1789,23,1793,0
+overcast,validation,cam-01,0,0,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,5,1795,1819,40,1860,0
+overcast,validation,cam-02,0,0,accepted,B2 B5 B7 B9,B2 B5 B7 B9,13,1665,1689,35,1712,0
+overcast,validation,cam-03,0,0,accepted,C1 C3 C4 C8,C1 C3 C4 C8,13,1601,1613,27,1641,0
+overcast,validation,cam-04,0,0,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,1586,1599,22,1622,0
+overcast,validation,cam-05,0,0,accepted,A10 A12 A13 A16 A18,A10 A12 A13 A16 A18,5,1629,1642,31,1673,0
+overcast,validation,cam-06,0,0,accepted,B10 B11 B14 B17,B11 B14 B17,10,1715,1728,55,1784,0
+overcast,validation,cam-07,0,0,accepted,C11 C12 C15 C18,C11 C12 C15 C18,9,1733,1745,26,1772,0
+overcast,validation,cam-08,0,0,accepted,D10 D13 D14 D17,D10 D13 D14 D17,4,1746,1774,29,1788,0
+overcast,validation,cam-01,1,1,accepted,A1 A3 A4 A7 A9,A1 A3 A4 A7 A9,5,1707,1719,54,1774,0
+overcast,validation,cam-02,1,1,accepted,B2 B5 B7 B9,B2 B5 B7 B9,13,1730,1741,35,1777,0
+overcast,validation,cam-03,1,1,accepted,C1 C3 C4 C8,C1 C3 C4 C8,13,1767,1795,39,1817,0
+overcast,validation,cam-04,1,1,accepted,D2 D5 D6 D9,D2 D5 D6 D9,5,1905,1952,72,1987,0
+overcast,validation,cam-05,1,1,accepted,A10 A12 A13 A16 A18,A10 A12 A13 A16 A18,5,2257,2288,37,2310,0
+overcast,validation,cam-06,1,1,accepted,B10 B11 B14 B17,B11 B14 B17,10,2291,2323,54,2363,0
+overcast,validation,cam-07,1,1,accepted,C11 C12 C15 C18,C11 C12 C15 C18,9,2641,2701,37,2695,0
+overcast,validation,cam-08,1,1,accepted,D10 D13 D14 D17,D10 D13 D14 D17,4,2164,2177,29,2213,0

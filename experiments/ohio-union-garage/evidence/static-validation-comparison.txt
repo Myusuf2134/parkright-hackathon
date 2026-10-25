@@ -1,0 +1,32 @@
+Static validation scene, Ohio Union North Garage-inspired simulation, live A2 (production mapper unchanged:
+occupied conf 0.65, coverage 0.45, allow_open false). 34 of 72 bays occupied. Presets: day, dusk, night, overcast.
+Apple M2, 8 GB. Each row: one configuration of camera mounting / lighting; the committed one is marked.
+
+configuration                                   frames  tp  fp  fn  precision recall  open  frames equal
+cameras hung at 2.8 m (below girders), 1 cycle  32      107 3   29  0.973     0.787   0     12/32
+girder face 3.1 m, brighter fixtures, 1 cycle   32      126 0   10  1         0.926   0     24/32
+3.0 m, 2 cycles                                 64      232 0   40  1         0.853   0     32/64
+3.2 m, slab 3.7 m (committed), 2 cycles         64      254 0   18  1         0.934   0     48/64
+3.2 m + 8 stall lights (rejected), 2 cycles     64      258 2   14  0.992     0.949   0     52/64
+
+Committed configuration, per frame (truth → perception) where they differ:
+  clear_day cam-06  cycle 0  missed B10  (truth B10 B11 B14 B17 | perception B11 B14 B17)
+  clear_day cam-06  cycle 1  missed B10  (truth B10 B11 B14 B17 | perception B11 B14 B17)
+  dusk      cam-03  cycle 0  missed C3  (truth C1 C3 C4 C8 | perception C1 C4 C8)
+  dusk      cam-05  cycle 0  missed A18  (truth A10 A12 A13 A16 A18 | perception A10 A12 A13 A16)
+  dusk      cam-06  cycle 0  missed B10  (truth B10 B11 B14 B17 | perception B11 B14 B17)
+  dusk      cam-03  cycle 1  missed C3  (truth C1 C3 C4 C8 | perception C1 C4 C8)
+  dusk      cam-05  cycle 1  missed A18  (truth A10 A12 A13 A16 A18 | perception A10 A12 A13 A16)
+  dusk      cam-06  cycle 1  missed B10  (truth B10 B11 B14 B17 | perception B11 B14 B17)
+  night     cam-01  cycle 0  missed A3 A9  (truth A1 A3 A4 A7 A9 | perception A1 A4 A7)
+  night     cam-05  cycle 0  missed A12  (truth A10 A12 A13 A16 A18 | perception A10 A13 A16 A18)
+  night     cam-06  cycle 0  missed B10  (truth B10 B11 B14 B17 | perception B11 B14 B17)
+  night     cam-01  cycle 1  missed A3 A9  (truth A1 A3 A4 A7 A9 | perception A1 A4 A7)
+  night     cam-05  cycle 1  missed A12  (truth A10 A12 A13 A16 A18 | perception A10 A13 A16 A18)
+  night     cam-06  cycle 1  missed B10  (truth B10 B11 B14 B17 | perception B11 B14 B17)
+  overcast  cam-06  cycle 0  missed B10  (truth B10 B11 B14 B17 | perception B11 B14 B17)
+  overcast  cam-06  cycle 1  missed B10  (truth B10 B11 B14 B17 | perception B11 B14 B17)
+
+Every difference is a miss (bay left UNCERTAIN), never a false OCCUPIED and never OPEN. B10 from CAM-06 is
+partly hidden by the SUV in B11 at that oblique angle: A2 detects it at 0.56 (< 0.65), so it stays UNCERTAIN.
+The others are dark cars in the far row at dusk and night.

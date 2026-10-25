@@ -1,0 +1,124 @@
+{
+  "schema": "parkright-ohio-union-perf-v1",
+  "created_at": "2026-10-25T05:24:18.018Z",
+  "machine": {
+    "cpu": "Apple M2",
+    "cores": 8,
+    "memory_gb": 8
+  },
+  "note": "Measured on this machine (Apple M2, 8 GB), not an M5. Load average is recorded because macOS background work changes A2 latency a lot.",
+  "load_average": [
+    7.1,
+    6.8
+  ],
+  "observer_fps": 30,
+  "observer_raf_fps": 57.6,
+  "simulation_loop_fps": 57,
+  "cctv_draw_calls_per_frame": 1186,
+  "cctv_preview_fps": 15.3,
+  "cctv_render_ms": {
+    "n": 609,
+    "mean": 4.1,
+    "p50": 4.100000023841858,
+    "p95": 5.300000011920929
+  },
+  "jpeg_encode_ms": {
+    "n": 23,
+    "mean": 58.2,
+    "p50": 47.59999996423721,
+    "p95": 101.10000002384186
+  },
+  "camera_schedule": "round robin CAM-01 → … → CAM-08, one frame in flight, no extra wait (interval = A2 time)",
+  "accepted_frames_per_second": 0.38,
+  "camera_to_driver_update_ms": {
+    "n": 22,
+    "mean": 2527.2,
+    "p50": 2520,
+    "p95": 2833
+  },
+  "from_live_measurement": {
+    "frames": 224,
+    "a2_inference_ms": {
+      "n": 224,
+      "mean": 2128,
+      "p50": 2125,
+      "p95": 2558
+    },
+    "a2_inference_ms_by_camera": {
+      "cam-01": {
+        "n": 28,
+        "mean": 2104,
+        "p50": 2152,
+        "p95": 2416
+      },
+      "cam-02": {
+        "n": 28,
+        "mean": 2102,
+        "p50": 2163,
+        "p95": 2484
+      },
+      "cam-03": {
+        "n": 28,
+        "mean": 2152,
+        "p50": 2125,
+        "p95": 2623
+      },
+      "cam-04": {
+        "n": 28,
+        "mean": 2137,
+        "p50": 2121,
+        "p95": 2689
+      },
+      "cam-05": {
+        "n": 28,
+        "mean": 2127,
+        "p50": 2160,
+        "p95": 2435
+      },
+      "cam-06": {
+        "n": 28,
+        "mean": 2157,
+        "p50": 2144,
+        "p95": 2713
+      },
+      "cam-07": {
+        "n": 28,
+        "mean": 2129,
+        "p50": 2105,
+        "p95": 2480
+      },
+      "cam-08": {
+        "n": 28,
+        "mean": 2119,
+        "p50": 2144,
+        "p95": 2445
+      }
+    },
+    "ingest_ms": {
+      "n": 224,
+      "mean": 2149,
+      "p50": 2146,
+      "p95": 2578
+    },
+    "camera_to_websocket_ms": {
+      "n": 224,
+      "mean": 2190,
+      "p50": 2191,
+      "p95": 2636
+    },
+    "facility_refresh_cycle_ms": {
+      "n": 28,
+      "mean": 18128,
+      "p50": 18335,
+      "p95": 20202
+    }
+  },
+  "compared_with_m2_34_space_showcase": {
+    "a2_mean_ms": 2180,
+    "accepted_fps": "0.38–0.48",
+    "facility_refresh_mean_ms": 9100,
+    "observer_fps": 30,
+    "preview_fps": 15.4,
+    "note": "experiments/garage-showcase/evidence/performance.json, same machine, other runs"
+  }
+}
