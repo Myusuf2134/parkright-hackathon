@@ -105,3 +105,4 @@
 .sc-map.n72 .sc-bay small { font-size: 7.5px; }
 /* The spine between bays 9 and 10. */
 .sc-map.n72 .sc-bay:nth-child(10) { margin-left: 7px; }
+.sc-grid.n8 ~ .sc-thumbs { display: none; } /* the 8-camera grid already shows every camera */
