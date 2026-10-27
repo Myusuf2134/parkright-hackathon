@@ -20,3 +20,20 @@ export const Bolt = (p: P) => <svg {...base(p)} stroke="none"><path d="M13 3 6 1
 export const TurnRight = (p: P) => <svg {...base(p)} strokeWidth={2.4}><path d="M8 19V11a3 3 0 0 1 3-3h8M15 4l4 4-4 4" /></svg>;
 export const Search = (p: P) => <svg {...base(p)}><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4 4" /></svg>;
 export const Replay = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4.5h4.5" /></svg>;
+export const Check = (p: P) => <svg {...base(p)} strokeWidth={2.4}><path d="m5.5 12.5 4 4 9-9.5" /></svg>;
+export const Chevron = (p: P) => <svg {...base(p)} strokeWidth={2.2}><path d="m9 5 7 7-7 7" /></svg>;
+export const Clock = (p: P) => <svg {...base(p)} strokeWidth={1.9}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></svg>;
+export const Lock = (p: P) => <svg {...base(p)} strokeWidth={1.9}><rect x="5" y="10.5" width="14" height="9.5" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></svg>;
+export const Phone = (p: P) => <svg {...base(p)} strokeWidth={1.9}><rect x="7" y="3" width="10" height="18" rx="2.5" /><path d="M11 17.5h2" /></svg>;
+export const Camera = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5Z" /><circle cx="12" cy="12.5" r="3.5" /></svg>;
+export const Spark = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M12 3.5 13.8 9l5.7 1.5-5.7 1.6L12 17.5l-1.8-5.4L4.5 10.5 10.2 9Z" /></svg>;
+export const Plug = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M9 3v4M15 3v4M7 7h10v3a5 5 0 0 1-10 0Z" /><path d="M12 15v6" /></svg>;
+const TrafficIcon = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M5 14.5V12l1.7-3.6A1.8 1.8 0 0 1 8.3 7.4h7.4a1.8 1.8 0 0 1 1.6 1L19 12v2.5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1Z" /><path d="M5.5 12h13M8 18.5v1M16 18.5v1" /></svg>;
+const WeatherIcon = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M7.5 15.5h9a3.5 3.5 0 0 0 .4-7A5 5 0 0 0 7.3 9.6 3 3 0 0 0 7.5 15.5Z" /><path d="M9 19h.01M12 20.5h.01M15 19h.01" strokeWidth={2.6} /></svg>;
+const ConeIcon = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M10.3 4h3.4l4.3 14H6Z" /><path d="M4 20h16M8.2 13h7.6M9.4 9h5.2" /></svg>;
+const AnnounceIcon = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M4 10v4a1 1 0 0 0 1 1h2l6 4V5L7 9H5a1 1 0 0 0-1 1Z" /><path d="M16.5 9a4 4 0 0 1 0 6" /></svg>;
+const ParkIcon = (p: P) => <svg {...base(p)} strokeWidth={1.9}><rect x="4.5" y="4.5" width="15" height="15" rx="4" /><path d="M10 16V8h2.8a2.4 2.4 0 0 1 0 4.8H10" /></svg>;
+export function AlertIcon({ kind, ...p }: P & { kind: 'traffic' | 'weather' | 'construction' | 'announcement' | 'parking' }) {
+  const I = { traffic: TrafficIcon, weather: WeatherIcon, construction: ConeIcon, announcement: AnnounceIcon, parking: ParkIcon }[kind];
+  return <I {...p} />;
+}

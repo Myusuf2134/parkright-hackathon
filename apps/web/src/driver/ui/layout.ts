@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState, type RefObject } from 'react';
 
 /** Visible viewport height (tracks the iOS URL bar and rotation). */
 export function useViewportHeight(): number {
@@ -33,4 +33,19 @@ export function useSafeArea(): { top: number; bottom: number } {
 
 export function haptic(ms = 8) {
   try { navigator.vibrate?.(ms); } catch { /* not supported (iOS) */ }
+}
+
+/** Height of the app frame: the phone screen on mobile, the centred device frame on desktop. */
+export function useFrameHeight(ref: RefObject<HTMLElement | null>): number {
+  const [h, setH] = useState(() => Math.round(window.visualViewport?.height ?? window.innerHeight));
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const read = () => setH(Math.round(el.clientHeight));
+    read();
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref]);
+  return h;
 }

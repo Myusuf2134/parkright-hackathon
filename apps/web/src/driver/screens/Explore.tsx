@@ -1,5 +1,5 @@
 import type { Facility, ParkingSpace } from '@parkright/contracts';
-import { animate, motion, useMotionValue, useTransform, type MotionValue } from 'motion/react';
+import { AnimatePresence, animate, motion, useMotionValue, useTransform, type MotionValue } from 'motion/react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { AdviceState, Load } from '../net/api.ts';
 import type { LiveView } from '../net/live.ts';
@@ -25,6 +25,8 @@ export interface ParkingCtx {
   destination: string | null;
   destinationIsDemo: boolean;
   classLine: string | null;
+  /** Recommended departure from Plan (demo estimate), shown beside the class line. */
+  leaveBy: string | null;
 }
 
 export function Explore(props: {
@@ -63,6 +65,7 @@ export function Explore(props: {
   const mapX = useMotionValue(0), mapY = useMotionValue(0), mapScale = useMotionValue(1.06);
   useEffect(() => { if (revealed) animate(mapScale, 1, { duration: 0.6, ease: [0.22, 1, 0.36, 1] }); }, [revealed, mapScale]);
   const ctlBottom = useTransform(sheetY, (v) => viewport - v + 14);
+  const lblBottom = useTransform(sheetY, (v) => viewport - v + 26);
   const ctlOpacity = useTransform(sheetY, (v) => (viewport - v > viewport * 0.6 ? 0 : 1));
   const recenter = () => { animate(mapX, 0, { type: 'spring', bounce: 0.1 }); animate(mapY, 0, { type: 'spring', bounce: 0.1 }); };
 
@@ -92,7 +95,7 @@ export function Explore(props: {
               onClick={() => setMode('garage')}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMode('garage'); } }}
             >
-              <GaragePin count={pinCount} />
+              <GaragePin count={pinCount} active={mode !== 'peek'} />
             </g>
           )}
           {ctx.destination && <DestinationPin name={ctx.destination} />}
@@ -114,7 +117,7 @@ export function Explore(props: {
               <span className="sq" />
               <span className="t">
                 {ctx.destination ? <b>{ctx.destination}</b> : <b className="ph">Search a campus building</b>}
-                {ctx.destination && ctx.classLine && <small>{ctx.classLine}{ctx.destinationIsDemo && <> · <DemoMark /></>}</small>}
+                {ctx.destination && ctx.classLine && <small>{ctx.leaveBy ? `${ctx.classLine.split(' · ')[0]} · Leave ${ctx.leaveBy}` : ctx.classLine}{ctx.destinationIsDemo && <> · <DemoMark /></>}</small>}
                 {!ctx.destination && <small>Parking near where you're going</small>}
               </span>
             </button>
@@ -123,7 +126,7 @@ export function Explore(props: {
         )}
       </motion.div>
 
-      <motion.span className="maplbl" style={{ bottom: ctlBottom, opacity: ctlOpacity }} aria-hidden>Illustrated map</motion.span>
+      <motion.span className="maplbl" style={{ bottom: lblBottom, opacity: ctlOpacity }} aria-hidden>Illustrated map</motion.span>
       <motion.button type="button" className="circ mapctl press" style={{ bottom: ctlBottom, opacity: ctlOpacity }} aria-label="Recenter map" onClick={recenter}><Locate /></motion.button>
 
       <Sheet
@@ -158,6 +161,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
   }, [p.onMeasure]);
 
   const eyebrow = ctx.destination ? `Best parking near ${ctx.destination}` : 'Monitored garage';
+  const forYouLine = counts.forYou === counts.open ? undefined : `${counts.forYou} usable by you`;
   let body;
   if (ctx.facilities.state === 'error' && !facility) {
     body = (
@@ -200,11 +204,11 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
     body = (
       <>
         <div className="big">
-          <span className="num" data-testid="open-count">{counts.open}</span>
-          <span className="lbl"><b>{counts.open === 1 ? 'space confirmed open' : 'spaces confirmed open'}</b><span>of {counts.total} · {facility.name}</span></span>
+          <Count value={counts.open} />
+          <span className="lbl"><b>{counts.open === 1 ? 'space confirmed open' : 'spaces confirmed open'}</b><span className="fac">{facility.name}</span></span>
         </div>
         <TickStrip spaces={spaces} label={`${counts.open} of ${counts.total} spaces confirmed open`} />
-        <Provenance live={live} now={ctx.now} simulated={facility.is_simulated} extra={counts.forYou < counts.open ? `${counts.forYou} for you` : undefined} />
+        <Provenance live={live} now={ctx.now} simulated={facility.is_simulated} extra={forYouLine} />
         <div className="acts">
           <button type="button" className="btn press" onClick={() => setMode('garage')} data-testid="view-spaces">View spaces</button>
           <button type="button" className="circ ink lg press" aria-label={s ? `Go to space ${s.space_id}` : 'Go'} disabled={!s || p.checking !== null} onClick={() => s && p.onGo(s.space_id)} data-testid="go">
@@ -242,21 +246,20 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
           <button type="button" className="circ flat press" aria-label="Close garage details" onClick={() => setMode('peek')}><Close /></button>
         </div>
       </div>
-      <div className="big">
-        <span className={`num${!live.trusted ? ' off' : counts.open === 0 ? ' zero' : ''}`}>{live.trusted ? counts.open : '—'}</span>
-        <span className="lbl">
-          <b>{live.trusted ? 'open now' : 'Live data paused'}</b>
-          <span>{live.trusted ? `${counts.occupied} occupied · ${counts.uncertain} can't confirm` : 'Nothing is shown as available'}</span>
-        </span>
+      <div className="stats" data-testid="garage-stats">
+        <div className="stat open"><b>{live.trusted ? counts.open : '—'}</b><span>Open</span></div>
+        <div className="stat occ"><b>{live.trusted ? counts.occupied : '—'}</b><span>Occupied</span></div>
+        <div className="stat unc"><b>{counts.uncertain}</b><span>Can't confirm</span></div>
       </div>
       <TickStrip spaces={spaces} label={`${counts.open} open, ${counts.occupied} occupied, ${counts.uncertain} can't confirm`} />
       <Provenance live={live} now={ctx.now} simulated={facility.is_simulated} extra={camera} />
+      <SpaceTypes spaces={spaces} prefs={ctx.prefs} />
       <AdviceCard advice={p.advice} trusted={live.trusted} open={counts.open} />
       <div className="acts">
         <button type="button" className="btn ink press" onClick={() => setMode('space')} data-testid="choose-space">Choose a space</button>
         <button type="button" className="circ green lg press" aria-label={p.suggested ? `Go to space ${p.suggested.space_id}` : 'Go'} disabled={!p.suggested || !live.trusted || p.checking !== null} onClick={() => p.suggested && p.onGo(p.suggested.space_id)}><Arrow /></button>
       </div>
-      <p className="body" style={{ fontSize: 13 }}>ParkRight shows what its cameras see. Spaces aren't reserved or held for you.</p>
+      <p className="notice-line">ParkRight shows what its cameras see. Spaces aren't reserved or held for you.</p>
     </div>
   );
 }
@@ -355,6 +358,7 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
             const isSel = s.space_id === selected && can;
             const cls = isSel ? 'se' : st === 'open' ? (can ? 'op' : 'op inel') : st === 'occupied' ? 'oc' : 'un';
             const desig = s.designation !== 'standard' ? s.designation : null;
+            const isSuggested = s.space_id === p.suggested?.space_id && can;
             return (
               <button
                 key={s.space_id}
@@ -368,7 +372,9 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
                 aria-label={`${s.space_id}, ${st === 'open' ? (can ? 'open' : 'open but not for you') : st === 'occupied' ? 'occupied' : "can't be confirmed"}${desig ? `, ${desig} space` : ''}`}
                 onClick={() => press(s)}
               >
-                {s.space_id}
+                {isSel && <motion.span layoutId="sel-ring" className="sel-ring" transition={{ type: 'spring', visualDuration: 0.34, bounce: 0.18 }} aria-hidden />}
+                <span className="bay-id">{s.space_id}</span>
+                {isSuggested && !isSel && <span className="sugg" aria-hidden />}
                 {desig && <span className={`des ${desig === 'accessible' ? 'acc' : desig === 'ev' ? 'ev' : 'res'}`} aria-hidden />}
               </button>
             );
@@ -384,13 +390,17 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
       <div style={{ height: 1, background: 'var(--line)' }} />
       {chosen && offerable(chosen, prefs) && live.trusted ? (
         <>
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <span className="plate" data-testid="chosen">{chosen.space_id}</span>
-            <div style={{ display: 'grid', gap: 4 }}>
+          <motion.div className="choice-sum" layout>
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span key={chosen.space_id} className="plate" data-testid="chosen" initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.2 }}>{chosen.space_id}</motion.span>
+            </AnimatePresence>
+            <div style={{ display: 'grid', gap: 4, minWidth: 0 }}>
               <b className="strong" style={{ fontSize: 18 }}>{chosen.space_id === p.suggested?.space_id ? 'Suggested space' : 'Your space'}</b>
-              <span className="body" style={{ fontSize: 14.5 }}>{describeSpace(chosen, ctx.spaces)}<br />Not reserved · rechecked when you go</span>
+              <span className="body" style={{ fontSize: 14.5 }}>{describeSpace(chosen, ctx.spaces)}</span>
+              <span className="mini-tags"><span className="live">Open now</span><span>Not reserved</span><span>Rechecked when you go</span></span>
             </div>
-          </div>
+          </motion.div>
+          <QuickSwitch spaces={ctx.spaces} prefs={prefs} chosen={chosen.space_id} onPick={(id) => { setSelected(id); setNote(null); haptic(); }} />
           <div className="acts">
             <button type="button" className="btn green press" onClick={() => p.onGo(chosen.space_id)} disabled={p.checking !== null} data-testid="go-space">
               {p.checking ? `Checking ${p.checking}…` : `Go to ${chosen.space_id}`}
@@ -400,6 +410,55 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
       ) : (
         <p className="body" data-testid="no-choice">{live.trusted ? (ctx.counts.forYou ? 'Tap a green space to choose it.' : 'No space you can use is confirmed open right now.') : 'Live data is paused. Spaces can be chosen again when it returns.'}</p>
       )}
+    </div>
+  );
+}
+
+/** The big number, rolling when the live count changes. */
+function Count({ value }: { value: number }) {
+  return (
+    <span className="num rolling" data-testid="open-count" aria-live="polite">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span key={value} initial={{ y: '45%', opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: '-45%', opacity: 0 }} transition={{ type: 'spring', visualDuration: 0.38, bounce: 0.1 }}>{value}</motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
+const TYPE_LABEL: Record<string, string> = { standard: 'Standard', accessible: 'Accessible', ev: 'EV charging', reserved: 'Reserved' };
+
+/** Which kinds of spaces this garage has and whether this driver may use them. */
+function SpaceTypes({ spaces, prefs }: { spaces: ParkingSpace[]; prefs: Prefs }) {
+  const byType = new Map<string, number>();
+  for (const s of spaces) byType.set(s.designation, (byType.get(s.designation) ?? 0) + 1);
+  return (
+    <div className="types" data-testid="space-types">
+      <div className="ey">Space types</div>
+      {[...byType].map(([t, n]) => {
+        const e = eligibility(t as ParkingSpace['designation'], prefs);
+        return (
+          <div key={t} className="type-row">
+            <span className={`tdot t-${t}`} />
+            <b>{TYPE_LABEL[t] ?? t}</b>
+            <span className="n">{n}</span>
+            <span className={`elig${e.ok ? ' ok' : ''}`}>{e.ok ? 'For you' : t === 'reserved' ? 'Never offered' : t === 'accessible' ? 'Needs placard' : t === 'ev' ? 'EV only' : 'Not for you'}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Other confirmed-open spaces, one tap away. */
+function QuickSwitch({ spaces, prefs, chosen, onPick }: { spaces: ParkingSpace[]; prefs: Prefs; chosen: string; onPick: (id: string) => void }) {
+  const others = spaces.filter((s) => s.space_id !== chosen && offerable(s, prefs)).slice(0, 6);
+  if (!others.length) return null;
+  return (
+    <div className="qswitch" role="group" aria-label="Other open spaces">
+      <span className="ey">Also open</span>
+      <div className="qchips">
+        {others.map((s) => <button key={s.space_id} type="button" className="qchip press" onClick={() => onPick(s.space_id)}>{s.space_id}</button>)}
+      </div>
     </div>
   );
 }

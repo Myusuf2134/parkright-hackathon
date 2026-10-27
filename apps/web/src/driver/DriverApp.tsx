@@ -11,7 +11,8 @@ import { Plan } from './screens/Plan.tsx';
 import { Splash, type SplashVariant } from './screens/Splash.tsx';
 import { Trip, tripStatus, type TripWatch } from './screens/Trip.tsx';
 import { You } from './screens/You.tsx';
-import { haptic, useSafeArea, useViewportHeight } from './ui/layout.ts';
+import { haptic, useFrameHeight, useSafeArea } from './ui/layout.ts';
+import { useArrival, type LiveParking } from './arrival/useArrival.ts';
 
 type Tab = 'explore' | 'plan' | 'you';
 interface Toast { id: number; text: string; tone: 'warn' | 'good' }
@@ -32,7 +33,8 @@ function useDebounced<T>(value: T, ms: number): T {
 }
 
 export function DriverApp() {
-  const viewport = useViewportHeight();
+  const frame = useRef<HTMLDivElement>(null);
+  const viewport = useFrameHeight(frame);
   const safe = useSafeArea();
   const now = useNow(1000);
   const [prefs, updatePrefs] = usePrefs();
@@ -52,11 +54,17 @@ export function DriverApp() {
   const counts = useMemo(() => countSpaces(spaces, prefs), [spaces, prefs]);
   const suggested = useMemo(() => (live.trusted ? suggestSpace(spaces, prefs, facility?.levels) : null), [live.trusted, spaces, prefs, facility?.levels]);
 
+  // ---- Arrival Intelligence (demo schedule + live parking near class)
+  const parking: LiveParking | null = useMemo(() => (facility ? { trusted: live.trusted, open: counts.open, forYou: counts.forYou, garage: facility.name, simulated: facility.is_simulated } : null), [facility, live.trusted, counts.open, counts.forYou]);
+  const arrival = useArrival(scenario, parking);
+  const arrivalDest = arrival.result.movedTo?.buildingShort ?? arrival.result.session.buildingShort;
+
   // ---- destination (from the demo schedule until the driver changes it)
   const [dest, setDest] = useState<string | null | undefined>(undefined);
-  useEffect(() => { if (dest === undefined && scenario !== undefined) setDest(scenario?.next_class.destination_short ?? null); }, [scenario, dest]);
+  useEffect(() => { if (dest === undefined && scenario !== undefined) setDest(scenario ? arrivalDest : null); }, [scenario, dest, arrivalDest]);
   const destination = dest ?? null;
-  const fromSchedule = !!scenario && destination === scenario.next_class.destination_short;
+  const fromSchedule = destination !== null && destination === arrivalDest && !arrival.result.canceled;
+  const leaveBy = fromSchedule && arrival.result.departure.state === 'ok' ? arrival.result.departure.leaveAt : null;
 
   // ---- navigation state
   const [tab, setTab] = useState<Tab>('explore');
@@ -135,7 +143,8 @@ export function DriverApp() {
   const ctx: ParkingCtx = {
     facilities, facility, live, spaces, counts, prefs, now, destination,
     destinationIsDemo: fromSchedule,
-    classLine: fromSchedule && scenario ? `${scenario.next_class.course} · ${scenario.next_class.time}` : null,
+    classLine: fromSchedule ? `${arrival.result.session.course} · ${arrival.result.session.startsAt}` : null,
+    leaveBy,
   };
 
   // The tab pill arrives after the sheet has sprung up, never on top of it.
@@ -145,7 +154,7 @@ export function DriverApp() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="app" data-testid="driver-app" data-tab={tab} data-mode={mode} data-live={live.trusted ? 'live' : live.connection}>
+      <div ref={frame} className="app" data-testid="driver-app" data-tab={tab} data-mode={mode} data-live={live.trusted ? 'live' : live.connection}>
         <AnimatePresence mode="popLayout" initial={false}>
           {trip && facility ? (
             <motion.div key="trip" className="screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
@@ -167,8 +176,8 @@ export function DriverApp() {
                   onProfile={() => setTab('you')} onRetry={retryFacilities}
                 />
               )}
-              {tab === 'plan' && <Plan scenario={scenario} onFind={(d) => { setDest(d); setMode('peek'); setTab('explore'); }} />}
-              {tab === 'you' && <You prefs={prefs} update={updatePrefs} health={health} onAbout={() => setModal('about')} onReplayIntro={() => { flags.set('introSeen', false); setSplash('full'); }} />}
+              {tab === 'plan' && <Plan scenario={scenario} arrival={arrival} parking={parking} onFind={(d) => { setDest(d); setMode('peek'); setTab('explore'); }} />}
+              {tab === 'you' && <You prefs={prefs} update={updatePrefs} health={health} demoSchedule={!!scenario} onAbout={() => setModal('about')} onReplayIntro={() => { flags.set('introSeen', false); setSplash('full'); }} />}
             </motion.div>
           )}
         </AnimatePresence>

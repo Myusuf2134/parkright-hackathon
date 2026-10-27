@@ -6,7 +6,7 @@ import { ago } from '../lib/time.ts';
 import { DemoMark } from '../ui/bits.tsx';
 import { Close, Search as SearchIcon } from '../ui/icons.tsx';
 
-function Modal({ open, onClose, label, children }: { open: boolean; onClose: () => void; label: string; children: ReactNode }) {
+export function Modal({ open, onClose, label, children }: { open: boolean; onClose: () => void; label: string; children: ReactNode }) {
   return (
     <AnimatePresence>
       {open && (
