@@ -17,6 +17,8 @@ interface Raw {
   spaces: ParkingSpace[];
   lastFrame: OccupancyUpdateMessage['frame'];
   lastMessageAt: number | null;
+  /** When the newest camera evidence arrived (client clock); null if no frame has been seen. */
+  lastFrameAt: number | null;
   everLive: boolean;
   lastLiveAt: number | null;
 }
@@ -34,7 +36,7 @@ type Message = FacilitySnapshotMessage | OccupancyUpdateMessage;
 export const blind = (spaces: ParkingSpace[]): ParkingSpace[] =>
   spaces.map((s) => ({ ...s, current_state: 'UNCERTAIN', confidence: null }));
 
-const INITIAL: Raw = { connection: 'idle', facility: null, spaces: [], lastFrame: null, lastMessageAt: null, everLive: false, lastLiveAt: null };
+const INITIAL: Raw = { connection: 'idle', facility: null, spaces: [], lastFrame: null, lastMessageAt: null, lastFrameAt: null, everLive: false, lastLiveAt: null };
 
 export function useLiveFacility(facilityId: string | null): LiveView {
   const [raw, setRaw] = useState<Raw>(INITIAL);
@@ -57,7 +59,9 @@ export function useLiveFacility(facilityId: string | null): LiveView {
         attempt = 0;
         const at = Date.now();
         if (msg.type === 'facility_snapshot') {
-          setRaw((r) => ({ ...r, connection: 'live', facility: msg.facility, spaces: msg.spaces, lastMessageAt: at, everLive: true, lastLiveAt: at }));
+          // Evidence age on connect: the newest observation, measured on the server's clock.
+          const newest = Math.max(0, ...msg.spaces.map((s) => (s.last_observed_at ? Date.parse(s.last_observed_at) : 0)));
+          setRaw((r) => ({ ...r, connection: 'live', facility: msg.facility, spaces: msg.spaces, lastMessageAt: at, lastFrameAt: newest || null, everLive: true, lastLiveAt: at }));
         } else if (msg.type === 'occupancy_update') {
           setRaw((r) => ({
             ...r,
@@ -66,6 +70,7 @@ export function useLiveFacility(facilityId: string | null): LiveView {
             facility: r.facility && { ...r.facility, counts: msg.counts },
             lastFrame: msg.frame ?? r.lastFrame,
             lastMessageAt: at,
+            lastFrameAt: msg.frame ? at : r.lastFrameAt,
             lastLiveAt: at,
           }));
         }

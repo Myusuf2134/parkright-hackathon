@@ -138,7 +138,10 @@ export function DriverApp() {
     classLine: fromSchedule && scenario ? `${scenario.next_class.course} · ${scenario.next_class.time}` : null,
   };
 
-  const showTabs = revealed && !trip && (tab !== 'explore' || mode === 'peek');
+  // The tab pill arrives after the sheet has sprung up, never on top of it.
+  const [settled, setSettled] = useState(revealed);
+  useEffect(() => { if (!revealed) return; const t = setTimeout(() => setSettled(true), 420); return () => clearTimeout(t); }, [revealed]);
+  const showTabs = settled && !trip && (tab !== 'explore' || mode === 'peek');
 
   return (
     <MotionConfig reducedMotion="user">
@@ -170,6 +173,7 @@ export function DriverApp() {
           )}
         </AnimatePresence>
 
+        {showTabs && tab !== 'explore' && <div className="tabfade" aria-hidden />}
         <AnimatePresence>
           {showTabs && (
             <motion.nav key="tabs" className="tabs" role="tablist" aria-label="ParkRight" style={{ x: '-50%' }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 14 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>

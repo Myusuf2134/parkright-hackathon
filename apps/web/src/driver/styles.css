@@ -70,7 +70,8 @@ p, h1, h2, h3 { margin: 0; }
 /* ---------- type ---------- */
 .ey { font: 600 12px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2); }
 .hl { font: 800 44px/1 var(--ui); letter-spacing: -0.045em; color: var(--ink); }
-.title { font: 800 32px/1.02 var(--ui); letter-spacing: -0.04em; }
+.title { font: 800 32px/1.02 var(--ui); letter-spacing: -0.04em; overflow-wrap: anywhere; }
+.title.long { font-size: 24px; line-height: 1.08; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .greet { font: 500 15px/1 var(--ui); color: var(--ink-2); }
 .body { font: 500 15px/1.4 var(--ui); color: var(--ink-2); }
 .strong { font: 700 19px/1.1 var(--ui); letter-spacing: -0.015em; }
@@ -116,7 +117,7 @@ p, h1, h2, h3 { margin: 0; }
 
 /* ---------- availability ---------- */
 .big { display: flex; align-items: flex-end; gap: 14px; }
-.num { font: 800 76px/0.8 var(--ui); letter-spacing: -0.055em; font-variant-numeric: tabular-nums; color: var(--green-deep); min-width: 0.6em; }
+.num { flex: none; font: 800 76px/0.8 var(--ui); letter-spacing: -0.055em; font-variant-numeric: tabular-nums; color: var(--green-deep); min-width: 0.6em; padding-right: 0.04em; }
 .num.zero { color: var(--ink); }
 .num.off { color: var(--unc); }
 .big .lbl { display: grid; gap: 5px; padding-bottom: 1px; min-width: 0; }
@@ -168,6 +169,9 @@ p, h1, h2, h3 { margin: 0; }
 .tabs .tab-bg { position: absolute; inset: 0; border-radius: 23px; background: var(--ink); z-index: -1; }
 .tabs button span { position: relative; }
 
+/* Content scrolling under the floating pill fades out instead of colliding with it. */
+.tabfade { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--safe-bottom) + 96px); z-index: 15; pointer-events: none; background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.94) 55%, #fff); }
+
 /* ---------- cards & lists ---------- */
 .card { background: var(--warm); border-radius: 26px; padding: 18px; display: grid; gap: 8px; }
 .card.advice { background: linear-gradient(135deg, #eef4ff 0%, #fdf0f2 100%); }
@@ -207,8 +211,11 @@ p, h1, h2, h3 { margin: 0; }
 .bay .des.ev { background: var(--green-deep); }
 .bay .des.res { background: var(--ink-2); }
 .bay.sm .des { top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 3px; }
-.aisle { position: absolute; left: 0; right: 0; border-radius: 14px; background: var(--warm); display: flex; align-items: center; justify-content: center; gap: 10px; font: 600 11px/1 var(--mono); letter-spacing: 0.14em; color: var(--ink-3); }
-.aisle::before, .aisle::after { content: ''; flex: 1; max-width: 90px; height: 2px; background: repeating-linear-gradient(90deg, #d6d7d1 0 10px, transparent 10px 18px); }
+.aisle { position: absolute; left: 0; border-radius: 14px; background: linear-gradient(90deg, transparent 0 0) , var(--warm); display: flex; align-items: center; font: 600 11px/1 var(--mono); letter-spacing: 0.14em; color: var(--ink-3); }
+.aisle::before { content: ''; position: absolute; left: 18px; right: 18px; top: 50%; height: 2px; background: repeating-linear-gradient(90deg, #dcddd7 0 10px, transparent 10px 18px); }
+/* The label stays readable while a wide plan scrolls sideways. */
+.aisle span { position: sticky; left: 0; margin: 0 auto 0 0; padding: 0 12px; background: var(--warm); z-index: 1; white-space: nowrap; }
+.planwrap.fits .aisle span { margin: 0 auto; }
 .legend { display: flex; gap: 14px; flex-wrap: wrap; font: 500 12px/1 var(--ui); color: var(--ink-2); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { width: 12px; height: 16px; border-radius: 4px; display: inline-block; }

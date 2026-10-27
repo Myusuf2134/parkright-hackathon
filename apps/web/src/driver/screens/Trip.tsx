@@ -84,8 +84,8 @@ export function Trip({ facility, spaceId, live, spaces, prefs, now, onEnd, onCho
               {status === 'ok' ? `${spaceId} is still open` : warn[status].title}
             </div>
             <div className="prov">
-              {status === 'ok' && live.lastMessageAt
-                ? <span className="live">Live · checked {ago(now - live.lastMessageAt)} ago</span>
+              {status === 'ok' && live.lastFrameAt
+                ? <span className="live">Live · seen {ago(now - live.lastFrameAt)} ago</span>
                 : <span className="paused">{warn[status === 'ok' ? 'paused' : status].body}</span>}
             </div>
           </div>

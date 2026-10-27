@@ -59,8 +59,14 @@ export function Sheet({ y, viewport, detents, active, hidden, onChange, scroll, 
       onDragStart={() => { dragged.current = true; }}
       onDragEnd={(_, info) => {
         setTimeout(() => { dragged.current = false; }, 0);
-        const projected = viewport - (y.get() + info.velocity.y * 0.2);
-        const best = detents.reduce((b, d) => (Math.abs(d.height - projected) < Math.abs(b.height - projected) ? d : b));
+        // Like iOS sheets: a flick moves one detent in its direction; a slow drag settles on the nearest.
+        const pos = viewport - y.get();
+        const v = info.velocity.y;
+        let best = detents.reduce((b, d) => (Math.abs(d.height - pos) < Math.abs(b.height - pos) ? d : b));
+        if (Math.abs(v) > 500) {
+          const next = v < 0 ? order.find((d) => d.height > pos + 8) : [...order].reverse().find((d) => d.height < pos - 8);
+          if (next) best = next;
+        }
         if (best.id !== active) onChange(best.id);
         else animate(y, viewport - best.height, SHEET_SPRING);
       }}

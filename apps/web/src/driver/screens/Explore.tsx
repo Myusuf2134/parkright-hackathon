@@ -228,7 +228,7 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
       <div className="row" style={{ alignItems: 'flex-start' }}>
         <div style={{ display: 'grid', gap: 8, minWidth: 0 }}>
           <div className="ey">{level} · {counts.total} spaces</div>
-          <h2 className="title">{facility.name}</h2>
+          <h2 className={`title${facility.name.length > 26 ? ' long' : ''}`}>{facility.name}</h2>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button type="button" className="circ flat press" aria-label="About this data" onClick={p.onAbout}><Info /></button>
@@ -339,9 +339,9 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
           ))}
         </div>
       )}
-      <div className="planwrap" ref={wrap}>
+      <div className={`planwrap${plan.width <= width + 1 ? ' fits' : ''}`} ref={wrap}>
         <div className="plan" style={{ width: plan.width, height: plan.height }} data-testid="plan">
-          {plan.aisles.map((a, i) => <div key={i} className="aisle" style={{ top: a.y, height: a.h, width: plan.width }}>DRIVE AISLE</div>)}
+          {plan.aisles.map((a, i) => <div key={i} className="aisle" style={{ top: a.y, height: a.h, width: plan.width }}><span>DRIVE AISLE</span></div>)}
           {plan.bays.map(({ space: s, x, y, w, h }) => {
             const st = bayState(s);
             const can = offerable(s, prefs) && live.trusted;

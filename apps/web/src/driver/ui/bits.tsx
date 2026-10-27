@@ -3,6 +3,9 @@ import { bayState } from '../lib/parking.ts';
 import { ago } from '../lib/time.ts';
 import type { LiveView } from '../net/live.ts';
 
+/** Past this, the label stops saying Live: the backend marks spaces stale at 12 s (30 s at the Ohio site). */
+const QUIET_MS = 12_000;
+
 /** One tick per space, in reading order. Thin ticks for big garages. */
 export function TickStrip({ spaces, label }: { spaces: ParkingSpace[]; label: string }) {
   const dense = spaces.length > 24;
@@ -19,7 +22,9 @@ export function TickStrip({ spaces, label }: { spaces: ParkingSpace[]; label: st
 /** "● Live · 2 s · Simulated garage", or the paused/connecting equivalent. */
 export function Provenance({ live, now, simulated, extra }: { live: LiveView; now: number; simulated: boolean; extra?: string }) {
   let status;
-  if (live.trusted && live.lastMessageAt) status = <span className="live" data-testid="prov-live">Live · {ago(now - live.lastMessageAt)}</span>;
+  const frameAge = live.lastFrameAt ? now - live.lastFrameAt : null;
+  if (live.trusted && frameAge !== null && frameAge <= QUIET_MS) status = <span className="live" data-testid="prov-live">Live · {ago(frameAge)}</span>;
+  else if (live.trusted) status = <span className="paused" data-testid="prov-quiet">{frameAge === null ? 'Connected · no camera frames yet' : `Camera quiet · ${ago(frameAge)}`}</span>;
   else if (live.connection === 'reconnecting' || live.silent) status = <span className="paused" data-testid="prov-paused">{live.silent ? 'No recent update' : 'Reconnecting'}</span>;
   else status = <span data-testid="prov-connecting">Connecting…</span>;
   return (
