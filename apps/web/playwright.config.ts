@@ -18,7 +18,7 @@ export default defineConfig({
     launchOptions: process.env.PARKRIGHT_CHROMIUM ? { executablePath: process.env.PARKRIGHT_CHROMIUM } : {},
   },
   projects: [
-    { name: 'scripted', testMatch: 'driver.spec.ts' },
+    { name: 'scripted', testMatch: /(driver|arrival)\.spec\.ts/ },
     { name: 'live', testMatch: 'live.spec.ts' },
   ],
   webServer: [

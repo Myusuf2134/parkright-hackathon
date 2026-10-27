@@ -75,6 +75,8 @@ export interface DepartureInput {
   parkingMinutes: number | null;
   walkMinutes: number | null;
   bufferMinutes: number;
+  /** True when live data shows no space this driver can use confirmed open. */
+  parkingUnconfirmed?: boolean;
   /** Only signals already judged relevant. */
   relevant: Signal[];
 }
@@ -94,8 +96,10 @@ export function departure(input: DepartureInput): Departure {
     if (s.driveDelayMin) parts.push({ label: s.kind === 'weather' ? 'Weather' : s.kind === 'construction' ? 'Roadwork' : 'Traffic', minutes: s.driveDelayMin, source: s.source });
   }
   const incomplete: string[] = [];
-  if (input.parkingMinutes === null) incomplete.push('parking');
-  else parts.push({ label: 'Park', minutes: input.parkingMinutes, source: 'estimated' });
+  // No confirmed space never makes the advice later: keep the typical parking time and flag it.
+  if (input.parkingUnconfirmed) incomplete.push('parking');
+  if (input.parkingMinutes !== null) parts.push({ label: 'Park', minutes: input.parkingMinutes, source: 'estimated' });
+  else incomplete.push('parking-time');
   const walkDelay = relevant.reduce((n, s) => n + (s.walkDelayMin ?? 0), 0);
   parts.push({ label: 'Walk', minutes: walk! + walkDelay, source: 'estimated' });
   parts.push({ label: 'Buffer', minutes: input.bufferMinutes, source: 'estimated' });
@@ -145,8 +149,8 @@ export function evaluate(def: ScenarioDef, live: Parameters<typeof parkingSignal
   const shown = judged.filter((j) => j.relevant).sort((a, b) => b.priority - a.priority);
   const filtered = judged.filter((j) => !j.relevant);
   const relevant = shown.map((j) => j.signal);
-  const parkingMinutes = live && live.trusted && live.forYou === 0 ? null : def.parkingMinutes;
-  const dep = departure({ session: def.session, route: def.route, parkingMinutes, walkMinutes: def.walkMinutes, bufferMinutes: def.bufferMinutes, relevant });
+  const parkingUnconfirmed = !!live && live.trusted && live.forYou === 0;
+  const dep = departure({ session: def.session, route: def.route, parkingMinutes: def.parkingMinutes, walkMinutes: def.walkMinutes, bufferMinutes: def.bufferMinutes, parkingUnconfirmed, relevant });
   const canceled = dep.state === 'not-needed';
   const movedTo = relevant.find((s) => s.effect === 'move')?.movedTo ?? null;
 

@@ -83,7 +83,7 @@ test('trip watches the space, warns when taken and offers the next one', async (
   await page.goto(APP);
   await page.getByTestId('go').click();
   await expect(page.getByTestId('trip')).toHaveAttribute('data-watch', 'ok');
-  await expect(page.getByText('Demo route · not live directions')).toBeVisible();
+  await expect(page.getByText('Demo guidance · not live directions')).toBeVisible();
   await expect(page.getByTestId('trip-title')).toHaveText('A2 is still open');
   be.update({ A2: 'OCCUPIED' });
   await expect(page.getByTestId('trip')).toHaveAttribute('data-watch', 'taken');
@@ -112,7 +112,8 @@ test('accessible and EV spaces need the matching setting; a permit unlocks nothi
   await page.getByRole('switch', { name: 'Accessible placard' }).click();
   await page.getByRole('switch', { name: /Student permit/ }).click();
   await expect(page.getByText('Self-reported · not verified')).toBeVisible();
-  await page.getByRole('button', { name: 'Electric' }).click();
+  await page.getByTestId('vehicle-card').click();
+  await page.getByTestId('vehicle-ev').click();
   await page.getByTestId('tab-explore').click();
   await page.getByTestId('view-spaces').click();
   await page.getByTestId('choose-space').click();
@@ -127,10 +128,11 @@ test('demo data is labelled everywhere it appears', async ({ page }) => {
   await page.goto(APP);
   await expect(page.getByTestId('search').locator('[data-demo]')).toHaveText('Demo');
   await page.getByTestId('tab-plan').click();
-  await expect(page.getByText('Demo schedule')).toBeVisible();
-  const rows = page.locator('.list .li');
-  await expect(rows).toHaveCount(3);
-  for (const r of await rows.all()) await expect(r.locator('[data-demo]')).toBeVisible();
+  await expect(page.getByTestId('scenario-pill')).toContainText('Demo');
+  // Every estimate in the hero says where it came from; the schedule and departure are demo.
+  const hero = page.getByTestId('arrival-hero');
+  await expect(hero.locator('[data-source=demo]')).toHaveCount(2);
+  await expect(page.getByTestId('parkline').locator('[data-source=simulated]')).toBeVisible();
   await page.getByTestId('find-near').click();
   await expect(page.getByTestId('explore')).toBeVisible();
 });

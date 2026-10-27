@@ -135,16 +135,16 @@ function ArrivalHero({ r, parking, destShort, onFind, onRemove }: { r: ArrivalRe
       {d.state === 'ok' && (
         <>
           <div className="row"><span className="ey">Recommended departure</span><SourceTag source={d.source}>{d.source === 'demo' ? 'Demo estimate' : 'Estimated'}</SourceTag></div>
-          <div className="depart" aria-live="polite">
+          <div className="depart" aria-live="polite" data-testid="leave-at">
             <AnimatePresence mode="popLayout" initial={false}>
-              <motion.span key={d.leaveAt} className="dtime" data-testid="leave-at" initial={{ y: 22, opacity: 0, filter: 'blur(4px)' }} animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }} exit={{ y: -22, opacity: 0, filter: 'blur(4px)' }} transition={{ type: 'spring', visualDuration: 0.4, bounce: 0.12 }}>
+              <motion.span key={d.leaveAt} className="dtime" initial={{ y: 22, opacity: 0, filter: 'blur(4px)' }} animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }} exit={{ y: -22, opacity: 0, filter: 'blur(4px)' }} transition={{ type: 'spring', visualDuration: 0.4, bounce: 0.12 }}>
                 {d.leaveAt.replace(/ (AM|PM)$/, '')}<small>{d.leaveAt.slice(-2)}</small>
               </motion.span>
             </AnimatePresence>
           </div>
-          <div className="outlook">Arrive by {d.arriveBy} · {d.spareMinutes} min to spare<span className="outlook-tot"> · {d.totalMinutes} min door to door</span></div>
+          <div className="outlook">Arrive by {d.arriveBy} · {d.spareMinutes} min to spare</div>
           <Breakdown parts={d.parts} />
-          {d.incomplete.includes('parking') && <p className="body warnline">Parking time not included: no space you can use is confirmed open.</p>}
+          {d.incomplete.includes('parking') && <p className="body warnline">No space you can use is confirmed open right now. Allow extra time to find one.</p>}
         </>
       )}
       {d.state === 'unavailable' && (

@@ -89,10 +89,10 @@ describe('missing data and live parking', () => {
   it('without a drive estimate, says unavailable instead of guessing', () => {
     expect(evaluate(S.missing).departure).toEqual({ state: 'unavailable', missing: ['drive time'] });
   });
-  it('live parking with nothing open becomes a live alert and parking time is left out', () => {
+  it('live parking with nothing open becomes a live alert, and never makes the advice later', () => {
     const r = evaluate(S.normal, { trusted: true, open: 0, forYou: 0, garage: 'Garage', building: DEFAULT_SEED.building });
     expect(r.shown[0].signal).toMatchObject({ id: 'parking-none', source: 'live' });
-    expect(r.departure.state === 'ok' && r.departure.incomplete).toEqual(['parking']);
+    expect(r.departure).toMatchObject({ state: 'ok', leaveAt: '9:58 AM', incomplete: ['parking'] });
   });
   it('live parking paused (connection lost) is surfaced, never treated as available', () => {
     const r = evaluate(S.normal, { trusted: false, open: 7, forYou: 7, garage: 'Garage', building: DEFAULT_SEED.building });

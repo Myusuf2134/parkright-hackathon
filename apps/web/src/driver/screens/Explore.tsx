@@ -391,9 +391,11 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
       {chosen && offerable(chosen, prefs) && live.trusted ? (
         <>
           <motion.div className="choice-sum" layout>
+            <span data-testid="chosen" style={{ display: 'contents' }}>
             <AnimatePresence mode="popLayout" initial={false}>
-              <motion.span key={chosen.space_id} className="plate" data-testid="chosen" initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.2 }}>{chosen.space_id}</motion.span>
+              <motion.span key={chosen.space_id} className="plate" initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.2 }}>{chosen.space_id}</motion.span>
             </AnimatePresence>
+            </span>
             <div style={{ display: 'grid', gap: 4, minWidth: 0 }}>
               <b className="strong" style={{ fontSize: 18 }}>{chosen.space_id === p.suggested?.space_id ? 'Suggested space' : 'Your space'}</b>
               <span className="body" style={{ fontSize: 14.5 }}>{describeSpace(chosen, ctx.spaces)}</span>
