@@ -161,7 +161,7 @@ export function evaluate(def: ScenarioDef, live: Parameters<typeof parkingSignal
   else if (top?.kind === 'traffic' && !def.route.etaIncludesTraffic) note = { text: `Traffic on your route may add ${top.driveDelayMin} minutes.`, tone: 'notice', source: top.source };
   else if (top?.kind === 'weather') note = { text: `${top.title}. Extra time included.`, tone: 'notice', source: top.source };
   else if (top?.kind === 'construction') note = { text: top.title + '.', tone: 'notice', source: top.source };
-  else if (top?.kind === 'parking') note = { text: top.title + '.', tone: 'notice', source: top.source };
+  else if (top?.kind === 'parking') note = { text: top.id === 'parking-none' ? 'No confirmed open space near class. Allow extra time to find one.' : `${top.title}.`, tone: 'notice', source: top.source };
   else if (dep.state === 'ok') note = { text: 'Parking and walking time included.', tone: 'calm', source: dep.source };
   return { session: def.session, route: def.route, shown, filtered, departure: dep, canceled, movedTo, note };
 }

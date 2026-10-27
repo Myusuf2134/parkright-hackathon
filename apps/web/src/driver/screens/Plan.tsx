@@ -144,7 +144,6 @@ function ArrivalHero({ r, parking, destShort, onFind, onRemove }: { r: ArrivalRe
           </div>
           <div className="outlook">Arrive by {d.arriveBy} · {d.spareMinutes} min to spare</div>
           <Breakdown parts={d.parts} />
-          {d.incomplete.includes('parking') && <p className="body warnline">No space you can use is confirmed open right now. Allow extra time to find one.</p>}
         </>
       )}
       {d.state === 'unavailable' && (
