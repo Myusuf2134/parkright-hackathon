@@ -4,7 +4,7 @@ Two entries:
 
 | URL | What |
 | --- | --- |
-| `/app/` | **ParkRight driver app**: mobile-first PWA (splash, Explore, garage details, choose a space, trip, Plan, You) |
+| `/app/` | **ParkRight driver app (V5)**: mobile-first PWA — splash, Explore (where to park), garage details, choose a space, trip, Plan with Arrival Intelligence (when to leave), You |
 | `/` | Legacy screens, unchanged (`?classic=1`, `?record=1` demo screen) — the existing integration tests use these |
 
 ## Run it
@@ -27,14 +27,16 @@ PARKRIGHT_API_URL=http://127.0.0.1:8431 npm run dev:web
 `e2e/live_api.py --site mvp|showcase|ohio` picks the 12-, 34- or 72-space garage.
 
 Useful query flags on `/app/`: `splash=off|full|short|reduced`, `device=iphone15` (simulates the
-standalone-PWA safe areas for screenshots). On a phone, open `/app/` and Add to Home Screen.
+standalone-PWA safe areas for screenshots), `arrival=normal|quiet|traffic|weather|construction|canceled|moved|missing`
+(Plan's demo scenario; also switchable from the Demo pill on Plan). On a desktop browser the app is
+shown in a centred device frame. On a phone, open `/app/` and Add to Home Screen.
 
 ## Test
 
 ```bash
 npm run typecheck -w @parkright/web
-npm test -w @parkright/web               # unit: availability, eligibility, plan layout
-npm run test:e2e -w @parkright/web       # browser: scripted backend + the real API via e2e/live_api.py
+npm test -w @parkright/web               # unit: availability, eligibility, plan layout, Arrival Intelligence engine
+npm run test:e2e -w @parkright/web       # browser: scripted backend (driver + arrival specs) and the real API via e2e/live_api.py
 # In a sandbox with a preinstalled Chromium: PARKRIGHT_CHROMIUM=/path/to/chrome npm run test:e2e -w @parkright/web
 ```
 
@@ -47,3 +49,9 @@ npm run test:e2e -w @parkright/web       # browser: scripted backend + the real 
   and offers the next one. Nothing is a reservation.
 - Simulated garages, demo schedules, demo garages and the demo route are labelled where they appear.
   The map is an illustration: no facility has real coordinates.
+
+## Arrival Intelligence
+
+See [docs/arrival-intelligence.md](docs/arrival-intelligence.md): what is live (parking), what is demo
+(schedule, travel times, disruptions), how relevance and departure are computed, and what each real
+integration would require.
