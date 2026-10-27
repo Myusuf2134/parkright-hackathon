@@ -71,7 +71,7 @@ export function Explore(props: {
 
   return (
     <div className="screen" data-testid="explore">
-      <div className={`map${off ? ' off' : ''}`} aria-label="Illustrated campus map" role="img">
+      <div className={`map${off ? ' off' : ''}`} role="group" aria-label="Illustrated campus map">
         <motion.svg
           viewBox={`0 0 ${MAP_W} ${MAP_H}`}
           preserveAspectRatio="xMidYMid slice"
@@ -84,7 +84,14 @@ export function Explore(props: {
           <CampusStreets />
           {ctx.destination && <WalkLink />}
           {facility && (
-            <g className="pinbtn" role="button" aria-label={`${facility.name}: ${pinCount === null ? 'availability unknown' : `${pinCount} confirmed open`}`} onClick={() => setMode('garage')}>
+            <g
+              className="pinbtn"
+              role="button"
+              tabIndex={0}
+              aria-label={`${facility.name}: ${pinCount === null ? 'availability unknown' : `${pinCount} confirmed open`}. Show garage details`}
+              onClick={() => setMode('garage')}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMode('garage'); } }}
+            >
               <GaragePin count={pinCount} />
             </g>
           )}
