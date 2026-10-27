@@ -1,7 +1,7 @@
 import type { ParkingSpace } from '@parkright/contracts';
 import { bayState } from '../lib/parking.ts';
 import { ago } from '../lib/time.ts';
-import type { LiveView } from '../data/live.ts';
+import type { LiveView } from '../net/live.ts';
 
 /** One tick per space, in reading order. Thin ticks for big garages. */
 export function TickStrip({ spaces, label }: { spaces: ParkingSpace[]; label: string }) {
