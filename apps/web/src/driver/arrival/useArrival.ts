@@ -24,7 +24,11 @@ export function seedFrom(scenario: Scenario | null | undefined): ScheduleSeed {
   };
 }
 
-export interface LiveParking { trusted: boolean; open: number; forYou: number; garage: string; simulated: boolean }
+export interface LiveParking {
+  trusted: boolean; open: number; forYou: number; garage: string; simulated: boolean;
+  /** The detector reports OCCUPIED/UNCERTAIN only (allow_open false), so zero open means unknown, not full. */
+  openDisabled?: boolean;
+}
 
 export function useArrival(scenario: Scenario | null | undefined, parking: LiveParking | null) {
   const [id, setIdState] = useState(initialId);
@@ -35,8 +39,8 @@ export function useArrival(scenario: Scenario | null | undefined, parking: LiveP
   const defs: ScenarioDef[] = useMemo(() => buildScenarios(seedFrom(scenario)), [scenario]);
   const def = defs.find((d) => d.id === id) ?? defs[0];
   const result: ArrivalResult = useMemo(
-    () => evaluate(def, parking ? { trusted: parking.trusted, open: parking.open, forYou: parking.forYou, garage: parking.garage, building: def.session.building } : null),
-    [def, parking?.trusted, parking?.open, parking?.forYou, parking?.garage], // eslint-disable-line react-hooks/exhaustive-deps
+    () => evaluate(def, parking ? { trusted: parking.trusted, open: parking.open, forYou: parking.forYou, garage: parking.garage, building: def.session.building, openDisabled: parking.openDisabled } : null),
+    [def, parking?.trusted, parking?.open, parking?.forYou, parking?.garage, parking?.openDisabled], // eslint-disable-line react-hooks/exhaustive-deps
   );
   return { id: def.id, def, defs, setId, result };
 }

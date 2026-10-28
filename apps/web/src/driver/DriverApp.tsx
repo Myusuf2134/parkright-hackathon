@@ -1,7 +1,8 @@
 import { AnimatePresence, MotionConfig, motion, useMotionValue } from 'motion/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { fetchSpace, useAdvice, useFacilities, useHealth, useScenario } from './net/api.ts';
+import { fetchSpace, useAdvice, useDemoInfo, useFacilities, useHealth, useScenario } from './net/api.ts';
 import { useLiveFacility } from './net/live.ts';
+import { summarize } from './lib/evidence.ts';
 import { countSpaces, offerable, readingOrder, suggestSpace } from './lib/parking.ts';
 import { flags, usePrefs } from './lib/prefs.ts';
 import { prefersReducedMotion, useNow } from './lib/time.ts';
@@ -43,6 +44,7 @@ export function DriverApp() {
   const [facilities, retryFacilities] = useFacilities();
   const scenario = useScenario();
   const health = useHealth();
+  const demo = useDemoInfo();
   const facilityId = useMemo(() => {
     if (facilities.state !== 'ok' || !facilities.value.length) return null;
     const wanted = scenario?.simulator.facility_id;
@@ -53,9 +55,13 @@ export function DriverApp() {
   const spaces = useMemo(() => readingOrder(live.safeSpaces, facility?.levels), [live.safeSpaces, facility?.levels]);
   const counts = useMemo(() => countSpaces(spaces, prefs), [spaces, prefs]);
   const suggested = useMemo(() => (live.trusted ? suggestSpace(spaces, prefs, facility?.levels) : null), [live.trusted, spaces, prefs, facility?.levels]);
+  // Per-space evidence ages: the garage label is as old as its oldest current view.
+  const evidence = useMemo(() => summarize(spaces, now, live.clockOffsetMs), [spaces, now, live.clockOffsetMs]);
+  // The running detector can't report OPEN (allow_open false): zero open means "can't confirm", not "full".
+  const openDisabled = demo?.allowOpen === false && counts.open === 0;
 
   // ---- Arrival Intelligence (demo schedule + live parking near class)
-  const parking: LiveParking | null = useMemo(() => (facility ? { trusted: live.trusted, open: counts.open, forYou: counts.forYou, garage: facility.name, simulated: facility.is_simulated } : null), [facility, live.trusted, counts.open, counts.forYou]);
+  const parking: LiveParking | null = useMemo(() => (facility ? { trusted: live.trusted, open: counts.open, forYou: counts.forYou, garage: facility.name, simulated: facility.is_simulated, openDisabled } : null), [facility, live.trusted, counts.open, counts.forYou, openDisabled]);
   const arrival = useArrival(scenario, parking);
   const arrivalDest = arrival.result.movedTo?.buildingShort ?? arrival.result.session.buildingShort;
 
@@ -141,7 +147,7 @@ export function DriverApp() {
   }, [facilityId, prefs, say]);
 
   const ctx: ParkingCtx = {
-    facilities, facility, live, spaces, counts, prefs, now, destination,
+    facilities, facility, live, spaces, counts, prefs, now, destination, evidence, demo, openDisabled,
     destinationIsDemo: fromSchedule,
     classLine: fromSchedule ? `${arrival.result.session.course} · ${arrival.result.session.startsAt}` : null,
     leaveBy,
@@ -196,7 +202,7 @@ export function DriverApp() {
           )}
         </AnimatePresence>
 
-        <AboutData open={modal === 'about'} onClose={() => setModal(null)} facility={facility} spaces={spaces} health={health} demo={!!scenario} now={now} />
+        <AboutData open={modal === 'about'} onClose={() => setModal(null)} facility={facility} spaces={spaces} health={health} demo={!!scenario} info={demo ?? null} openDisabled={openDisabled} now={now} />
         <SearchSheet open={modal === 'search'} onClose={() => setModal(null)} scenario={scenario} onPick={(d) => setDest(d)} />
 
         <AnimatePresence>

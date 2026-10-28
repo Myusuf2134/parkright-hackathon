@@ -1,7 +1,7 @@
 import type { Facility, ParkingSpace } from '@parkright/contracts';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState, type ReactNode } from 'react';
-import type { Health, Scenario } from '../net/api.ts';
+import type { DemoInfo, Health, Scenario } from '../net/api.ts';
 import { ago } from '../lib/time.ts';
 import { DemoMark } from '../ui/bits.tsx';
 import { Close, Search as SearchIcon } from '../ui/icons.tsx';
@@ -36,8 +36,9 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
   );
 }
 
-export function AboutData({ open, onClose, facility, spaces, health, demo, now }: {
-  open: boolean; onClose: () => void; facility: Facility | null; spaces: ParkingSpace[]; health: Health | null; demo: boolean; now: number;
+export function AboutData({ open, onClose, facility, spaces, health, demo, info, openDisabled, now }: {
+  open: boolean; onClose: () => void; facility: Facility | null; spaces: ParkingSpace[]; health: Health | null; demo: boolean;
+  info: DemoInfo | null; openDisabled: boolean; now: number;
 }) {
   const model = spaces.find((s) => s.model)?.model ?? null;
   return (
@@ -50,7 +51,14 @@ export function AboutData({ open, onClose, facility, spaces, health, demo, now }
           <div className="li"><span className="t"><b className="simw">Simulated garage</b><small>A virtual garage and camera built for this demo. The detection is real; the garage isn't.</small></span></div>
           <div className="li"><span className="t"><b><DemoMark /></b><small>Example data: class schedule, other garages and the route. Never shown as availability.</small></span></div>
           <div className="li"><span className="t"><b>Can't confirm</b><small>No clear view, weak evidence or an old frame. Never offered as open.</small></span></div>
+          {openDisabled && <div className="li" data-testid="about-open-disabled"><span className="t"><b>Occupied-only detection</b><small>We can detect occupied spaces, but can't yet confirm empty ones. Open-space confirmation isn't enabled in this demo yet.</small></span></div>}
         </div>
+        {info?.site && (
+          <div className="site-note" data-testid="about-site">
+            <b>{info.site.title}</b>
+            <span>{info.site.disclaimer}</span>
+          </div>
+        )}
         {facility && (
           <>
             <div className="sec">{facility.name}</div>

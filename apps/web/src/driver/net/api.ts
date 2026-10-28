@@ -1,7 +1,7 @@
 /** REST calls the driver app makes. All go through the same-origin /api proxy. */
 import type { Facility, ParkingSpace } from '@parkright/contracts';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchScenario, type Scenario } from '../../demo/api.ts';
+import { fetchScenario, type DemoStatus, type Scenario } from '../../demo/api.ts';
 
 export type { Scenario };
 
@@ -54,6 +54,48 @@ export function useScenario(): Scenario | null | undefined {
   const [s, setS] = useState<Scenario | null | undefined>(undefined);
   useEffect(() => { void fetchScenario().then(setS); }, []);
   return s;
+}
+
+/** What the driver app reads from /api/v1/demo/status: the site description and the detector's own settings. */
+export interface DemoInfo {
+  /** The simulated site's own metadata (null for the default garages). Shown verbatim, never invented here. */
+  site: { title: string; tag: string; disclaimer: string } | null;
+  /** The running detector's allow_open. False means it can only report OCCUPIED or UNCERTAIN. */
+  allowOpen: boolean;
+  detector: string;
+}
+
+/** Demo status, retried a few times. null = not demo mode (or unreachable); undefined = loading. */
+export function useDemoInfo(): DemoInfo | null | undefined {
+  const [info, setInfo] = useState<DemoInfo | null | undefined>(undefined);
+  useEffect(() => {
+    let alive = true;
+    let attempt = 0;
+    let timer: ReturnType<typeof setTimeout>;
+    const run = () => {
+      fetch('/api/v1/demo/status')
+        .then(async (r) => {
+          if (r.status === 404) { if (alive) setInfo(null); return; }
+          if (!r.ok) throw new Error(String(r.status));
+          const d = (await r.json()) as DemoStatus;
+          if (!alive) return;
+          const s = d.site;
+          setInfo({
+            site: s && s.title && s.disclaimer ? { title: s.title, tag: s.tag, disclaimer: s.disclaimer } : null,
+            allowOpen: d.perception?.allow_open === true,
+            detector: d.perception?.provider ?? 'unknown',
+          });
+        })
+        .catch(() => {
+          if (!alive) return;
+          if (++attempt >= 4) { setInfo(null); return; }
+          timer = setTimeout(run, 600 * 2 ** attempt);
+        });
+    };
+    run();
+    return () => { alive = false; clearTimeout(timer); };
+  }, []);
+  return info;
 }
 
 /** Fresh read of one space, used to recheck a space right before a trip starts. */

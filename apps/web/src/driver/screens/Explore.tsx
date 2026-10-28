@@ -1,8 +1,9 @@
 import type { Facility, ParkingSpace } from '@parkright/contracts';
 import { AnimatePresence, animate, motion, useMotionValue, useTransform, type MotionValue } from 'motion/react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { AdviceState, Load } from '../net/api.ts';
+import type { AdviceState, DemoInfo, Load } from '../net/api.ts';
 import type { LiveView } from '../net/live.ts';
+import { spaceLabel, type Evidence } from '../lib/evidence.ts';
 import { bayState, describeSpace, eligibility, layoutPlan, offerable, type Counts } from '../lib/parking.ts';
 import type { Prefs } from '../lib/prefs.ts';
 import { greeting } from '../lib/time.ts';
@@ -27,6 +28,12 @@ export interface ParkingCtx {
   classLine: string | null;
   /** Recommended departure from Plan (demo estimate), shown beside the class line. */
   leaveBy: string | null;
+  /** Age of the evidence on screen, per space (lib/evidence.ts). */
+  evidence: Evidence;
+  /** Demo status: site description and the detector's allow_open. null outside demo mode. */
+  demo: DemoInfo | null | undefined;
+  /** The detector can't report OPEN and nothing is open: show "can't confirm empty spaces", never "full". */
+  openDisabled: boolean;
 }
 
 export function Explore(props: {
@@ -69,7 +76,7 @@ export function Explore(props: {
   const ctlOpacity = useTransform(sheetY, (v) => (viewport - v > viewport * 0.6 ? 0 : 1));
   const recenter = () => { animate(mapX, 0, { type: 'spring', bounce: 0.1 }); animate(mapY, 0, { type: 'spring', bounce: 0.1 }); };
 
-  const pinCount = live.trusted ? counts.open : null;
+  const pinCount = live.trusted && !ctx.openDisabled ? counts.open : null;
   const off = facility !== null && !live.trusted && live.connection !== 'connecting';
 
   return (
@@ -91,7 +98,7 @@ export function Explore(props: {
               className="pinbtn"
               role="button"
               tabIndex={0}
-              aria-label={`${facility.name}: ${pinCount === null ? 'availability unknown' : `${pinCount} confirmed open`}. Show garage details`}
+              aria-label={`${facility.name}: ${pinCount === null ? (ctx.openDisabled && live.trusted ? 'open spaces can’t be confirmed yet' : 'availability unknown') : `${pinCount} confirmed open`}. Show garage details`}
               onClick={() => setMode('garage')}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMode('garage'); } }}
             >
@@ -184,8 +191,32 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
       <>
         <div className="big"><span className="num off" data-testid="open-count">—</span><span className="lbl"><b>Live data paused</b><span>{facility.name}</span></span></div>
         <TickStrip spaces={spaces} label="Availability unknown while reconnecting" />
-        <Provenance live={live} now={ctx.now} simulated={facility.is_simulated} />
+        <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
         <div className="acts"><button type="button" className="btn press" onClick={() => setMode('garage')}>View garage</button><button type="button" className="circ lg" disabled aria-label="Go (unavailable)"><Arrow /></button></div>
+      </>
+    );
+  } else if (ctx.openDisabled && ctx.evidence.fresh === 0) {
+    // Occupied-only detection with no current view at all: say the views are old, not "0 occupied".
+    body = (
+      <>
+        <div className="big" data-testid="stale-state"><span className="num off">—</span><span className="lbl"><b>No recent camera view</b><span>Spaces can’t be confirmed until the cameras report again</span></span></div>
+        <TickStrip spaces={spaces} label="No space can be confirmed: no recent camera view" />
+        <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
+        <div className="acts"><button type="button" className="btn press" onClick={() => setMode('garage')}>View garage</button></div>
+      </>
+    );
+  } else if (ctx.openDisabled) {
+    // Occupied-only detection: what the cameras can say, and plainly what they can't yet.
+    body = (
+      <>
+        <div className="big" data-testid="open-disabled">
+          <span className="num zero" data-testid="occupied-count">{counts.occupied}</span>
+          <span className="lbl"><b>{counts.occupied === 1 ? 'space seen occupied' : 'spaces seen occupied'}</b><span>Empty spaces can’t be confirmed yet</span></span>
+        </div>
+        <TickStrip spaces={spaces} label={`${counts.occupied} of ${counts.total} spaces seen occupied; open spaces can't be confirmed yet`} />
+        <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
+        <p className="notice-line" data-testid="open-disabled-line">Open-space confirmation isn’t enabled in this demo yet.</p>
+        <div className="acts"><button type="button" className="btn ink press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
       </>
     );
   } else if (counts.forYou === 0) {
@@ -193,7 +224,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
       <>
         <div className="big"><span className="num zero" data-testid="open-count">{counts.open}</span><span className="lbl"><b>{counts.open === 0 ? 'spaces confirmed open' : 'open spaces you can use: 0'}</b><span>{counts.uncertain ? `${counts.uncertain} can't be confirmed right now` : `of ${counts.total} · ${facility.name}`}</span></span></div>
         <TickStrip spaces={spaces} label={`${counts.open} of ${counts.total} spaces confirmed open`} />
-        <Provenance live={live} now={ctx.now} simulated={facility.is_simulated} />
+        <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
         <div className="acts">
           <button type="button" className="btn ink press" onClick={p.onWatch} disabled={p.watching} data-testid="watch">{p.watching ? 'Watching while the app is open…' : 'Tell me when one opens'}</button>
         </div>
@@ -208,7 +239,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
           <span className="lbl"><b>{counts.open === 1 ? 'space confirmed open' : 'spaces confirmed open'}</b><span className="fac">{facility.name}</span></span>
         </div>
         <TickStrip spaces={spaces} label={`${counts.open} of ${counts.total} spaces confirmed open`} />
-        <Provenance live={live} now={ctx.now} simulated={facility.is_simulated} extra={forYouLine} />
+        <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} extra={forYouLine} />
         <div className="acts">
           <button type="button" className="btn press" onClick={() => setMode('garage')} data-testid="view-spaces">View spaces</button>
           <button type="button" className="circ ink lg press" aria-label={s ? `Go to space ${s.space_id}` : 'Go'} disabled={!s || p.checking !== null} onClick={() => s && p.onGo(s.space_id)} data-testid="go">
@@ -246,15 +277,28 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
           <button type="button" className="circ flat press" aria-label="Close garage details" onClick={() => setMode('peek')}><Close /></button>
         </div>
       </div>
+      {ctx.demo?.site && (
+        <div className="site-note" data-testid="site-disclaimer">
+          <b>{ctx.demo.site.tag}</b>
+          <span>{ctx.demo.site.disclaimer}</span>
+        </div>
+      )}
       <div className="stats" data-testid="garage-stats">
-        <div className="stat open"><b>{live.trusted ? counts.open : '—'}</b><span>Open</span></div>
+        <div className={`stat open${ctx.openDisabled ? ' off' : ''}`}><b>{live.trusted && !ctx.openDisabled ? counts.open : '—'}</b><span>Open</span></div>
         <div className="stat occ"><b>{live.trusted ? counts.occupied : '—'}</b><span>Occupied</span></div>
         <div className="stat unc"><b>{counts.uncertain}</b><span>Can't confirm</span></div>
       </div>
       <TickStrip spaces={spaces} label={`${counts.open} open, ${counts.occupied} occupied, ${counts.uncertain} can't confirm`} />
-      <Provenance live={live} now={ctx.now} simulated={facility.is_simulated} extra={camera} />
+      <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} extra={camera} />
+      {ctx.openDisabled && live.trusted && (
+        <div className="card occ-only" data-testid="open-disabled-card">
+          <span className="ey">Occupied-only detection</span>
+          <b>We can detect occupied spaces, but can’t yet confirm empty ones.</b>
+          <span>Open-space confirmation isn’t enabled in this demo yet, so no space is offered and there’s no parking advice.</span>
+        </div>
+      )}
       <SpaceTypes spaces={spaces} prefs={ctx.prefs} />
-      <AdviceCard advice={p.advice} trusted={live.trusted} open={counts.open} />
+      {!(ctx.openDisabled && live.trusted) && <AdviceCard advice={p.advice} trusted={live.trusted} open={counts.open} />}
       <div className="acts">
         <button type="button" className="btn ink press" onClick={() => setMode('space')} data-testid="choose-space">Choose a space</button>
         <button type="button" className="circ green lg press" aria-label={p.suggested ? `Go to space ${p.suggested.space_id}` : 'Go'} disabled={!p.suggested || !live.trusted || p.checking !== null} onClick={() => p.suggested && p.onGo(p.suggested.space_id)}><Arrow /></button>
@@ -323,10 +367,13 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
     if (offerable(s, prefs) && live.trusted) { setSelected(s.space_id); setNote(null); haptic(); return; }
     const st = bayState(s);
     const elig = eligibility(s.designation, prefs);
+    const age = spaceLabel(s, ctx.now, live.clockOffsetMs).text.toLowerCase();
     setNote(
       !live.trusted ? `${s.space_id}: live data is paused, so nothing can be chosen.`
-        : st === 'occupied' ? `${s.space_id} is occupied.`
-        : st === 'uncertain' ? `${s.space_id} can't be confirmed right now${s.stale ? ' (no recent camera view)' : ''}.`
+        : st === 'occupied' ? `${s.space_id} is occupied · ${age}.`
+        : st === 'uncertain' ? (s.stale || !s.last_observed_at ? `${s.space_id} can't be confirmed right now · ${age}.`
+          : ctx.openDisabled ? `${s.space_id} isn't seen occupied, but empty spaces can't be confirmed in this demo yet · ${age}.`
+          : `${s.space_id} can't be confirmed right now · ${age}.`)
         : `${s.space_id} is open, but: ${elig.reason}`,
     );
   };
@@ -336,7 +383,7 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
     <div className="panel" style={{ gap: 20, paddingBottom: p.safe.bottom + 24 }} data-testid="space-panel">
       <div className="row">
         <button type="button" className="circ flat press" aria-label="Back to garage details" onClick={() => setMode('garage')}><Back /></button>
-        <Provenance live={live} now={ctx.now} simulated={false} />
+        <Provenance live={live} evidence={ctx.evidence} simulated={false} />
       </div>
       <div style={{ display: 'grid', gap: 8 }}>
         <div className="ey">{facility.name} · {levelName}</div>
@@ -399,7 +446,7 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
             <div style={{ display: 'grid', gap: 4, minWidth: 0 }}>
               <b className="strong" style={{ fontSize: 18 }}>{chosen.space_id === p.suggested?.space_id ? 'Suggested space' : 'Your space'}</b>
               <span className="body" style={{ fontSize: 14.5 }}>{describeSpace(chosen, ctx.spaces)}</span>
-              <span className="mini-tags"><span className="live">Open now</span><span>Not reserved</span><span>Rechecked when you go</span></span>
+              <span className="mini-tags"><ChosenAge space={chosen} now={ctx.now} offsetMs={live.clockOffsetMs} /><span>Not reserved</span><span>Rechecked when you go</span></span>
             </div>
           </motion.div>
           <QuickSwitch spaces={ctx.spaces} prefs={prefs} chosen={chosen.space_id} onPick={(id) => { setSelected(id); setNote(null); haptic(); }} />
@@ -410,10 +457,16 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
           </div>
         </>
       ) : (
-        <p className="body" data-testid="no-choice">{live.trusted ? (ctx.counts.forYou ? 'Tap a green space to choose it.' : 'No space you can use is confirmed open right now.') : 'Live data is paused. Spaces can be chosen again when it returns.'}</p>
+        <p className="body" data-testid="no-choice">{live.trusted ? (ctx.openDisabled ? 'Open-space confirmation isn’t enabled in this demo yet, so no space can be chosen.' : ctx.counts.forYou ? 'Tap a green space to choose it.' : 'No space you can use is confirmed open right now.') : 'Live data is paused. Spaces can be chosen again when it returns.'}</p>
       )}
     </div>
   );
+}
+
+/** "Open · seen 3 s ago" for the chosen space: its own evidence, amber once it's past 12 s. */
+function ChosenAge({ space, now, offsetMs }: { space: ParkingSpace; now: number; offsetMs: number }) {
+  const l = spaceLabel(space, now, offsetMs);
+  return <span className={l.tone === 'live' ? 'live' : 'paused'} data-testid="chosen-age" data-tone={l.tone}>Open · {l.text.toLowerCase()}</span>;
 }
 
 /** The big number, rolling when the live count changes. */

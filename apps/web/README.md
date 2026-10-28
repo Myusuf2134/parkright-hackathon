@@ -24,7 +24,9 @@ PARKRIGHT_API_URL=http://127.0.0.1:8431 npm run dev:web
 #   curl -X POST localhost:8431/__test/camera -H 'content-type: application/json' -d '{"paused":true}'
 ```
 
-`e2e/live_api.py --site mvp|showcase|ohio` picks the 12-, 34- or 72-space garage.
+`e2e/live_api.py --site mvp|showcase|ohio` picks the 12-, 34- or 72-space garage. Add
+`--detector-like --stale-ms 30000` (with `--site ohio`) to stand in for the real Ohio run without A2:
+`allow_open` false, OCCUPIED/UNCERTAIN only, eight cameras reporting one at a time (~18 s cycle).
 
 Useful query flags on `/app/`: `splash=off|full|short|reduced`, `device=iphone15` (simulates the
 standalone-PWA safe areas for screenshots), `arrival=normal|quiet|traffic|weather|construction|canceled|moved|missing`
@@ -48,7 +50,12 @@ npm run test:e2e -w @parkright/web       # browser: scripted backend (driver + a
 - A space is re-read from the API before a trip starts and watched during it; if it is lost the trip says so
   and offers the next one. Nothing is a reservation.
 - Simulated garages, demo schedules, demo garages and the demo route are labelled where they appear.
-  The map is an illustration: no facility has real coordinates.
+  The map is an illustration: no facility has real coordinates. A site's own disclaimer
+  (`/api/v1/demo/status` → `site`) is shown verbatim in garage details and About; none is invented.
+- Freshness is per space: a garage reads "Live" only while its *oldest* current view is under 12 s,
+  otherwise "Camera views 1–18 s old"; a chosen space shows its own age ("Open · seen 17 s ago").
+- When the detector reports `allow_open: false`, zero open means "can't confirm empty spaces", not
+  "full": the app says open-space confirmation isn't enabled, offers no space, watch or advice.
 
 ## Arrival Intelligence
 

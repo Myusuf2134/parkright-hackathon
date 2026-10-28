@@ -164,7 +164,7 @@ function ArrivalHero({ r, parking, destShort, onFind, onRemove }: { r: ArrivalRe
         <div className="parkline" data-testid="parkline">
           <span className={`pdot${parking.trusted && parking.forYou > 0 ? ' on' : ''}`} />
           <span className="t">
-            <b>{parking.trusted ? `${parking.open} confirmed open` : 'Live parking paused'}</b>
+            <b className={parking.trusted && parking.openDisabled && parking.open === 0 ? 'wrap' : undefined}>{!parking.trusted ? 'Live parking paused' : parking.openDisabled && parking.open === 0 ? 'Open spaces can’t be confirmed yet' : `${parking.open} confirmed open`}</b>
             <small>{parking.garage}</small>
           </span>
           <SourceTag source={parking.trusted ? (parking.simulated ? 'simulated' : 'live') : 'unavailable'}>{parking.trusted ? (parking.simulated ? 'Live · simulated' : 'Live') : 'Paused'}</SourceTag>

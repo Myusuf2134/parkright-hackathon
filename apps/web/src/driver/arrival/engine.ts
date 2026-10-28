@@ -113,12 +113,20 @@ export function departure(input: DepartureInput): Departure {
 }
 
 /** Live parking turned into a signal: real data, so it is never a demo alert. */
-export function parkingSignal(p: { trusted: boolean; open: number; forYou: number; garage: string; building: string } | null): Signal | null {
+export function parkingSignal(p: { trusted: boolean; open: number; forYou: number; garage: string; building: string; openDisabled?: boolean } | null): Signal | null {
   if (!p) return null;
   if (!p.trusted) {
     return { id: 'parking-paused', kind: 'parking', title: 'Live parking data paused', detail: `${p.garage} can't be confirmed right now.`, buildings: [p.building], severity: 'moderate', confidence: 1, minutesOld: 0, maxAgeMin: 5, action: 'find-parking', source: 'live' };
   }
   if (p.forYou > 0) return null;
+  // The detector can't report OPEN at all: say that, not that the garage is full.
+  if (p.openDisabled && p.open === 0) {
+    return {
+      id: 'parking-unverified', kind: 'parking', title: 'Open spaces can’t be confirmed yet',
+      detail: `${p.garage} detects occupied spaces only. Open-space confirmation isn’t enabled in this demo yet.`,
+      buildings: [p.building], severity: 'moderate', confidence: 1, minutesOld: 0, maxAgeMin: 5, action: 'find-parking', source: 'live',
+    };
+  }
   return {
     id: 'parking-none', kind: 'parking', title: 'No confirmed open spaces',
     detail: `${p.garage} has no space you can use confirmed open right now.`,
@@ -161,7 +169,7 @@ export function evaluate(def: ScenarioDef, live: Parameters<typeof parkingSignal
   else if (top?.kind === 'traffic' && !def.route.etaIncludesTraffic) note = { text: `Traffic on your route may add ${top.driveDelayMin} minutes.`, tone: 'notice', source: top.source };
   else if (top?.kind === 'weather') note = { text: `${top.title}. Extra time included.`, tone: 'notice', source: top.source };
   else if (top?.kind === 'construction') note = { text: top.title + '.', tone: 'notice', source: top.source };
-  else if (top?.kind === 'parking') note = { text: top.id === 'parking-none' ? 'No confirmed open space near class. Allow extra time to find one.' : `${top.title}.`, tone: 'notice', source: top.source };
+  else if (top?.kind === 'parking') note = { text: top.id === 'parking-none' ? 'No confirmed open space near class. Allow extra time to find one.' : top.id === 'parking-unverified' ? 'Open spaces can’t be confirmed yet. Allow extra time to find one.' : `${top.title}.`, tone: 'notice', source: top.source };
   else if (dep.state === 'ok') note = { text: 'Parking and walking time included.', tone: 'calm', source: dep.source };
   return { session: def.session, route: def.route, shown, filtered, departure: dep, canceled, movedTo, note };
 }

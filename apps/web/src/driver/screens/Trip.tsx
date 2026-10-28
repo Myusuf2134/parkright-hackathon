@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import type { LiveView } from '../net/live.ts';
 import { bayState, describeSpace, offerable, suggestSpace } from '../lib/parking.ts';
 import type { Prefs } from '../lib/prefs.ts';
-import { ago } from '../lib/time.ts';
+import { spaceLabel } from '../lib/evidence.ts';
 import { CampusStreets, GaragePin, GARAGE_PIN, MAP_H, MAP_W, TRIP_ROUTE } from '../ui/CampusMap.tsx';
 import { Close, TurnRight } from '../ui/icons.tsx';
 
@@ -40,7 +40,8 @@ export function Trip({ facility, spaceId, live, spaces, prefs, now, onEnd, onCho
   const level = facility.levels.find((l) => l.level_id === space?.level_id)?.name ?? 'Level 1';
   const alt = status !== 'ok' && live.trusted ? suggestSpace(spaces.filter((s) => s.space_id !== spaceId), prefs, facility.levels) : null;
   const row = space ? describeSpace(space, spaces) : '';
-  const seen = live.lastFrameAt ? ago(now - live.lastFrameAt) : null;
+  // This space's own last observation, not the newest frame from any camera.
+  const seen = space ? spaceLabel(space, now, live.clockOffsetMs) : null;
 
   const warn: Record<Exclude<TripWatch, 'ok'>, { title: string; body: string }> = {
     taken: { title: `${spaceId} was just taken`, body: 'A camera now sees a car there.' },
@@ -93,7 +94,7 @@ export function Trip({ facility, spaceId, live, spaces, prefs, now, onEnd, onCho
             <div className="trip-title" data-testid="trip-title">{status === 'ok' ? `${spaceId} is still open` : warn[status].title}</div>
             <div className="prov">
               {status === 'ok' && seen
-                ? <span className="live">Live · seen {seen} ago</span>
+                ? <span className={seen.tone === 'live' ? 'live' : 'paused'} data-testid="trip-age" data-tone={seen.tone}>{seen.tone === 'live' ? `Live · ${seen.text.toLowerCase()}` : seen.text}</span>
                 : <span className="paused">{warn[status === 'ok' ? 'paused' : status].body}</span>}
               {facility.is_simulated && <><span aria-hidden>·</span><span className="simw">Simulated</span></>}
             </div>

@@ -476,3 +476,14 @@ p, h1, h2, h3 { margin: 0; }
   .mverb { font-size: 28px; }
   .trip .turn { width: 62px; height: 62px; }
 }
+
+/* ---------- site disclaimer & occupied-only detection ---------- */
+.site-note { display: grid; gap: 5px; padding: 13px 15px; border-radius: 18px; background: #eef2f8; box-shadow: inset 0 0 0 1px rgba(58, 83, 120, 0.12); }
+.site-note b { font: 650 12.5px/1.25 var(--mono); color: var(--sim); letter-spacing: -0.01em; }
+.site-note span { font: 500 13.5px/1.4 var(--ui); color: var(--ink-2); }
+.card.occ-only { background: var(--warm); gap: 7px; }
+.card.occ-only b { font: 650 16.5px/1.3 var(--ui); letter-spacing: -0.01em; }
+.card.occ-only > span:last-child { font: 500 13.5px/1.4 var(--ui); color: var(--ink-2); }
+.stat.open.off { background: var(--warm); }
+.stat.open.off b { color: var(--ink-3); }
+.parkline b.wrap { white-space: normal; }

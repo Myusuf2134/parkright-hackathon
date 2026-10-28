@@ -3,6 +3,8 @@
  * a snapshot on connect, then whole-facility replacements; while disconnected every space is UNCERTAIN.
  * Added here: a null facility id, the time of the last message, and a silence guard — if the socket
  * says nothing for SILENCE_MS, the view goes blind too, because evidence that old is stale anyway.
+ * The client–server clock offset is kept so per-space evidence ages (lib/evidence.ts) use the
+ * server's observation times without trusting the two clocks to agree.
  */
 import type { Facility, FacilitySnapshotMessage, OccupancyUpdateMessage, ParkingSpace } from '@parkright/contracts';
 import { useEffect, useMemo, useState } from 'react';
@@ -21,6 +23,8 @@ interface Raw {
   lastFrameAt: number | null;
   everLive: boolean;
   lastLiveAt: number | null;
+  /** Client clock minus server clock, from the last update's published_at (0 until one arrives). */
+  clockOffsetMs: number;
 }
 
 export interface LiveView extends Raw {
@@ -36,7 +40,7 @@ type Message = FacilitySnapshotMessage | OccupancyUpdateMessage;
 export const blind = (spaces: ParkingSpace[]): ParkingSpace[] =>
   spaces.map((s) => ({ ...s, current_state: 'UNCERTAIN', confidence: null }));
 
-const INITIAL: Raw = { connection: 'idle', facility: null, spaces: [], lastFrame: null, lastMessageAt: null, lastFrameAt: null, everLive: false, lastLiveAt: null };
+const INITIAL: Raw = { connection: 'idle', facility: null, spaces: [], lastFrame: null, lastMessageAt: null, lastFrameAt: null, everLive: false, lastLiveAt: null, clockOffsetMs: 0 };
 
 export function useLiveFacility(facilityId: string | null): LiveView {
   const [raw, setRaw] = useState<Raw>(INITIAL);
@@ -63,6 +67,7 @@ export function useLiveFacility(facilityId: string | null): LiveView {
           const newest = Math.max(0, ...msg.spaces.map((s) => (s.last_observed_at ? Date.parse(s.last_observed_at) : 0)));
           setRaw((r) => ({ ...r, connection: 'live', facility: msg.facility, spaces: msg.spaces, lastMessageAt: at, lastFrameAt: newest || null, everLive: true, lastLiveAt: at }));
         } else if (msg.type === 'occupancy_update') {
+          const published = Date.parse(msg.published_at);
           setRaw((r) => ({
             ...r,
             connection: 'live',
@@ -72,6 +77,7 @@ export function useLiveFacility(facilityId: string | null): LiveView {
             lastMessageAt: at,
             lastFrameAt: msg.frame ? at : r.lastFrameAt,
             lastLiveAt: at,
+            clockOffsetMs: Number.isFinite(published) ? at - published : r.clockOffsetMs,
           }));
         }
       };

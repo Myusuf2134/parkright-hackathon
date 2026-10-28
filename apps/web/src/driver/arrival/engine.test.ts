@@ -94,6 +94,13 @@ describe('missing data and live parking', () => {
     expect(r.shown[0].signal).toMatchObject({ id: 'parking-none', source: 'live' });
     expect(r.departure).toMatchObject({ state: 'ok', leaveAt: '9:58 AM', incomplete: ['parking'] });
   });
+  it('with open detection disabled, says it can’t confirm open spaces instead of “none open”', () => {
+    const r = evaluate(S.normal, { trusted: true, open: 0, forYou: 0, garage: 'Garage', building: DEFAULT_SEED.building, openDisabled: true });
+    expect(r.shown[0].signal).toMatchObject({ id: 'parking-unverified', source: 'live' });
+    expect(r.shown.some((j) => j.signal.id === 'parking-none')).toBe(false);
+    expect(r.note?.text).toBe('Open spaces can’t be confirmed yet. Allow extra time to find one.');
+    expect(r.departure).toMatchObject({ state: 'ok', leaveAt: '9:58 AM', incomplete: ['parking'] });
+  });
   it('live parking paused (connection lost) is surfaced, never treated as available', () => {
     const r = evaluate(S.normal, { trusted: false, open: 7, forYou: 7, garage: 'Garage', building: DEFAULT_SEED.building });
     expect(r.shown[0].signal).toMatchObject({ id: 'parking-paused', source: 'live' });
