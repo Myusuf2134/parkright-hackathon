@@ -1,13 +1,17 @@
 {
-  "name": "ParkRight",
-  "short_name": "ParkRight",
-  "description": "Park smarter. Arrive ready.",
+  "name": "Meridian | Intelligent mobility",
+  "short_name": "Meridian",
+  "description": "Meridian's ParkRight campus mobility demonstration",
   "start_url": "/",
-  "display": "browser",
-  "background_color": "#021a15",
-  "theme_color": "#021a15",
+  "display": "standalone",
+  "background_color": "#061421",
+  "theme_color": "#061421",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }
