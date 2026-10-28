@@ -17,7 +17,7 @@ export function Final() {
       <footer className="footer">
         <div className="wrap footer-grid">
           <div className="footer-brand">
-            <a href="#top" className="brand"><img src="/icon.svg" alt="" width={28} height={28} />ParkRight</a>
+            <a href="#top" className="brand" data-testid="footer-brand"><span className="brand-mark"><img src="/brand/parkright-mark.png" alt="" width={37} height={32} /><img className="brand-word" src="/brand/parkright-wordmark.png" alt="ParkRight" width={93} height={21} /></span></a>
             <p>A hackathon prototype for campus parking.</p>
           </div>
           <div className="disclosures" aria-label="Simulation and data disclosures">

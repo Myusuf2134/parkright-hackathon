@@ -23,7 +23,7 @@ export function Site() {
       <a className="skip" href="#main">Skip to content</a>
       <nav className={`nav${scrolled ? ' scrolled' : ''}`} aria-label="Primary">
         <div className="wrap nav-inner">
-          <a href="#top" className="brand" aria-label="ParkRight home"><img src="/icon.svg" alt="" width={28} height={28} />ParkRight</a>
+          <a href="#top" className="brand" aria-label="ParkRight home" data-testid="nav-brand"><span className="brand-mark"><img src="/brand/parkright-mark.png" alt="" width={37} height={32} /><img className="brand-word" src="/brand/parkright-wordmark.png" alt="ParkRight" width={93} height={21} /></span></a>
           <div className="nav-links">{NAV.map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
           <Action to="app" kind="primary" testid="cta-nav">Try ParkRight</Action>
         </div>

@@ -128,3 +128,21 @@ test('motion: the pipeline lights in order and tab screens crossfade', async ({ 
   await expect(page.locator('.duo-set.on')).toHaveCount(1);
   await expect(page.locator('.duo-set.on img').first()).toHaveAttribute('src', '/media/v5-you.webp');
 });
+
+test('branding: the real ParkRight mark and wordmark, and every icon URL resolves', async ({ page, request }) => {
+  for (const id of ['nav-brand', 'footer-brand']) {
+    const brand = page.getByTestId(id);
+    await expect(brand.locator('img[src="/brand/parkright-mark.png"]')).toBeVisible();
+    await expect(brand.getByRole('img', { name: 'ParkRight' })).toHaveAttribute('src', '/brand/parkright-wordmark.png');
+  }
+  const links = await page.locator('head link[rel~="icon"], head link[rel="apple-touch-icon"], head link[rel="manifest"]').evaluateAll((ls) => ls.map((l) => l.getAttribute('href')!));
+  expect(links).toEqual(['/favicon.ico', '/favicon-32x32.png', '/favicon-16x16.png', '/apple-touch-icon.png', '/site.webmanifest']);
+  const manifest = await (await request.get('/site.webmanifest')).json();
+  for (const url of [...links, ...manifest.icons.map((i: { src: string }) => i.src), '/brand/parkright-mark.png', '/brand/parkright-wordmark.png']) {
+    const r = await request.get(url);
+    expect(r.status(), url).toBe(200);
+    expect(r.headers()['content-type'], url).toMatch(/image|json|manifest|icon/);
+  }
+  // The old placeholder is gone (the static server answers unknown paths with the page itself).
+  expect((await request.get('/icon.svg')).headers()['content-type']).not.toContain('image/svg');
+});
