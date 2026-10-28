@@ -299,3 +299,31 @@ body { background: #06111b; }
       linear-gradient(0deg,rgba(3,12,20,.28),transparent 65%);
   }
 }
+
+/* Continuous campus view, transparent content, no horizontal separators */
+.md-capabilities,.md-panel-section,.md-technology-intro,.md-product-heading,.md-markets,.md-end,.md-footer,
+#main > .showcase,#main > .ai,#main > .demo,#main > .arrival,#main > .tech {
+ background: transparent !important; border: 0 !important;
+}
+.md-markets::before { opacity: 0 !important; }
+.md-markets-row > div,.md-tech-points > div { border: 0 !important; }
+#main .flow li,#main .stats div,#main .truth-card,#main .arr-card,
+#main .shot,#main .browser,#main .tabs,.md-glass-card {
+ background: rgba(4,14,24,.18) !important;
+ color: white !important; border-color: rgba(255,255,255,.13) !important;
+ box-shadow: none !important;
+}
+#main .flow li *,#main .stats div *,#main .truth-card *,#main .arr-card *,
+#main .shot figcaption,#main .shot figcaption *,#main .tabs button,
+.md-glass-card * { color: white !important; }
+#main .flow li:last-child { background: transparent !important; }
+#main .browser-bar { background: rgba(4,14,24,.35); color: white; }
+#main .browser-bar span { background: rgba(255,255,255,.12); color: white; }
+#main .browser figcaption { color: white; }
+#main .shot { padding: 0 !important; overflow: hidden; }
+#main .shot figcaption { padding: 12px 14px; }
+#main .arr-picker button[aria-checked='true'] { background: rgba(4,14,24,.4) !important; }
+#main .arr-picker button[aria-checked='true'] * { color: white !important; }
+#main .arr-note { background: rgba(4,14,24,.3); color: white; }
+.md-vision-photo { background: transparent !important; }
+.md-footer-disclosures p,.md-footer-tag,.md-footer-small { color: rgba(255,255,255,.9); }
