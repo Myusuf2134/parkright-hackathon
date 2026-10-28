@@ -6,7 +6,6 @@ import { Showcase } from './sections/Showcase.tsx';
 import { Tech } from './sections/Tech.tsx';
 import { LINKS } from './config.ts';
 import { Action, Reveal } from './ui/kit.tsx';
-import './meridian.css';
 
 const NAV = [
   ['#app', 'Product'],
