@@ -29,7 +29,7 @@ export function Site() {
           <Action to="app" kind="primary" testid="cta-nav">Try ParkRight</Action>
         </div>
       </nav>
-      <div className="atmos" aria-hidden />
+      <div className="site-background" aria-hidden />
       <Hero />
       <main id="main">
         <Problem />

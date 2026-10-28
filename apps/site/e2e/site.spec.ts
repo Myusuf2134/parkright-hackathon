@@ -88,3 +88,18 @@ test('reduced motion shows everything without animation', async ({ browser }) =>
   expect(await page.locator('.hero-front').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
   await ctx.close();
 });
+
+test('the campus night photo is one fixed backdrop that never moves or repeats', async ({ page, request }) => {
+  const bg = page.locator('.site-background');
+  const style = await bg.evaluate((e) => { const s = getComputedStyle(e); return { position: s.position, image: s.backgroundImage, size: s.backgroundSize, repeat: s.backgroundRepeat, z: s.zIndex }; });
+  expect(style).toMatchObject({ position: 'fixed', size: 'cover', repeat: 'no-repeat', z: '-1' });
+  expect(style.image).toContain('/campus-night-aerial.webp');
+  expect((await request.get('/campus-night-aerial.webp')).status()).toBe(200);
+  const vh = await page.evaluate(() => innerHeight);
+  for (const y of [0, 2500, 6000, 100000]) {
+    await page.evaluate((v) => scrollTo({ top: v, behavior: 'instant' }), y);
+    const box = (await bg.boundingBox())!;
+    expect(box.y).toBe(0);
+    expect(box.height).toBeGreaterThanOrEqual(vh);
+  }
+});

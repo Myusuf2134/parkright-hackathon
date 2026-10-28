@@ -29,7 +29,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 500 16px/1.5 var(--ui); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body { margin: 0; background: #0b1119; color: var(--ink); font: 500 16px/1.5 var(--ui); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 img { max-width: 100%; }
 a { color: inherit; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
@@ -53,9 +53,22 @@ code, pre { font-family: var(--mono); }
 .fine { margin: 0; font: 500 13px/1.5 var(--ui); color: var(--ink-2); }
 .shead { display: grid; gap: 18px; margin-bottom: 56px; }
 
-/* ---------- atmosphere ---------- */
-.atmos { position: absolute; inset: 0 0 auto; height: 1400px; z-index: -1; pointer-events: none;
-  background: radial-gradient(48% 52% at 6% 6%, var(--sky) 0%, rgba(211, 228, 255, 0) 70%), radial-gradient(42% 48% at 70% 2%, var(--blush) 0%, rgba(253, 224, 228, 0) 72%), radial-gradient(40% 40% at 100% 40%, rgba(211, 228, 255, 0.55) 0%, rgba(211, 228, 255, 0) 70%); }
+/* ---------- fixed backdrop ----------
+   The nighttime campus aerial sits on its own fixed layer (more reliable than background-attachment:
+   fixed, which mobile Safari ignores). It never moves; 100lvh keeps it the same size when mobile
+   browser toolbars show or hide, so it does not jump. Every section scrolls over it on one
+   consistent translucent surface so the existing type keeps its contrast. */
+.site-background { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100vh; height: 100lvh; pointer-events: none;
+  background: #0b1119 url('/campus-night-aerial.webp') center / cover no-repeat; }
+.hero, main > .section, .final, .footer {
+  --sheet-gap: 24px;
+  width: calc(100% - 2 * var(--sheet-gap)); max-width: 1296px; margin-left: auto; margin-right: auto; margin-bottom: var(--sheet-gap);
+  border-radius: 36px; background: rgba(251, 250, 247, 0.86);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1); backdrop-filter: blur(16px) saturate(1.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 30px 80px -40px rgba(0, 0, 0, 0.6);
+}
+.hero { margin-top: var(--sheet-gap); }
+.footer { margin-bottom: var(--sheet-gap); }
 
 /* ---------- nav ---------- */
 .nav { position: fixed; inset: 0 0 auto; z-index: 50; transition: background-color 300ms var(--ease), box-shadow 300ms var(--ease); }
@@ -101,7 +114,7 @@ code, pre { font-family: var(--mono); }
 .reveal.in { opacity: 1; transform: none; }
 
 /* ---------- hero ---------- */
-.hero { position: relative; max-width: 1200px; margin: 0 auto; padding: 150px 28px 96px; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 40px; align-items: center; min-height: min(100vh, 980px); }
+.hero { position: relative; padding: 126px 48px 96px; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 40px; align-items: center; min-height: min(100vh, 980px); }
 .hero-copy { display: grid; gap: 26px; align-content: center; animation: rise 900ms var(--ease) both; }
 .hero-lede { margin: 0; font: 500 clamp(18px, 1.7vw, 22px)/1.45 var(--ui); color: var(--ink-2); max-width: 34ch; text-wrap: pretty; }
 .hero .fine { max-width: 44ch; }
@@ -133,7 +146,7 @@ code, pre { font-family: var(--mono); }
 .problem > .fine { margin-top: 40px; }
 
 /* ---------- showcase ---------- */
-.showcase { background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 18%, #fff 82%, rgba(255, 255, 255, 0) 100%); }
+.showcase { background: rgba(255, 255, 255, 0.88); }
 .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 6px; border-radius: 24px; background: var(--warm); margin-bottom: 56px; }
 .tabs button { display: grid; gap: 4px; padding: 16px 20px; border-radius: 18px; text-align: left; transition: background-color 220ms var(--ease), box-shadow 220ms var(--ease); }
 .tabs button b { font: 750 19px/1.1 var(--ui); letter-spacing: -0.02em; }
@@ -177,7 +190,7 @@ code, pre { font-family: var(--mono); }
 .truth-phone .phone { --w: 230px; }
 
 /* ---------- demo ---------- */
-.demo { background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 20%, #fff 80%, rgba(255, 255, 255, 0)); }
+.demo { background: rgba(255, 255, 255, 0.88); }
 .browser { margin: 0; border-radius: 22px; overflow: hidden; background: var(--card); box-shadow: var(--sh-2), inset 0 0 0 1px var(--line); }
 .browser-bar { display: flex; align-items: center; gap: 7px; height: 42px; padding: 0 16px; background: #f5f4f0; border-bottom: 1px solid var(--line); }
 .browser-bar i { width: 11px; height: 11px; border-radius: 50%; background: #dcdad3; }
@@ -248,10 +261,11 @@ code, pre { font-family: var(--mono); }
 
 /* ---------- final + footer ---------- */
 .final { padding: 150px 0 140px; overflow: hidden; }
-.final::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(42% 60% at 25% 50%, var(--sky) 0%, rgba(211, 228, 255, 0) 70%), radial-gradient(40% 60% at 75% 50%, var(--blush) 0%, rgba(253, 224, 228, 0) 70%); }
+.final { isolation: isolate; }
+.final::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: radial-gradient(42% 60% at 25% 50%, var(--sky) 0%, rgba(211, 228, 255, 0) 70%), radial-gradient(40% 60% at 75% 50%, var(--blush) 0%, rgba(253, 224, 228, 0) 70%); }
 .final-inner { display: grid; gap: 44px; justify-items: center; text-align: center; }
 .final-h { max-width: none; }
-.footer { padding: 56px 0 64px; border-top: 1px solid var(--line); background: #f7f6f2; }
+.footer { padding: 56px 0 64px; }
 .footer-grid { display: grid; grid-template-columns: minmax(200px, 0.6fr) minmax(0, 1.4fr); gap: 48px; }
 .footer-brand p { margin: 12px 0 0; color: var(--ink-2); font-size: 14.5px; }
 .disclosures h3 { margin: 0 0 12px; font: 650 12px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
@@ -259,7 +273,7 @@ code, pre { font-family: var(--mono); }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
-  .hero { grid-template-columns: minmax(0, 1fr); padding-top: 128px; min-height: 0; gap: 56px; }
+  .hero { grid-template-columns: minmax(0, 1fr); padding-top: 104px; min-height: 0; gap: 56px; }
   .hero-copy { justify-items: start; }
   .hero-stage { height: 640px; max-width: 620px; width: 100%; justify-self: center; }
   .chip-b { right: 0; }
@@ -276,10 +290,11 @@ code, pre { font-family: var(--mono); }
 }
 @media (max-width: 760px) {
   .wrap, .hero { padding-left: 20px; padding-right: 20px; }
+  .hero, main > .section, .final, .footer { --sheet-gap: 10px; border-radius: 28px; }
   .section { padding: 88px 0; }
   .nav-links { display: none; }
   .nav-inner { justify-content: space-between; }
-  .hero { padding-top: 112px; padding-bottom: 64px; }
+  .hero { padding-top: 96px; padding-bottom: 64px; }
   .hero-stage { height: 560px; }
   .hero-front { --w: 252px; translate: 30px 0; }
   .hero-back { --w: 214px; translate: -92% -46%; }
