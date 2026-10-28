@@ -25,13 +25,6 @@
 .d-ghost { padding: 6px 14px; border: 0; border-radius: 999px; background: var(--card-2); color: var(--text); font-size: 13px; font-weight: 600; }
 .d-ghost.on { background: var(--text); color: var(--ink); }
 
-.d-steps { display: flex; gap: 6px; margin: 18px 0 16px; padding: 0; list-style: none; }
-.d-steps li { flex: 1; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: var(--card); color: var(--faint); font-size: 13px; font-weight: 600; transition: background-color 300ms ease, color 300ms ease; }
-.d-steps li span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--card-2); font-size: 11.5px; }
-.d-steps li.done { color: var(--muted); }
-.d-steps li.done span { background: #0f3a22; color: #8ff0b0; }
-.d-steps li.now { background: #0f3a22; color: var(--text); }
-.d-steps li.now span { background: var(--green); color: var(--ink); }
 
 .d-alert { margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; background: #3b1517; color: #ffb4b4; }
 .d-grid { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 16px; align-items: start; }
@@ -101,7 +94,6 @@
 @media (max-width: 1100px) {
   .d-grid { grid-template-columns: 1fr; }
   .d-tech ol { grid-template-columns: repeat(4, 1fr); }
-  .d-steps { flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   .demo * { animation: none !important; transition: none !important; }
@@ -143,3 +135,5 @@
 .d-live-map.n72 .d-live-bay small { font-size: 7.5px; }
 .d-live-map.n72 .d-live-bay:nth-child(10) { margin-left: 8px; }
 .d-cam-tabs { flex-wrap: wrap; justify-content: flex-end; }
+
+.d-flow { margin: 18px 0 16px; }

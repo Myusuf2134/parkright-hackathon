@@ -1,0 +1,8 @@
+.pflow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; counter-reset: pf; }
+.pflow li { position: relative; display: grid; gap: 4px; align-content: start; padding: 10px 12px 10px 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); min-width: 0; }
+.pflow li::before { content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 2px; background: rgba(255, 255, 255, 0.14); }
+.pflow li.on::before { background: #4ade80; }
+.pflow li.warn::before { background: #f2b84b; }
+.pflow li:not(:last-child)::after { content: '→'; position: absolute; right: -9px; top: 50%; translate: 0 -50%; font: 600 12px/1 ui-monospace, monospace; color: rgba(255, 255, 255, 0.35); z-index: 1; }
+.pflow b { font: 650 13px/1.15 'Geist Variable', system-ui, sans-serif; color: #f4f6f8; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pflow small { font: 500 11.5px/1.25 'Geist Mono Variable', ui-monospace, monospace; color: rgba(244, 246, 248, 0.6); overflow-wrap: anywhere; }

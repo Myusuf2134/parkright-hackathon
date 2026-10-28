@@ -3,6 +3,7 @@
  *
  *   1 class context → 2 camera → 3 A2 detections → 4 bay states → 5 garage comparison
  *   → 6 Nemotron (or labelled local fallback) → 7 the result: garage, level, space, walk.
+ * Shown as the compact flow Camera → NVIDIA A2 → Space state → ParkRight (data-step keeps 1–7).
  *
  * Camera, detections and bay states are live (latest frame + WebSocket). Garage
  * candidates, walking times and availability are the demo fixture and are labelled
@@ -13,12 +14,11 @@ import type { ParkingSpace } from '@parkright/contracts';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLiveFacility } from '../live.ts';
 import { type DemoRecommendation, type DemoStatus, type Scenario, flags, requestRecommendation, useDemoStatus, useEvents } from './api.ts';
+import { PipelineFlow } from './Flow.tsx';
 import { EventFeed, LiveGarageCard, liveCounts, ShowcaseCameraCard } from './Showcase.tsx';
 import './demo.css';
 
 type Phase = 'idle' | 'loading' | 'done' | 'error';
-
-const STEPS = ['Class', 'Camera', 'Detection', 'Bays', 'Compare', 'Nemotron', 'Result'] as const;
 
 export function DemoApp({ scenario }: { scenario: Scenario }) {
   const opts = useMemo(() => flags(), []);
@@ -89,14 +89,10 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
         </div>
       </header>
 
-      <ol className="d-steps" aria-label="Demo progress">
-        {STEPS.map((label, i) => (
-          <li key={label} className={i + 1 < step ? 'done' : i + 1 === step ? 'now' : ''}>
-            <span>{i + 1}</span>
-            {label}
-          </li>
-        ))}
-      </ol>
+      <div className="d-flow">
+        {/* Camera (frame) → A2 (detections) → space state (bays, comparison) → ParkRight (recommendation). */}
+        <PipelineFlow active={step <= 2 ? 0 : step === 3 ? 1 : step <= 5 ? 2 : 3} />
+      </div>
 
       {status === 'down' && <p className="d-alert" role="alert">The ParkRight API is not answering. Run <code>npm run demo:check</code>.</p>}
 
