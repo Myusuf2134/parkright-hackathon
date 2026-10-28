@@ -4,12 +4,11 @@ import { Arrival } from './sections/Arrival.tsx';
 import { Demo } from './sections/Demo.tsx';
 import { Final } from './sections/Final.tsx';
 import { Hero } from './sections/Hero.tsx';
-import { Problem } from './sections/Problem.tsx';
 import { Showcase } from './sections/Showcase.tsx';
 import { Tech } from './sections/Tech.tsx';
 import { Action } from './ui/kit.tsx';
 
-const NAV = [['#app', 'App'], ['#ai', 'AI'], ['#demo', 'Demo'], ['#arrival', 'Arrival'], ['#tech', 'Tech']] as const;
+const NAV = [['#app', 'App'], ['#ai', 'AI'], ['#demo', 'Demo'], ['#arrival', 'Arrival'], ['#tech', 'Under the hood']] as const;
 
 export function Site() {
   const [scrolled, setScrolled] = useState(false);
@@ -32,7 +31,6 @@ export function Site() {
       <div className="site-background" aria-hidden />
       <Hero />
       <main id="main">
-        <Problem />
         <Showcase />
         <Ai />
         <Demo />

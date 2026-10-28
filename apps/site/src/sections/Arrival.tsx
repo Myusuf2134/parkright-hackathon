@@ -21,7 +21,7 @@ export function Arrival() {
   return (
     <section className="section arrival" id="arrival" aria-labelledby="arrival-title">
       <div className="wrap">
-        <SectionHead id="arrival-title" eyebrow="Arrival Intelligence" title="Know when to leave. Not just where to park." lede="ParkRight checks every update against your trip, keeps only what matters, and turns it into one departure time." />
+        <SectionHead id="arrival-title" eyebrow="Arrival Intelligence" title="Know when to leave. Not just where to park." lede="Every update is checked against your trip. What matters becomes one departure time." />
         <div className="arr">
           <div className="arr-picker" role="radiogroup" aria-label="Demo scenario">
             {scenarios.map((s) => (
@@ -42,9 +42,13 @@ export function Arrival() {
             </div>
 
             <div className="arr-leave" aria-live="polite" data-testid="arr-leave">
-              {dep.state === 'ok' && <><span className="eyebrow">Leave at</span><b className="arr-time">{dep.leaveAt}</b><span className="arr-sub">Arrive by {dep.arriveBy} · {dep.spareMinutes} min to spare</span></>}
-              {dep.state === 'not-needed' && <><span className="eyebrow">Leave at</span><b className="arr-time off">No trip needed</b><span className="arr-sub">Your class was canceled.</span></>}
-              {dep.state === 'unavailable' && <><span className="eyebrow">Leave at</span><b className="arr-time off">Not available</b><span className="arr-sub">Missing {dep.missing.join(', ')}. ParkRight won’t guess.</span></>}
+              <span className="eyebrow">Leave at</span>
+              {/* Keyed on the value so each new estimate eases in; nothing animates with reduced motion. */}
+              <span className="arr-swap" key={dep.state === 'ok' ? dep.leaveAt : dep.state}>
+                {dep.state === 'ok' && <><b className="arr-time">{dep.leaveAt}</b><span className="arr-sub">Arrive by {dep.arriveBy} · {dep.spareMinutes} min to spare</span></>}
+                {dep.state === 'not-needed' && <><b className="arr-time off">No trip needed</b><span className="arr-sub">Your class was canceled.</span></>}
+                {dep.state === 'unavailable' && <><b className="arr-time off">Not available</b><span className="arr-sub">Missing {dep.missing.join(', ')}. ParkRight won’t guess.</span></>}
+              </span>
               <Source>Demo estimate</Source>
             </div>
 
@@ -55,7 +59,7 @@ export function Arrival() {
               </div>
             )}
 
-            {r.note && <p className={`arr-note ${r.note.tone}`} data-testid="arr-note">{r.note.text}</p>}
+            {r.note && <p className={`arr-note ${r.note.tone}`} data-testid="arr-note" key={r.note.text}>{r.note.text}</p>}
 
             <div className="arr-checks">
               <div>
@@ -69,7 +73,7 @@ export function Arrival() {
             </div>
           </Reveal>
         </div>
-        <p className="fine center">Classes, traffic, weather, roadwork and announcements here are demo scenarios with generic road names, run through the same engine as the app. Nothing on this card is current, real-world information.</p>
+        <p className="fine center">Demo scenarios run through the app’s own engine. Nothing here is live traffic, weather or schedule data.</p>
       </div>
     </section>
   );

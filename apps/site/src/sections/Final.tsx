@@ -23,11 +23,11 @@ export function Final() {
           <div className="disclosures" aria-label="Simulation and data disclosures">
             <h3>About this prototype</h3>
             <ul>
-              <li>The Ohio Union North Garage-inspired level is a simulation inspired by a campus parking deck. It is not an official or exact digital twin and uses no real university data.</li>
-              <li>Camera imagery on this page is rendered by the simulator. It is not real-world CCTV.</li>
-              <li>On that garage, the detector reports occupied spaces and spaces it can’t confirm. Open-space confirmation is not enabled.</li>
-              <li>Class schedules, traffic, weather, roadwork, routing and departure times are demo scenarios.</li>
-              <li>App screens were captured from the app running on scripted demo data. ParkRight never reserves a space.</li>
+              <li>The Ohio Union North Garage-inspired level is simulated: not an official or exact digital twin, and no real university data.</li>
+              <li>Camera imagery is rendered by the simulator, not real-world CCTV.</li>
+              <li>The detector reports occupied and can’t-confirm spaces. Open-space confirmation is not enabled.</li>
+              <li>Schedules, traffic, weather, routing and departure times are demo scenarios.</li>
+              <li>App screens show scripted demo data. ParkRight never reserves a space.</li>
             </ul>
           </div>
         </div>

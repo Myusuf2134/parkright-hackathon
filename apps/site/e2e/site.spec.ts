@@ -10,9 +10,13 @@ test.beforeEach(async ({ page }) => {
 
 test('every section is present with its headline', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Park smarter. Arrive ready.');
-  for (const h of ['Your class starts at 10:20. Parking shouldn’t be the unknown.', 'Your day, parked.', 'From camera to clarity.', 'See both sides of ParkRight.', 'Know when to leave. Not just where to park.', 'What it’s built with.', 'Less searching. More arriving.']) {
+  for (const h of ['Your day, parked.', 'From camera to clarity.', 'See both sides of ParkRight.', 'Know when to leave. Not just where to park.', 'Less searching. More arriving.']) {
     await expect(page.getByRole('heading', { name: h })).toBeAttached();
   }
+  // The section order is the six-part story; the stack sits folded in "Under the hood".
+  const order = await page.locator('main > section, .final').evaluateAll((els) => els.map((e) => e.id || e.className.split(' ').pop()));
+  expect(order).toEqual(['app', 'ai', 'demo', 'arrival', 'tech', 'final']);
+  await expect(page.getByText('Your class starts at 10:20.')).toBeVisible();
 });
 
 test('no failed requests, no errors, no horizontal overflow, every image loads', async ({ page }) => {
@@ -67,7 +71,7 @@ test('honest claims: OPEN is off, imagery is rendered, the garage is not a digit
   await expect(body).toContainText('Rendered simulation, not real-world CCTV');
   await expect(body).toContainText('Open-space confirmation is not enabled.');
   await expect(body).toContainText('not an official or exact digital twin');
-  await expect(body).toContainText('GPU performance has not been measured yet');
+  await expect(body).toContainText('GPU performance has not been measured yet'); // inside Under the hood
   await expect(body).not.toContainText(/validated open|real-time|\d+% accura/i);
 });
 
@@ -102,4 +106,25 @@ test('the campus night photo is one fixed backdrop that never moves or repeats',
     expect(box.y).toBe(0);
     expect(box.height).toBeGreaterThanOrEqual(vh);
   }
+});
+
+test('Under the hood is folded by default, opens on click and from the nav link', async ({ page, isMobile }) => {
+  const hood = page.getByTestId('hood');
+  await expect(hood).not.toHaveAttribute('open', '');
+  await expect(page.getByText('Pydantic models exported to TypeScript')).toBeHidden();
+  if (isMobile) await hood.locator('summary').click();
+  else await page.locator('.nav-links').getByRole('link', { name: 'Under the hood' }).click();
+  await expect(hood).toHaveAttribute('open', '');
+  await expect(page.getByText('Pydantic models exported to TypeScript')).toBeVisible();
+});
+
+test('motion: the pipeline lights in order and tab screens crossfade', async ({ page }) => {
+  await page.locator('#ai').scrollIntoViewIfNeeded();
+  await page.getByTestId('flow').scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('flow')).toHaveClass(/\bon\b/);
+  const delays = await page.locator('.flow li').evaluateAll((els) => els.map((e) => getComputedStyle(e).transitionDelay.split(',')[0]));
+  expect(delays).toEqual(['0s', '0.28s', '0.56s', '0.84s']);
+  await page.getByTestId('tab-you').click();
+  await expect(page.locator('.duo-set.on')).toHaveCount(1);
+  await expect(page.locator('.duo-set.on img').first()).toHaveAttribute('src', '/media/v5-you.webp');
 });

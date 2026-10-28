@@ -1,4 +1,4 @@
-import { Reveal, SectionHead } from '../ui/kit.tsx';
+import { useEffect, useRef } from 'react';
 
 const STACK = [
   ['React 19 · Vite · TypeScript', 'The student app, the presentation view and this site.', 'In the demo'],
@@ -11,19 +11,33 @@ const STACK = [
   ['Tests', 'Vitest unit tests and Playwright browser tests, including runs against the real API with scripted camera states.', 'In the repo'],
 ] as const;
 
+/** "Under the hood": the full stack, folded away by default. Opens when linked to (#tech). */
 export function Tech() {
+  const ref = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const open = () => { if (location.hash === '#tech' && ref.current) ref.current.open = true; };
+    open();
+    addEventListener('hashchange', open);
+    return () => removeEventListener('hashchange', open);
+  }, []);
   return (
-    <section className="section tech" id="tech" aria-labelledby="tech-title">
+    <section className="section tech" aria-labelledby="tech-title">
       <div className="wrap">
-        <SectionHead id="tech-title" eyebrow="Technology" title="What it’s built with." lede="The actual stack in the repository, and what each part does today." />
-        <ul className="stack">
-          {STACK.map(([h, p, tag], i) => (
-            <Reveal as="li" key={h} delay={(i % 4) * 70}>
-              <div className="stack-top"><b>{h}</b><span className={`tag${tag === 'In the demo' ? '' : ' opt'}`}>{tag}</span></div>
-              <p>{p}</p>
-            </Reveal>
-          ))}
-        </ul>
+        <details className="hood" id="tech" ref={ref} data-testid="hood">
+          <summary>
+            <span className="eyebrow">Under the hood</span>
+            <span id="tech-title" className="h3">What it’s built with</span>
+            <span className="hood-chev" aria-hidden />
+          </summary>
+          <ul className="stack">
+            {STACK.map(([h, p, tag]) => (
+              <li key={h}>
+                <div className="stack-top"><b>{h}</b><span className={`tag${tag === 'In the demo' ? '' : ' opt'}`}>{tag}</span></div>
+                <p>{p}</p>
+              </li>
+            ))}
+          </ul>
+        </details>
       </div>
     </section>
   );
