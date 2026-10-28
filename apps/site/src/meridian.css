@@ -251,3 +251,51 @@ body { background: var(--md-deep); }
   .md-demo-viewport-split { height: 790px; }
   .md-demo-viewport-student { height: 790px; }
 }
+
+
+/* One continuous, stationary campus overlook behind the full Meridian story.
+   Keep the lake/trees on the left visible instead of covering them with a
+   nearly opaque hero gradient. Foreground cards retain their own surfaces. */
+body { background: #06111b; }
+.site-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  background: #06111b url('/campus-night-aerial.webp') center 56% / cover no-repeat;
+}
+.md-hero { background: transparent; }
+.md-hero-photo { display: none; }
+.md-hero::before {
+  background:
+    linear-gradient(90deg,rgba(2,11,21,.43) 0%,rgba(3,12,21,.26) 37%,rgba(3,12,21,.08) 78%,rgba(3,12,21,.10) 100%),
+    linear-gradient(180deg,rgba(2,9,17,.26) 0%,transparent 27%,transparent 75%,rgba(3,12,20,.23) 100%);
+}
+.md-hero::after { opacity: .32; }
+.md-hero-copy { filter: drop-shadow(0 2px 12px rgba(0,0,0,.45)); }
+.md-capabilities,
+.md-panel-section,
+.md-technology-intro,
+.md-product-heading,
+.md-markets,
+.md-end,
+.md-footer,
+#main > .showcase,
+#main > .ai,
+#main > .demo,
+#main > .arrival,
+#main > .tech {
+  background: rgba(3,12,21,.50);
+}
+.md-markets::before { opacity: .15; }
+.md-footer { background: rgba(3,10,17,.69); }
+.md-nav.scrolled { background: rgba(4,12,21,.76); }
+@media (max-width: 760px) {
+  .site-background { background-position: 58% 56%; }
+  .md-hero::before {
+    background: linear-gradient(90deg,rgba(2,11,21,.59),rgba(2,11,21,.27)),
+      linear-gradient(0deg,rgba(3,12,20,.28),transparent 65%);
+  }
+}
