@@ -145,3 +145,46 @@ test('a stale space is counted beside the label, not hidden in it', async ({ pag
   await expect(page.getByTestId('prov-live')).toBeVisible();
   await expect(page.getByTestId('prov-stale')).toHaveText('1 without a recent view');
 });
+
+test('the illustrated-map label never covers the garage pin (Ohio, tall peek sheet)', async ({ page }) => {
+  await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
+  await expect(page.getByTestId('open-count')).toHaveText('27');
+  const label = await page.getByTestId('map-label').boundingBox();
+  const pin = await page.locator('.pinbtn').boundingBox();
+  expect(label && pin).toBeTruthy();
+  const overlap = label!.x < pin!.x + pin!.width && pin!.x < label!.x + label!.width && label!.y < pin!.y + pin!.height && pin!.y < label!.y + label!.height;
+  expect(overlap).toBe(false);
+});
+
+test('the Ohio garage title is shown whole (the size suffix is already in the eyebrow)', async ({ page }) => {
+  await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
+  await page.getByTestId('view-spaces').click();
+  await expect(page.getByTestId('garage-title')).toHaveText('Ohio Union North Garage-inspired simulation');
+  // Clipped = the text needs more height than the clamped box shows (measured on an unclamped copy).
+  const clipped = await page.getByTestId('garage-title').evaluate((el) => {
+    const c = el.cloneNode(true) as HTMLElement;
+    Object.assign(c.style, { webkitLineClamp: 'unset', display: 'block', overflow: 'visible', position: 'absolute', visibility: 'hidden', width: `${el.clientWidth}px` });
+    el.parentElement!.appendChild(c);
+    const natural = c.getBoundingClientRect().height;
+    c.remove();
+    return natural > el.getBoundingClientRect().height + 2;
+  });
+  expect(clipped).toBe(false);
+});
+
+test('About names the actual source: a scripted run is never called real detection', async ({ page }) => {
+  await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
+  await page.getByTestId('view-spaces').click();
+  await page.getByRole('button', { name: 'About this data' }).click();
+  await expect(page.getByTestId('about-simulated')).toContainText('scripted test source, not a detector');
+  await expect(page.getByTestId('about')).not.toContainText('The detection is real');
+});
+
+test('deep links open Plan or garage details directly (used by the presentation tour)', async ({ page }) => {
+  const be = new Backend(page, SCRIPTED, { scenario: true, status: demoStatus(true, OHIO_SITE), fixture: OHIO });
+  await be.install();
+  await page.goto(`${APP}&tab=plan`);
+  await expect(page.getByTestId('driver-app')).toHaveAttribute('data-tab', 'plan');
+  await page.goto(`${APP}&sheet=garage`);
+  await expect(page.getByTestId('garage-panel')).toBeVisible();
+});

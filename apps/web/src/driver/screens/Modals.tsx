@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useState, type ReactNode } from 'react';
 import type { DemoInfo, Health, Scenario } from '../net/api.ts';
 import { ago } from '../lib/time.ts';
+import { detectorKind, type DetectorKind } from '../lib/names.ts';
 import { DemoMark } from '../ui/bits.tsx';
 import { Close, Search as SearchIcon } from '../ui/icons.tsx';
 
@@ -36,11 +37,21 @@ export function Modal({ open, onClose, label, children }: { open: boolean; onClo
   );
 }
 
+/** Says what actually produced the states, so a scripted run is never called real detection. */
+const SOURCE_LINE: Record<DetectorKind, string> = {
+  a2: 'Space states come from the NVIDIA A2 detector running on its camera frames; the garage itself isn\'t real.',
+  scripted: 'Space states come from a scripted test source, not a detector.',
+  none: 'No detector is connected, so every space shows as can\'t confirm.',
+  other: 'Space states come from the detector named below; the garage itself isn\'t real.',
+  unknown: 'The detector can\'t be identified right now.',
+};
+
 export function AboutData({ open, onClose, facility, spaces, health, demo, info, openDisabled, now }: {
   open: boolean; onClose: () => void; facility: Facility | null; spaces: ParkingSpace[]; health: Health | null; demo: boolean;
   info: DemoInfo | null; openDisabled: boolean; now: number;
 }) {
   const model = spaces.find((s) => s.model)?.model ?? null;
+  const detector = detectorKind(model?.provider ?? health?.perception.provider);
   return (
     <Modal open={open} onClose={onClose} label="How ParkRight knows">
       <div style={{ display: 'grid', gap: 18 }} data-testid="about">
@@ -48,7 +59,7 @@ export function AboutData({ open, onClose, facility, spaces, health, demo, info,
         <p className="body">Cameras watch each space. A detector decides whether it's open, occupied or unclear. Only a space seen open in the last few seconds is shown as open.</p>
         <div className="list">
           <div className="li"><span className="t"><b><span className="live">Live</span></b><small>Straight from the garage's cameras, updated as each frame is processed.</small></span></div>
-          <div className="li"><span className="t"><b className="simw">Simulated garage</b><small>A virtual garage and camera built for this demo. The detection is real; the garage isn't.</small></span></div>
+          <div className="li" data-testid="about-simulated"><span className="t"><b className="simw">Simulated garage</b><small>A virtual garage and cameras built for this demo. {SOURCE_LINE[detector]}</small></span></div>
           <div className="li"><span className="t"><b><DemoMark /></b><small>Example data: class schedule, other garages and the route. Never shown as availability.</small></span></div>
           <div className="li"><span className="t"><b>Can't confirm</b><small>No clear view, weak evidence or an old frame. Never offered as open.</small></span></div>
           {openDisabled && <div className="li" data-testid="about-open-disabled"><span className="t"><b>Occupied-only detection</b><small>We can detect occupied spaces, but can't yet confirm empty ones. Open-space confirmation isn't enabled in this demo yet.</small></span></div>}

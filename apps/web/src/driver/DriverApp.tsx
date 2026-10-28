@@ -27,6 +27,13 @@ function initialSplash(): SplashVariant | null {
   return flags.get('introSeen') ? 'short' : 'full';
 }
 
+/** Optional deep links used by the presentation tour: ?tab=plan|you, ?sheet=garage|space. */
+function initialView(): { tab: Tab; mode: Mode } {
+  const q = new URLSearchParams(location.search);
+  const t = q.get('tab'), m = q.get('sheet');
+  return { tab: t === 'plan' || t === 'you' ? t : 'explore', mode: m === 'garage' || m === 'space' ? m : 'peek' };
+}
+
 function useDebounced<T>(value: T, ms: number): T {
   const [v, setV] = useState(value);
   useEffect(() => { const t = setTimeout(() => setV(value), ms); return () => clearTimeout(t); }, [value, ms]);
@@ -73,8 +80,8 @@ export function DriverApp() {
   const leaveBy = fromSchedule && arrival.result.departure.state === 'ok' ? arrival.result.departure.leaveAt : null;
 
   // ---- navigation state
-  const [tab, setTab] = useState<Tab>('explore');
-  const [mode, setMode] = useState<Mode>('peek');
+  const [tab, setTab] = useState<Tab>(() => initialView().tab);
+  const [mode, setMode] = useState<Mode>(() => initialView().mode);
   const [selected, setSelected] = useState<string | null>(null);
   const [trip, setTrip] = useState<string | null>(null);
   const [checking, setChecking] = useState<string | null>(null);

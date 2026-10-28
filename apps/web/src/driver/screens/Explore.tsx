@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { AdviceState, DemoInfo, Load } from '../net/api.ts';
 import type { LiveView } from '../net/live.ts';
 import { spaceLabel, type Evidence } from '../lib/evidence.ts';
+import { garageTitle } from '../lib/names.ts';
 import { bayState, describeSpace, eligibility, layoutPlan, offerable, type Counts } from '../lib/parking.ts';
 import type { Prefs } from '../lib/prefs.ts';
 import { greeting } from '../lib/time.ts';
@@ -72,7 +73,6 @@ export function Explore(props: {
   const mapX = useMotionValue(0), mapY = useMotionValue(0), mapScale = useMotionValue(1.06);
   useEffect(() => { if (revealed) animate(mapScale, 1, { duration: 0.6, ease: [0.22, 1, 0.36, 1] }); }, [revealed, mapScale]);
   const ctlBottom = useTransform(sheetY, (v) => viewport - v + 14);
-  const lblBottom = useTransform(sheetY, (v) => viewport - v + 26);
   const ctlOpacity = useTransform(sheetY, (v) => (viewport - v > viewport * 0.6 ? 0 : 1));
   const recenter = () => { animate(mapX, 0, { type: 'spring', bounce: 0.1 }); animate(mapY, 0, { type: 'spring', bounce: 0.1 }); };
 
@@ -113,7 +113,8 @@ export function Explore(props: {
       <motion.div className="top" animate={{ opacity: mode === 'peek' ? 1 : 0, y: mode === 'peek' ? 0 : -12 }} transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }} style={{ pointerEvents: mode === 'peek' ? 'auto' : 'none' }} aria-hidden={mode !== 'peek'}>
         <div className="row">
           <span className="greet">{greeting()}</span>
-          <button type="button" className="circ avatar press" aria-label="You and settings" onClick={props.onProfile}><Person /></button>
+          {/* Sits in the top row, not over the map, so it can never cover a pin whatever the sheet height. */}
+          <span className="toprt"><span className="maplbl" data-testid="map-label">Illustrated map</span><button type="button" className="circ avatar press" aria-label="You and settings" onClick={props.onProfile}><Person /></button></span>
         </div>
         <h1 className="hl" style={{ marginTop: -14 }}>Where to?</h1>
         {live.connection === 'reconnecting' || live.silent ? (
@@ -133,7 +134,6 @@ export function Explore(props: {
         )}
       </motion.div>
 
-      <motion.span className="maplbl" style={{ bottom: lblBottom, opacity: ctlOpacity }} aria-hidden>Illustrated map</motion.span>
       <motion.button type="button" className="circ mapctl press" style={{ bottom: ctlBottom, opacity: ctlOpacity }} aria-label="Recenter map" onClick={recenter}><Locate /></motion.button>
 
       <Sheet
@@ -270,7 +270,7 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
       <div className="row" style={{ alignItems: 'flex-start' }}>
         <div style={{ display: 'grid', gap: 8, minWidth: 0 }}>
           <div className="ey">{level} · {counts.total} spaces</div>
-          <h2 className={`title${facility.name.length > 26 ? ' long' : ''}`}>{facility.name}</h2>
+          <h2 className={`title${garageTitle(facility.name).length > 26 ? ' long' : ''}`} data-testid="garage-title">{garageTitle(facility.name)}</h2>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button type="button" className="circ flat press" aria-label="About this data" onClick={p.onAbout}><Info /></button>
