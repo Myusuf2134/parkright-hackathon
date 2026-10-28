@@ -123,12 +123,24 @@ p, h1, h2, h3 { margin: 0; }
 .big .lbl { display: grid; gap: 5px; padding-bottom: 1px; min-width: 0; }
 .big .lbl b { font: 700 19px/1.1 var(--ui); letter-spacing: -0.015em; }
 .big .lbl span { font: 500 15px/1.2 var(--ui); color: var(--ink-2); }
-.ticks { display: flex; gap: 3px; height: 10px; }
-.ticks.dense { gap: 1.5px; }
-.ticks i { flex: 1; border-radius: 3px; background: var(--green); transition: background-color var(--std) var(--ease-out); }
-.ticks.dense i { border-radius: 1.5px; }
-.ticks i.o { background: var(--occ); }
-.ticks i.u { background: repeating-linear-gradient(135deg, #e8e9e5 0 3px, #d3d6d9 3px 6px); }
+/* Parking observations: one proportional bar + legend. Hatching keeps "can't confirm" readable without colour. */
+.obs { display: grid; gap: 8px; }
+.obs-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.obs-total { font: 500 12.5px/1 var(--mono); color: var(--ink-3); }
+.obs-bar { display: flex; gap: 3px; height: 12px; }
+.obs-bar i { flex: 1 1 0; min-width: 6px; border-radius: 6px; transition: flex-grow var(--slow) var(--ease-out); }
+.obs-bar i.occupied { background: var(--occ); }
+.obs-bar i.uncertain { background: repeating-linear-gradient(135deg, #ecedea 0 4px, #d5d8db 4px 8px); box-shadow: inset 0 0 0 1px rgba(17, 19, 22, 0.06); }
+.obs-bar i.open { background: var(--green); }
+.obs-bar i.empty { background: var(--warm); }
+.obs-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font: 500 12.5px/1.25 var(--ui); color: var(--ink-2); }
+.obs-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.obs-legend b { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.obs-legend i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.obs-legend i.occupied { background: var(--occ); }
+.obs-legend i.uncertain { background: repeating-linear-gradient(135deg, #ecedea 0 2px, #c9cdd1 2px 4px); box-shadow: inset 0 0 0 1px rgba(17, 19, 22, 0.1); }
+.obs-legend i.open { background: var(--green); }
+.obs-note { color: var(--amber); font-weight: 600; }
 .skel { border-radius: 16px; background: linear-gradient(90deg, #f1f1ee 0%, #f8f8f6 40%, #f1f1ee 80%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 
@@ -272,7 +284,12 @@ p, h1, h2, h3 { margin: 0; }
 /* Desktop and tablet: the app sits in a device-sized frame on an atmospheric backdrop. */
 @media (min-width: 720px) {
   body { background: radial-gradient(60% 70% at 15% 10%, var(--sky) 0%, rgba(211,228,255,0) 70%), radial-gradient(55% 65% at 90% 20%, var(--blush) 0%, rgba(253,224,228,0) 70%), #f6f6f3; }
-  .app { inset: auto; left: 50%; top: 50%; translate: -50% -50%; width: 430px; height: min(932px, calc(100vh - 48px)); border-radius: 46px; box-shadow: 0 0 0 10px #0c0e0f, 0 50px 100px -40px rgba(20, 30, 40, 0.55); }
+  /* A true iPhone 15 screen (393 × 852 CSS px), laid out at its real size and scaled to fit (--fit, set in
+     main.tsx: about 750 px tall on a typical desktop, smaller in short windows). Same bezel, radius and
+     island as the presentation's phone; safe areas as on the device. */
+  :root { --sim-top: 47px; --sim-bottom: 34px; }
+  .app { inset: auto; left: 50%; top: 50%; translate: -50% -50%; scale: var(--fit, 0.85); width: 393px; height: 852px; border-radius: 50px; box-shadow: 0 0 0 12px #0c0e0f, 0 0 0 14px #2a2d30, 0 60px 110px -40px rgba(20, 30, 40, 0.55); }
+  .app::after { content: ''; position: absolute; left: 50%; top: 11px; translate: -50% 0; width: 122px; height: 35px; border-radius: 18px; background: #000; z-index: 100; pointer-events: none; }
 }
 
 /* type */
@@ -479,9 +496,10 @@ p, h1, h2, h3 { margin: 0; }
 }
 
 /* ---------- site disclaimer & occupied-only detection ---------- */
-.site-note { display: grid; gap: 5px; padding: 13px 15px; border-radius: 18px; background: #eef2f8; box-shadow: inset 0 0 0 1px rgba(58, 83, 120, 0.12); }
-.site-note b { font: 650 12.5px/1.25 var(--mono); color: var(--sim); letter-spacing: -0.01em; }
-.site-note span { font: 500 13.5px/1.4 var(--ui); color: var(--ink-2); }
+/* The backend disclaimer: always visible, but fine print under the title, not a card. */
+.site-note { margin: -8px 0 0; font: 500 12.5px/1.45 var(--ui); color: var(--ink-3); text-wrap: pretty; }
+.site-note b { font: 600 11.5px/1 var(--mono); color: var(--sim); letter-spacing: -0.01em; margin-right: 4px; }
+div.site-note { margin: 0; display: grid; gap: 4px; }
 .card.occ-only { background: var(--warm); gap: 7px; }
 .card.occ-only b { font: 650 16.5px/1.3 var(--ui); letter-spacing: -0.01em; }
 .card.occ-only > span:last-child { font: 500 13.5px/1.4 var(--ui); color: var(--ink-2); }

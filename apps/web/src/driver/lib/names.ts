@@ -24,3 +24,14 @@ export const DETECTOR_LABEL: Record<DetectorKind, string> = {
   other: 'Detector',
   unknown: 'Detector status unknown',
 };
+
+/**
+ * Headline for a site: "Ohio Union North Garage-inspired" plus a separate SIMULATION mark. Uses the
+ * site's own title when the API gives one, otherwise the facility name; only a trailing "simulation"
+ * word and a "(N spaces)" suffix move out of the headline, never reworded.
+ */
+export function siteHeadline(siteTitle: string | null | undefined, facilityName: string | null | undefined, simulated: boolean) {
+  const raw = (siteTitle || (facilityName ? garageTitle(facilityName) : '') || 'ParkRight garage').trim();
+  const stripped = raw.replace(/\s+simulation$/i, '');
+  return { title: stripped || raw, simulation: simulated || stripped !== raw };
+}

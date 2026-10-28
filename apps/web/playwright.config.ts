@@ -24,7 +24,7 @@ export default defineConfig({
     launchOptions: process.env.PARKRIGHT_CHROMIUM ? { executablePath: process.env.PARKRIGHT_CHROMIUM } : {},
   },
   projects: [
-    { name: 'scripted', testMatch: /(driver|arrival|honesty)\.spec\.ts/ },
+    { name: 'scripted', testMatch: /(driver|arrival|honesty|frame)\.spec\.ts/ },
     { name: 'live', testMatch: /\/live\.spec\.ts$/ },
     ...SITES.map((x) => ({ name: x.name, testMatch: new RegExp(`/${x.name}(\\.present)?\\.spec\\.ts$`), use: { baseURL: `http://127.0.0.1:${x.web}` }, metadata: { api: x.api } })),
   ],

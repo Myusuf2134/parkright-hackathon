@@ -152,19 +152,19 @@ function SyncNote({ change }: { change: PerceptionEvent }) {
   );
 }
 
-/** The real app at iPhone 15 size (393 × 852), scaled to fit the stage height. */
+/** The real app at iPhone 15 size (393 × 852), scaled to fit: at most ~750 px tall, like /app/ on a desktop. */
 function Phone({ src }: { src: string }) {
   const box = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.8);
   useLayoutEffect(() => {
     const el = box.current!;
-    const ro = new ResizeObserver(() => setScale(Math.max(0.45, Math.min(1, (el.clientHeight - 8) / 876, (el.clientWidth - 8) / 417))));
+    const ro = new ResizeObserver(() => setScale(Math.max(0.45, Math.min(752 / 880, (el.clientHeight - 8) / 880, (el.clientWidth - 8) / 421))));
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
   return (
     <div className="pz-phonebox" ref={box}>
-      <div className="pz-phone" style={{ width: 417 * scale, height: 876 * scale }}>
+      <div className="pz-phone" style={{ width: 421 * scale, height: 880 * scale }}>
         <div className="pz-phone-in" style={{ transform: `scale(${scale})` }}>
           <iframe src={src} title="ParkRight student app" data-testid="pz-app" width={393} height={852} />
           <span className="pz-island" aria-hidden />

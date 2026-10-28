@@ -48,7 +48,7 @@ test('modes: student only, live AI only, and the garage tour shows the whole tit
   await expect(page).toHaveURL(/mode=student/);
   await page.getByTestId('pz-tour-garage').click();
   const app = page.frameLocator('[data-testid=pz-app]');
-  await expect(app.getByTestId('garage-title')).toHaveText('Ohio Union North Garage-inspired simulation', { timeout: 15_000 });
+  await expect(app.getByTestId('garage-title')).toHaveText('Ohio Union North Garage-inspired', { timeout: 15_000 });
   await expect(app.getByTestId('site-disclaimer')).toContainText('Not an official or exact digital twin');
   await page.keyboard.press('2');
   await expect(page.getByTestId('presentation')).toHaveAttribute('data-mode', 'split');

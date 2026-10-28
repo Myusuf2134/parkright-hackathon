@@ -4,7 +4,6 @@
  */
 import type { ParkingSpace } from '@parkright/contracts';
 import { bayState } from '../driver/lib/parking.ts';
-import { garageTitle } from '../driver/lib/names.ts';
 
 export type Mode = 'split' | 'student' | 'ai';
 
@@ -13,16 +12,7 @@ export function modeFrom(search: string): Mode {
   return m === 'student' || m === 'ai' ? m : 'split';
 }
 
-/**
- * Headline for the site: "Ohio Union North Garage-inspired" plus a separate SIMULATION mark.
- * Uses the site's own title when the API gives one, otherwise the facility name; only a trailing
- * "simulation" word and a "(N spaces)" suffix are moved out of the headline, never reworded.
- */
-export function siteHeadline(siteTitle: string | null | undefined, facilityName: string | null | undefined, simulated: boolean) {
-  const raw = (siteTitle || (facilityName ? garageTitle(facilityName) : '') || 'ParkRight garage').trim();
-  const stripped = raw.replace(/\s+simulation$/i, '');
-  return { title: stripped || raw, simulation: simulated || stripped !== raw };
-}
+export { siteHeadline } from '../driver/lib/names.ts';
 
 export interface Tally { total: number; occupied: number; uncertain: number; open: number }
 

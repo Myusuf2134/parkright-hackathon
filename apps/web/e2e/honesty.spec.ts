@@ -29,7 +29,7 @@ test('Ohio: the site disclaimer comes from the backend and is shown in garage de
   const note = page.getByTestId('site-disclaimer');
   await expect(note).toContainText(OHIO_SITE.tag);
   await expect(note).toContainText('Not an official or exact digital twin');
-  await expect(page.getByTestId('garage-panel')).toContainText('Ohio Union North Garage-inspired simulation');
+  await expect(page.getByTestId('garage-title')).toHaveText('Ohio Union North Garage-inspired');
   await page.getByRole('button', { name: 'About this data' }).click();
   await expect(page.getByTestId('about-site')).toContainText(OHIO_SITE.disclaimer);
 });
@@ -156,10 +156,11 @@ test('the illustrated-map label never covers the garage pin (Ohio, tall peek she
   expect(overlap).toBe(false);
 });
 
-test('the Ohio garage title is shown whole (the size suffix is already in the eyebrow)', async ({ page }) => {
+test('the Ohio garage title is the site title, whole; size and simulation are secondary', async ({ page }) => {
   await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
   await page.getByTestId('view-spaces').click();
-  await expect(page.getByTestId('garage-title')).toHaveText('Ohio Union North Garage-inspired simulation');
+  await expect(page.getByTestId('garage-title')).toHaveText('Ohio Union North Garage-inspired');
+  await expect(page.getByTestId('garage-panel').locator('.ey').first()).toHaveText('Level 1 · 72 spaces');
   // Clipped = the text needs more height than the clamped box shows (measured on an unclamped copy).
   const clipped = await page.getByTestId('garage-title').evaluate((el) => {
     const c = el.cloneNode(true) as HTMLElement;
@@ -187,4 +188,27 @@ test('deep links open Plan or garage details directly (used by the presentation 
   await expect(page.getByTestId('driver-app')).toHaveAttribute('data-tab', 'plan');
   await page.goto(`${APP}&sheet=garage`);
   await expect(page.getByTestId('garage-panel')).toBeVisible();
+});
+
+test('parking observations: no green segment and an explanation when open detection is off', async ({ page }) => {
+  await open(page, DETECTOR, demoStatus(false, OHIO_SITE));
+  const obs = page.getByTestId('obs');
+  await expect(obs).toHaveAttribute('data-open-enabled', 'false');
+  await expect(obs.locator('[data-seg=open]')).toHaveCount(0);
+  await expect(obs.locator('[data-seg=occupied]')).toHaveCount(1);
+  await expect(obs).toContainText('30 Occupied');
+  await expect(obs).toContainText('42 Can’t confirm');
+  await expect(obs).not.toContainText('Confirmed open');
+  await expect(obs).toContainText('Open-space confirmation isn’t enabled in this demo yet.');
+  await expect(obs.getByRole('img')).toHaveAttribute('aria-label', /30 occupied, 42 can't confirm, of 72 spaces/);
+});
+
+test('parking observations: confirmed open appears only from real OPEN evidence', async ({ page }) => {
+  const be = await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
+  const obs = page.getByTestId('obs');
+  await expect(obs).toContainText('27 Confirmed open');
+  await expect(obs.locator('[data-seg=open]')).toHaveCount(1);
+  be.update(Object.fromEntries(ids.map((id) => [id, SCRIPTED[id] === 'OPEN' ? 'OCCUPIED' : SCRIPTED[id]])) as States);
+  await expect(obs).toContainText('0 Confirmed open');
+  await expect(obs.locator('[data-seg=open]')).toHaveCount(0);
 });

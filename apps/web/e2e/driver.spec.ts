@@ -59,7 +59,7 @@ test('disconnect shows nothing as available and recovers', async ({ page }) => {
   be.disconnect();
   await expect(page.getByTestId('reconnecting')).toBeVisible();
   await expect(page.getByTestId('open-count')).toHaveText('—');
-  await expect(page.getByTestId('ticks').locator('i:not(.u)')).toHaveCount(0);
+  await expect(page.getByTestId('obs').locator('[data-seg=open], [data-seg=occupied]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /Go/ })).toBeDisabled();
   be.reconnect();
   await expect(page.getByTestId('open-count')).toHaveText('7', { timeout: 10_000 });

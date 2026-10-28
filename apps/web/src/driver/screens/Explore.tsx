@@ -4,12 +4,12 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { AdviceState, DemoInfo, Load } from '../net/api.ts';
 import type { LiveView } from '../net/live.ts';
 import { spaceLabel, type Evidence } from '../lib/evidence.ts';
-import { garageTitle } from '../lib/names.ts';
+import { siteHeadline } from '../lib/names.ts';
 import { bayState, describeSpace, eligibility, layoutPlan, offerable, type Counts } from '../lib/parking.ts';
 import type { Prefs } from '../lib/prefs.ts';
 import { greeting } from '../lib/time.ts';
 import { CampusStreets, DestinationPin, GaragePin, MAP_H, MAP_W, WalkLink } from '../ui/CampusMap.tsx';
-import { DemoMark, Provenance, TickStrip } from '../ui/bits.tsx';
+import { DemoMark, ObservationBar, Provenance } from '../ui/bits.tsx';
 import { Arrow, Back, Close, Info, Locate, Person } from '../ui/icons.tsx';
 import { haptic } from '../ui/layout.ts';
 import { Sheet, type Detent } from '../ui/Sheet.tsx';
@@ -168,6 +168,8 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
   }, [p.onMeasure]);
 
   const eyebrow = ctx.destination ? `Best parking near ${ctx.destination}` : 'Monitored garage';
+  const name = facility ? siteHeadline(ctx.demo?.site?.title, facility.name, facility.is_simulated).title : '';
+  const openEnabled = ctx.demo?.allowOpen !== false;
   const forYouLine = counts.forYou === counts.open ? undefined : `${counts.forYou} usable by you`;
   let body;
   if (ctx.facilities.state === 'error' && !facility) {
@@ -181,7 +183,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
     body = (
       <>
         <div className="skel" style={{ height: 64, width: '62%' }} aria-hidden />
-        <TickStrip spaces={spaces} label="Waiting for live data" />
+        <ObservationBar counts={counts} openEnabled={openEnabled} legend={false} note={false} />
         <div className="prov" role="status">Waiting for the first live snapshot…</div>
         <div className="acts"><button type="button" className="btn" disabled>View spaces</button><button type="button" className="circ lg" disabled aria-label="Go"><Arrow /></button></div>
       </>
@@ -189,8 +191,8 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
   } else if (!live.trusted) {
     body = (
       <>
-        <div className="big"><span className="num off" data-testid="open-count">—</span><span className="lbl"><b>Live data paused</b><span>{facility.name}</span></span></div>
-        <TickStrip spaces={spaces} label="Availability unknown while reconnecting" />
+        <div className="big"><span className="num off" data-testid="open-count">—</span><span className="lbl"><b>Live data paused</b><span>{name}</span></span></div>
+        <ObservationBar counts={counts} openEnabled={openEnabled} note={false} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
         <div className="acts"><button type="button" className="btn press" onClick={() => setMode('garage')}>View garage</button><button type="button" className="circ lg" disabled aria-label="Go (unavailable)"><Arrow /></button></div>
       </>
@@ -200,7 +202,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
     body = (
       <>
         <div className="big" data-testid="stale-state"><span className="num off">—</span><span className="lbl"><b>No recent camera view</b><span>Spaces can’t be confirmed until the cameras report again</span></span></div>
-        <TickStrip spaces={spaces} label="No space can be confirmed: no recent camera view" />
+        <ObservationBar counts={counts} openEnabled={openEnabled} note={false} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
         <div className="acts"><button type="button" className="btn press" onClick={() => setMode('garage')}>View garage</button></div>
       </>
@@ -213,17 +215,16 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
           <span className="num zero" data-testid="occupied-count">{counts.occupied}</span>
           <span className="lbl"><b>{counts.occupied === 1 ? 'space seen occupied' : 'spaces seen occupied'}</b><span>Empty spaces can’t be confirmed yet</span></span>
         </div>
-        <TickStrip spaces={spaces} label={`${counts.occupied} of ${counts.total} spaces seen occupied; open spaces can't be confirmed yet`} />
+        <ObservationBar counts={counts} openEnabled={false} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
-        <p className="notice-line" data-testid="open-disabled-line">Open-space confirmation isn’t enabled in this demo yet.</p>
         <div className="acts"><button type="button" className="btn ink press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
       </>
     );
   } else if (counts.forYou === 0) {
     body = (
       <>
-        <div className="big"><span className="num zero" data-testid="open-count">{counts.open}</span><span className="lbl"><b>{counts.open === 0 ? 'spaces confirmed open' : 'open spaces you can use: 0'}</b><span>{counts.uncertain ? `${counts.uncertain} can't be confirmed right now` : `of ${counts.total} · ${facility.name}`}</span></span></div>
-        <TickStrip spaces={spaces} label={`${counts.open} of ${counts.total} spaces confirmed open`} />
+        <div className="big"><span className="num zero" data-testid="open-count">{counts.open}</span><span className="lbl"><b>{counts.open === 0 ? 'spaces confirmed open' : 'open spaces you can use: 0'}</b><span>{counts.uncertain ? `${counts.uncertain} can't be confirmed right now` : `of ${counts.total} · ${name}`}</span></span></div>
+        <ObservationBar counts={counts} openEnabled={openEnabled} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
         <div className="acts">
           <button type="button" className="btn ink press" onClick={p.onWatch} disabled={p.watching} data-testid="watch">{p.watching ? 'Watching while the app is open…' : 'Tell me when one opens'}</button>
@@ -236,9 +237,9 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
       <>
         <div className="big">
           <Count value={counts.open} />
-          <span className="lbl"><b>{counts.open === 1 ? 'space confirmed open' : 'spaces confirmed open'}</b><span className="fac">{facility.name}</span></span>
+          <span className="lbl"><b>{counts.open === 1 ? 'space confirmed open' : 'spaces confirmed open'}</b><span className="fac">{name}</span></span>
         </div>
-        <TickStrip spaces={spaces} label={`${counts.open} of ${counts.total} spaces confirmed open`} />
+        <ObservationBar counts={counts} openEnabled={openEnabled} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} extra={forYouLine} />
         <div className="acts">
           <button type="button" className="btn press" onClick={() => setMode('garage')} data-testid="view-spaces">View spaces</button>
@@ -265,12 +266,14 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
   if (!facility) return <div className="panel"><div className="skel" style={{ height: 200 }} /></div>;
   const level = facility.levels.length === 1 ? facility.levels[0].name : `${facility.levels.length} levels`;
   const camera = facility.cameras.length === 1 ? facility.cameras[0].camera_id : `${facility.cameras.length} cameras`;
+  // The site's own title leads; the size is secondary metadata above it ("Simulated garage" sits below).
+  const head = siteHeadline(ctx.demo?.site?.title, facility.name, facility.is_simulated);
   return (
     <div className="panel" style={{ gap: 18, paddingBottom: p.safe.bottom + 24 }} data-testid="garage-panel">
       <div className="row" style={{ alignItems: 'flex-start' }}>
         <div style={{ display: 'grid', gap: 8, minWidth: 0 }}>
           <div className="ey">{level} · {counts.total} spaces</div>
-          <h2 className={`title${garageTitle(facility.name).length > 26 ? ' long' : ''}`} data-testid="garage-title">{garageTitle(facility.name)}</h2>
+          <h2 className={`title${head.title.length > 22 ? ' long' : ''}`} data-testid="garage-title">{head.title}</h2>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button type="button" className="circ flat press" aria-label="About this data" onClick={p.onAbout}><Info /></button>
@@ -278,17 +281,14 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
         </div>
       </div>
       {ctx.demo?.site && (
-        <div className="site-note" data-testid="site-disclaimer">
-          <b>{ctx.demo.site.tag}</b>
-          <span>{ctx.demo.site.disclaimer}</span>
-        </div>
+        <p className="site-note" data-testid="site-disclaimer"><b>{ctx.demo.site.tag}</b> {ctx.demo.site.disclaimer}</p>
       )}
       <div className="stats" data-testid="garage-stats">
         <div className={`stat open${ctx.openDisabled ? ' off' : ''}`}><b>{live.trusted && !ctx.openDisabled ? counts.open : '—'}</b><span>Open</span></div>
         <div className="stat occ"><b>{live.trusted ? counts.occupied : '—'}</b><span>Occupied</span></div>
         <div className="stat unc"><b>{counts.uncertain}</b><span>Can't confirm</span></div>
       </div>
-      <TickStrip spaces={spaces} label={`${counts.open} open, ${counts.occupied} occupied, ${counts.uncertain} can't confirm`} />
+      <ObservationBar counts={counts} openEnabled={ctx.demo?.allowOpen !== false} title legend={false} note={false} />
       <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} extra={camera} />
       {ctx.openDisabled && live.trusted && (
         <div className="card occ-only" data-testid="open-disabled-card">
