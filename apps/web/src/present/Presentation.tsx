@@ -117,7 +117,10 @@ function StudentStage({ tour, lastChange }: { tour: boolean; lastChange: Percept
   const [step, setStep] = useState('explore');
   const [nonce, setNonce] = useState(0);
   const q = TOUR.find((t) => t.id === step)?.query ?? '';
-  const src = `/app/?device=iphone15&splash=off${q}`;
+  // Replay the real ParkRight intro on every presentation page load or refresh.
+  // Tour navigation skips it so changing screens stays fast.
+  const splash = nonce === 0 && step === 'explore' ? 'full' : 'off';
+  const src = `/app/?device=iphone15&splash=${splash}${q}`;
   return (
     <section className="pz-stu" aria-label="What the student sees" data-testid="pz-student">
       <div className="pz-stu-copy">
