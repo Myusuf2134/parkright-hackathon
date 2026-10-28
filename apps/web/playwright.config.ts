@@ -26,7 +26,7 @@ export default defineConfig({
   projects: [
     { name: 'scripted', testMatch: /(driver|arrival|honesty)\.spec\.ts/ },
     { name: 'live', testMatch: /\/live\.spec\.ts$/ },
-    ...SITES.map((x) => ({ name: x.name, testMatch: new RegExp(`/${x.name}\\.spec\\.ts$`), use: { baseURL: `http://127.0.0.1:${x.web}` }, metadata: { api: x.api } })),
+    ...SITES.map((x) => ({ name: x.name, testMatch: new RegExp(`/${x.name}(\\.present)?\\.spec\\.ts$`), use: { baseURL: `http://127.0.0.1:${x.web}` }, metadata: { api: x.api } })),
   ],
   webServer: [
     {

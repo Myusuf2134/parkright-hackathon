@@ -27,7 +27,7 @@ export interface DemoStatus {
   epoch: number;
   frames_since_reset: number;
   nemotron: { mode: 'live' | 'fallback'; model: string; provider: string; live_configured: boolean; will_call_nemotron: boolean };
-  perception: { provider: string; phase: string | null; inference_ready: boolean; loaded: boolean; allow_open: boolean; artifact_error: string | null };
+  perception: { provider: string; version?: string; phase: string | null; inference_ready: boolean; loaded: boolean; allow_open: boolean; artifact_error: string | null };
   calibration: Record<string, { x: number; y: number }[]> | null;
   showcase?: boolean;
   /** The simulated site, when it is not the default 34-space garage (demo label only). */

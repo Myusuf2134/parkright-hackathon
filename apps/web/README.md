@@ -5,7 +5,8 @@ Two entries:
 | URL | What |
 | --- | --- |
 | `/app/` | **ParkRight driver app (V5)**: mobile-first PWA — splash, Explore (where to park), garage details, choose a space, trip, Plan with Arrival Intelligence (when to leave), You |
-| `/` | Legacy screens, unchanged (`?classic=1`, `?record=1` demo screen) — the existing integration tests use these |
+| `/present/` | **Hackathon presentation**: the real V5 app (embedded from `/app/`) beside what ParkRight's AI sees. `?mode=split` (default) · `student` · `ai`; keys 1 / 2 / 3 switch |
+| `/` | Legacy screens (`?classic=1`, `?record=1` demo screen) — the existing integration tests use these. The demo screen's progress bar is now the compact Camera → NVIDIA A2 → Space state → ParkRight flow |
 
 ## Run it
 
@@ -32,6 +33,22 @@ Useful query flags on `/app/`: `splash=off|full|short|reduced`, `device=iphone15
 standalone-PWA safe areas for screenshots), `arrival=normal|quiet|traffic|weather|construction|canceled|moved|missing`
 (Plan's demo scenario; also switchable from the Demo pill on Plan). On a desktop browser the app is
 shown in a centred device frame. On a phone, open `/app/` and Add to Home Screen.
+
+## Presentation
+
+```bash
+npm run demo:ohio -- --open            # real A2 + simulator (needs the A2 checkpoint), then open /present/
+# or, without A2, the scripted harness (clearly labelled "Scripted test source, not a detector"):
+uv run --frozen python apps/web/e2e/live_api.py --site ohio --demo --detector-like --stale-ms 30000 --port 8431
+PARKRIGHT_API_URL=http://127.0.0.1:8431 npm run dev:web   # http://localhost:5180/present/
+```
+
+Left (60%): the student app itself, in an iPhone 15 frame, with a tour (Explore, Garage details, Space
+selection, Trip, Plan, You) that reloads it with `?sheet=` / `?tab=`. Right (40%): Camera → NVIDIA A2 →
+Space state → ParkRight; the CCTV frame with bay polygons and A2 boxes, camera freshness, bay ownership,
+occupied / can't confirm, camera → app latency (API receipt → this browser), and live events. Both halves
+read the same facility from the same API. Engineering detail is behind "Engineering details".
+With `allow_open: false` the AI side says "Open-space confirmation not enabled" instead of showing 0 open.
 
 ## Test
 

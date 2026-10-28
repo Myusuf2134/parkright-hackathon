@@ -14,8 +14,8 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      // The legacy screens stay at /, the driver app lives at /app/.
-      input: { main: resolve(import.meta.dirname, 'index.html'), app: resolve(import.meta.dirname, 'app/index.html') },
+      // The legacy screens stay at /, the driver app lives at /app/, the presentation at /present/.
+      input: { main: resolve(import.meta.dirname, 'index.html'), app: resolve(import.meta.dirname, 'app/index.html'), present: resolve(import.meta.dirname, 'present/index.html') },
     },
   },
 });

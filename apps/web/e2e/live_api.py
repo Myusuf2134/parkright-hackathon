@@ -62,7 +62,8 @@ class ScriptedProvider:
 
     def diagnostics(self) -> dict:
         # Read by /api/v1/demo/status the same way as the real provider's thresholds.
-        return {"phase": "ready", "inference_ready": True, "warmup_successful": True, "thresholds": {"allow_open": self.allow_open}}
+        # phase "scripted" and no warm-up, so no screen can call this a loaded A2 detector.
+        return {"phase": "scripted", "inference_ready": True, "warmup_successful": False, "thresholds": {"allow_open": self.allow_open}}
 
     async def infer(self, frame: Frame, view: CameraView) -> list[SpaceInference]:
         out = []
