@@ -48,7 +48,7 @@ function MeridianHero() {
         <p className="md-hero-description md-hero-enter">A better way to move through the world. We connect physical spaces, intelligent systems, and the people on their way.</p>
         <div className="actions md-hero-actions md-hero-enter">
           <Action to="app" testid="cta-hero-app">Explore ParkRight</Action>
-          <Action to="demo" kind="secondary" testid="cta-hero-demo">Watch the AI demo</Action>
+          <Action to="demo" kind="secondary" testid="cta-hero-demo">Try out the demo</Action>
         </div>
         <p className="md-prototype-note">Introducing ParkRight, our university mobility prototype. Garage imagery, schedules and estimates are simulated or demo scenarios.</p>
       </div>
