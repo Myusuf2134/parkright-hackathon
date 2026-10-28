@@ -197,3 +197,57 @@ body { background: var(--md-deep); }
 @media(prefers-reduced-motion:reduce) {
   .md-hero-enter, .md-hero-photo { animation: none; transform: none; opacity: 1; }
 }
+
+/* Meridian's interactive ParkRight demo: the actual /present/ and /app/ UIs
+   are embedded as live iframes, never screen captures or replicas. */
+.md-interactive-demo {
+  overflow: hidden;
+  border: 1px solid rgba(231,203,161,.28);
+  border-radius: 24px;
+  background: #060e18;
+  box-shadow: 0 32px 80px rgba(0,0,0,.36);
+}
+.md-demo-toolbar {
+  min-height: 76px;
+  padding: 16px 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: linear-gradient(100deg,#101e2c,#0b1622);
+  border-bottom: 1px solid rgba(244,213,172,.2);
+  text-shadow: none;
+}
+.md-demo-toolbar-left { display: flex; gap: 13px; align-items: center; }
+.md-demo-toolbar-left > div { display: grid; gap: 2px; }
+.md-demo-toolbar-left b { color: #fff; font: 590 15px/1.2 var(--ui); }
+.md-demo-toolbar-left small { color: #c0ccd3; font-size: 12px; }
+.md-live-indicator { width: 10px; height: 10px; flex: none; border-radius: 50%; background: #5cd59d; box-shadow: 0 0 0 5px rgba(92,213,157,.1),0 0 11px rgba(92,213,157,.34); }
+.md-demo-switch { display: flex; flex-wrap: wrap; gap: 5px; padding: 5px; border: 1px solid rgba(235,211,178,.22); border-radius: 999px; background: rgba(2,9,17,.55); }
+.md-demo-switch button { padding: 10px 16px; border-radius: 999px; color: #ccd4d9; font: 540 12.5px/1 var(--ui); text-shadow: none; transition: color 150ms,background-color 150ms; }
+.md-demo-switch button:hover { color: #fff; }
+.md-demo-switch button[aria-selected=true] { background: #f7ead8; color: #0a1520; }
+.md-demo-switch button:focus-visible { outline: 2px solid #f0c996; outline-offset: 3px; }
+.md-demo-viewport { position: relative; background: #101822; overflow: hidden; }
+.md-demo-viewport-split { height: min(900px,78vw); min-height: 690px; }
+.md-demo-viewport-student { height: 895px; background: radial-gradient(circle at center,#f7f7f5,#e8eef7 80%); }
+.md-demo-iframe { display: block; width: 100%; height: 100%; border: 0; background: transparent; }
+.md-demo-help { margin: 0; padding: 15px 23px 17px; border-top: 1px solid rgba(242,216,182,.15); color: #becbd1; font-size: 12.5px; line-height: 1.6; text-shadow: none; }
+.md-demo-help b { color: #f7e7d0; font-weight: 580; }
+.md-demo .demo-row { margin-top: 24px; }
+.md-demo .run { margin-top: 36px; }
+@media (max-width: 760px) {
+  .md-interactive-demo { border-radius: 17px; }
+  .md-demo-toolbar { padding: 16px; }
+  .md-demo-toolbar-left small { font-size: 11px; }
+  .md-demo-switch { width: 100%; justify-content: stretch; }
+  .md-demo-switch button { flex: 1; padding-inline: 8px; }
+  .md-demo-viewport-split { height: 860px; min-height: 0; }
+  .md-demo-viewport-student { height: 850px; }
+  .md-demo-help { padding: 15px; }
+}
+@media (max-width: 420px) {
+  .md-demo-viewport-split { height: 790px; }
+  .md-demo-viewport-student { height: 790px; }
+}
