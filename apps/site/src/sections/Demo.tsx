@@ -99,14 +99,6 @@ export function Demo() {
             {LINKS.walkthrough && <a className="btn btn-secondary" href={LINKS.walkthrough} target="_blank" rel="noreferrer" data-testid="cta-walkthrough">Watch recorded walkthrough</a>}
           </div>
         </div>
-        <Reveal className="run">
-          <div id="run" className="run-anchor" />
-          <h3 className="h3">Run it yourself</h3>
-          <p>{interactive ? 'The live embeds above require the ParkRight app server to keep running on port 5180.' : 'The public site has no hosted app connected yet. Start the local stack to interact with the real app.'} With the repository and A2 checkpoint:</p>
-          <pre><code>{'npm run demo:ohio -- --open\n# student app   http://localhost:5180/app/\n# both sides    http://localhost:5180/present/'}</code></pre>
-          <p className="fine">No checkpoint? A scripted harness (<code>apps/web/README.md</code>) runs the same screens, labelled “scripted test source”. Garage imagery and scenarios are simulated.</p>
-          <a className="link" href={LINKS.repo} target="_blank" rel="noreferrer">View the repository on GitHub</a>
-        </Reveal>
       </div>
     </section>
   );
