@@ -91,7 +91,7 @@ test('reduced motion shows everything without animation', async ({ browser }) =>
   await page.goto('/');
   const hidden = await page.locator('.reveal').evaluateAll((els) => els.filter((e) => getComputedStyle(e).opacity !== '1').length);
   expect(hidden).toBe(0);
-  expect(await page.locator('.hero-front').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
+  expect(await page.locator('.md-hero-title').evaluate((e) => getComputedStyle(e).animationName)).toBe('none');
   await ctx.close();
 });
 
@@ -155,4 +155,12 @@ test('Meridian content preserves prototype truth and functional product links', 
   await expect(page.getByText('Open-space confirmation is not enabled.')).toBeAttached();
   await expect(page.getByText('Today, a campus prototype. Tomorrow, more intelligent connections')).toBeAttached();
   await expect(page.getByTestId('cta-hero-app')).toHaveAttribute('href', '#run');
+});
+
+test('production without hosted app URLs keeps a clear static preview fallback', async ({ page }) => {
+  await expect(page.locator('#demo')).toContainText('This captured preview is not interactive.');
+  await expect(page.getByTestId('interactive-demo')).toHaveCount(0);
+  await expect(page.getByTestId('demo-live-frame')).toHaveCount(0);
+  await expect(page.locator('#demo img[src="/media/present-split.webp"]')).toBeAttached();
+  await expect(page.getByTestId('cta-demo-app')).toHaveAttribute('href', '#run');
 });
