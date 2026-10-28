@@ -6,9 +6,16 @@ JPEG frames through the authenticated frames endpoint. This lets the driver app 
 against live backend behaviour without A2, PyTorch or a GPU. Nothing here changes the API itself.
 
     uv run python apps/web/e2e/live_api.py --site mvp --demo --port 8431
+    uv run python apps/web/e2e/live_api.py --site ohio --demo --detector-like --stale-ms 30000
 
 POST /__test/states  {"A4": "OCCUPIED", "A5": "UNCERTAIN"}   change what the "camera" sees
 POST /__test/camera  {"paused": true}                         stop frames (spaces go stale)
+
+--detector-like stands in for the real Ohio run without A2: allow_open is false (so OPEN is reported
+as UNCERTAIN, as the real mapper does), and the cameras report one at a time on a round robin, so
+spaces carry different ages, like an 8-camera cycle of about 18 s. It never produces an OPEN space.
+In demo mode the site's own site.json (if any) is served as the demo status site, exactly as
+create_demo_app does from PARKRIGHT_SHOWCASE_DIR; calibrations are not loaded, since no detector runs.
 """
 
 import argparse
@@ -45,23 +52,33 @@ MVP_STATES = {"A1": "OCCUPIED", "A2": "OPEN", "A3": "OCCUPIED", "A4": "OPEN", "A
 class ScriptedProvider:
     """Reports whatever /__test/states says. Confidences are fixed and honest about being scripted."""
 
-    def __init__(self, states: dict[str, str]):
+    def __init__(self, states: dict[str, str], allow_open: bool = True):
         self.states = states
+        self.allow_open = allow_open
 
     @property
     def model(self) -> ModelRef:
         return ModelRef(provider="scripted-test", version="1")
 
+    def diagnostics(self) -> dict:
+        # Read by /api/v1/demo/status the same way as the real provider's thresholds.
+        return {"phase": "ready", "inference_ready": True, "warmup_successful": True, "thresholds": {"allow_open": self.allow_open}}
+
     async def infer(self, frame: Frame, view: CameraView) -> list[SpaceInference]:
         out = []
         for s in view.spaces:
             st = OccupancyState(self.states.get(s.space_id, "UNCERTAIN"))
+            if st is OccupancyState.OPEN and not self.allow_open:
+                st = OccupancyState.UNCERTAIN  # an empty-looking bay is not evidence of OPEN
             out.append(SpaceInference(space_id=s.space_id, state=st, confidence=None if st is OccupancyState.UNCERTAIN else 0.93))
         return out
 
 
-def default_states(fixture: Path) -> dict[str, str]:
+def default_states(fixture: Path, detector_like: bool = False) -> dict[str, str]:
     spaces = [s["space_id"] for s in json.loads(fixture.read_text())["spaces"]]
+    if detector_like:
+        pattern = ["OCCUPIED", "UNCERTAIN", "OCCUPIED", "UNCERTAIN", "UNCERTAIN", "OCCUPIED", "OCCUPIED", "UNCERTAIN"]
+        return {sid: pattern[i % len(pattern)] for i, sid in enumerate(spaces)}
     if set(spaces) == set(MVP_STATES):
         return dict(MVP_STATES)
     pattern = ["OPEN", "OCCUPIED", "OPEN", "OCCUPIED", "OCCUPIED", "UNCERTAIN", "OPEN", "OCCUPIED"]
@@ -79,18 +96,26 @@ def main() -> None:
     ap.add_argument("--site", choices=SITES, default="mvp")
     ap.add_argument("--demo", action="store_true", help="demo mode: scenario routes, Nemotron local fallback")
     ap.add_argument("--port", type=int, default=8431)
-    ap.add_argument("--interval", type=float, default=1.0)
+    ap.add_argument("--interval", type=float, default=None, help="seconds between frames (default 1.0; 2.26 per camera when --detector-like)")
+    ap.add_argument("--detector-like", action="store_true", help="allow_open false, OCCUPIED/UNCERTAIN only, cameras on a round robin")
+    ap.add_argument("--stale-ms", type=int, default=None, help="PARKRIGHT_STALE_AFTER_MS for this run (the API default is 12000)")
     args = ap.parse_args()
+    # 2.26 s per camera ≈ the measured 18.1 s eight-camera cycle on the M2 (docs/ohio-union-garage.md).
+    interval = args.interval if args.interval is not None else (2.26 if args.detector_like else 1.0)
 
     fixture = SITES[args.site]
-    provider = ScriptedProvider(default_states(fixture))
+    provider = ScriptedProvider(default_states(fixture, args.detector_like), allow_open=not args.detector_like)
     settings = Settings(
         port=args.port, facility_fixtures=[fixture], ingest_token=SecretStr(TOKEN), evaluation_enabled=False,
         demo_mode=args.demo, demo_nemotron="fallback",
+        **({"stale_after_ms": args.stale_ms} if args.stale_ms else {}),
     )
     if args.demo:
         from parkright_api.demo.app import create_demo_app
         app = create_demo_app(settings, provider)
+        site = fixture.parent / "site.json"
+        if site.exists():
+            app.state.demo_site = json.loads(site.read_text())
     else:
         app = create_app(settings, provider)
 
@@ -112,17 +137,26 @@ def main() -> None:
         session = f"driver-test-{datetime.now(UTC):%H%M%S}"
         seq = 0
         await asyncio.sleep(1.0)
+        async def post(cam: str):
+            nonlocal seq
+            seq += 1
+            meta = {"session_id": session, "camera_id": cam, "seq": seq, "sim_time_ms": seq * 1000,
+                    "captured_at": datetime.now(UTC).isoformat().replace("+00:00", "Z")}
+            with contextlib.suppress(httpx.HTTPError):
+                await client.post(f"/api/v1/cameras/{cam}/frames", data={"metadata": json.dumps(meta)},
+                                  files={"image": ("frame.jpg", image, "image/jpeg")})
+
         async with httpx.AsyncClient(base_url=f"http://127.0.0.1:{args.port}", headers={"authorization": f"Bearer {TOKEN}"}) as client:
+            turn = 0
             while True:
                 if not camera["paused"]:
-                    for cam in cameras:
-                        seq += 1
-                        meta = {"session_id": session, "camera_id": cam, "seq": seq, "sim_time_ms": seq * 1000,
-                                "captured_at": datetime.now(UTC).isoformat().replace("+00:00", "Z")}
-                        with contextlib.suppress(httpx.HTTPError):
-                            await client.post(f"/api/v1/cameras/{cam}/frames", data={"metadata": json.dumps(meta)},
-                                              files={"image": ("frame.jpg", image, "image/jpeg")})
-                await asyncio.sleep(args.interval)
+                    if args.detector_like:
+                        await post(cameras[turn % len(cameras)])  # one camera per tick, like one A2 frame in flight
+                        turn += 1
+                    else:
+                        for cam in cameras:
+                            await post(cam)
+                await asyncio.sleep(interval)
 
     async def serve():
         server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=args.port, log_level="warning"))
