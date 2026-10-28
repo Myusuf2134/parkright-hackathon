@@ -4,7 +4,6 @@ import { Arrival } from './sections/Arrival.tsx';
 import { Demo } from './sections/Demo.tsx';
 import { Showcase } from './sections/Showcase.tsx';
 import { Tech } from './sections/Tech.tsx';
-import { LINKS } from './config.ts';
 import { Action, Reveal } from './ui/kit.tsx';
 
 const NAV = [
@@ -161,7 +160,6 @@ function MeridianFooter() {
         <div className="actions">
           <Action to="app" testid="cta-final-app">Try ParkRight</Action>
           <Action to="demo" kind="secondary" testid="cta-final-demo">Explore the demo</Action>
-          <a className="md-footer-repo" href={LINKS.repo} target="_blank" rel="noreferrer" data-testid="cta-repo">GitHub repository ↗</a>
         </div>
       </div>
     </section>
