@@ -1,34 +1,110 @@
+import { useState } from 'react';
 import { LINKS } from '../config.ts';
 import { Action, Reveal, SectionHead, Source } from '../ui/kit.tsx';
 
+type View = 'split' | 'student';
+
+/**
+ * Embed the actual running app and presentation (including its own interactive
+ * student iframe) instead of a screenshot. Production without hosted app URLs
+ * shows an honest static fallback; it never points visitors at localhost.
+ */
 export function Demo() {
+  const [view, setView] = useState<View>('split');
+  const hasSplit = Boolean(LINKS.demo);
+  const hasStudent = Boolean(LINKS.app);
+  const interactive = hasSplit || hasStudent;
+  const selected: View = view === 'student' && hasStudent ? 'student' : hasSplit ? 'split' : 'student';
+  const src = selected === 'split' ? LINKS.demo : LINKS.app;
+
   return (
-    <section className="section demo" id="demo" aria-labelledby="demo-title">
+    <section className="section demo md-demo" id="demo" aria-labelledby="demo-title">
       <div className="wrap">
-        <SectionHead id="demo-title" eyebrow="Live demo" title="See both sides of ParkRight." lede="The real student app beside the pipeline that feeds it. Same garage, same live state." />
-        <Reveal as="figure" className="browser">
-          <div className="browser-bar" aria-hidden><i /><i /><i /><span>/present/</span></div>
-          <img src="/media/present-split.webp" alt="ParkRight presentation view: the student app in a phone on the left, and on the right the pipeline flow, camera tabs, metrics, a bay map and live events" width={2000} height={1250} loading="lazy" />
-          <figcaption>
-            <Source tone="demo">Captured on the scripted test harness</Source>
-            Scripted space states, no camera imagery. With the simulator and A2 running, the right side shows live frames and detections.
-          </figcaption>
-        </Reveal>
+        <SectionHead
+          id="demo-title"
+          eyebrow="Explore the real prototype"
+          title="See both sides of ParkRight."
+          lede="Use the real student app here. Explore parking, open the garage, plan a departure, and see the simulated AI pipeline beside it."
+        />
+        {interactive && src ? (
+          <div className="md-interactive-demo" data-testid="interactive-demo">
+            <div className="md-demo-toolbar">
+              <div className="md-demo-toolbar-left">
+                <span className="md-live-indicator" aria-hidden="true" />
+                <div>
+                  <b>Interactive demo</b>
+                  <small>Connected to the ParkRight app server · simulated garage</small>
+                </div>
+              </div>
+              <div className="md-demo-switch" role="tablist" aria-label="Embedded demo view">
+                {hasSplit && <button
+                  id="md-demo-tab-split"
+                  type="button"
+                  role="tab"
+                  aria-selected={selected === 'split'}
+                  aria-controls="md-demo-panel"
+                  data-testid="demo-view-split"
+                  onClick={() => setView('split')}
+                >Student + AI</button>}
+                {hasStudent && <button
+                  id="md-demo-tab-student"
+                  type="button"
+                  role="tab"
+                  aria-selected={selected === 'student'}
+                  aria-controls="md-demo-panel"
+                  data-testid="demo-view-student"
+                  onClick={() => setView('student')}
+                >Full-size app</button>}
+              </div>
+            </div>
+            <div
+              className={'md-demo-viewport ' + (selected === 'student' ? 'md-demo-viewport-student' : 'md-demo-viewport-split')}
+              id="md-demo-panel"
+              role="tabpanel"
+              aria-labelledby={'md-demo-tab-' + selected}
+            >
+              <iframe
+                key={selected}
+                className="md-demo-iframe"
+                src={src}
+                title={selected === 'split' ? 'Interactive ParkRight student app and AI presentation' : 'Interactive ParkRight student app'}
+                data-testid="demo-live-frame"
+                loading="lazy"
+                allow="fullscreen"
+              />
+            </div>
+            <p className="md-demo-help">Try tapping inside the phone: <b>Explore, Garage, Plan, You.</b> The split view uses the same running simulated data. This is not real campus availability.</p>
+          </div>
+        ) : (
+          <Reveal as="figure" className="browser">
+            <div className="browser-bar" aria-hidden><i /><i /><i /><span>/present/ · captured preview</span></div>
+            <img
+              src="/media/present-split.webp"
+              alt="Captured ParkRight presentation: the student phone app beside simulated garage occupancy and an AI pipeline"
+              width={2000}
+              height={1250}
+              loading="lazy"
+            />
+            <figcaption>
+              <Source tone="demo">Screenshot only</Source>
+              This captured preview is not interactive. The real app runs locally and can be embedded when a hosted app URL is configured.
+            </figcaption>
+          </Reveal>
+        )}
         <div className="demo-row">
-          <p className="demo-modes"><b>Student</b><span aria-hidden>·</span><b>Split</b><span aria-hidden>·</span><b>Live AI</b><em>three views of one live state</em></p>
+          <p className="demo-modes"><b>Student</b><span aria-hidden>·</span><b>Split</b><span aria-hidden>·</span><b>Live AI</b><em>the same simulated garage state</em></p>
           <div className="actions">
-            <Action to="demo" testid="cta-demo">Open Live Demo</Action>
+            <Action to="app" testid="cta-demo-app">Open Student App</Action>
+            <Action to="demo" kind="secondary" testid="cta-demo">Open Live Demo</Action>
             {LINKS.walkthrough && <a className="btn btn-secondary" href={LINKS.walkthrough} target="_blank" rel="noreferrer" data-testid="cta-walkthrough">Watch recorded walkthrough</a>}
           </div>
         </div>
-        <Reveal className="run" >
+        <Reveal className="run">
           <div id="run" className="run-anchor" />
           <h3 className="h3">Run it yourself</h3>
-          <p>{LINKS.demo ? 'The live demo runs on the local stack.' : 'The live demo isn’t hosted publicly yet.'} With the repository and the A2 checkpoint:</p>
-          <pre><code>{`npm run demo:ohio -- --open
-# student app   http://localhost:5180/app/
-# both sides    http://localhost:5180/present/`}</code></pre>
-          <p className="fine">No checkpoint? A scripted harness (<code>apps/web/README.md</code>) runs the same screens, labelled “scripted test source”.</p>
+          <p>{interactive ? 'The live embeds above require the ParkRight app server to keep running on port 5180.' : 'The public site has no hosted app connected yet. Start the local stack to interact with the real app.'} With the repository and A2 checkpoint:</p>
+          <pre><code>{'npm run demo:ohio -- --open\n# student app   http://localhost:5180/app/\n# both sides    http://localhost:5180/present/'}</code></pre>
+          <p className="fine">No checkpoint? A scripted harness (<code>apps/web/README.md</code>) runs the same screens, labelled “scripted test source”. Garage imagery and scenarios are simulated.</p>
           <a className="link" href={LINKS.repo} target="_blank" rel="noreferrer">View the repository on GitHub</a>
         </Reveal>
       </div>
