@@ -9,13 +9,15 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('every section is present with its headline', async ({ page }) => {
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Park smarter. Arrive ready.');
-  for (const h of ['Your day, parked.', 'From camera to clarity.', 'See both sides of ParkRight.', 'Know when to leave. Not just where to park.', 'Less searching. More arriving.']) {
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Arrive ready.');
+  await expect(page.getByText('MERIDIAN').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'A higher standard for how people arrive.' })).toBeAttached();
+  for (const h of ['Your day, parked.', 'From camera to clarity.', 'See both sides of ParkRight.', 'Know when to leave. Not just where to park.', 'A clearer way to arrive.']) {
     await expect(page.getByRole('heading', { name: h })).toBeAttached();
   }
-  // The section order is the six-part story; the stack sits folded in "Under the hood".
-  const order = await page.locator('main > section, .final').evaluateAll((els) => els.map((e) => e.id || e.className.split(' ').pop()));
-  expect(order).toEqual(['app', 'ai', 'demo', 'arrival', 'tech', 'final']);
+  // The new editorial story still includes the real, interactive ParkRight product sections.
+  const order = await page.locator('main > section').evaluateAll((els) => els.map((e) => e.id || e.className.split(' ').pop()));
+  expect(order).toEqual(['capabilities', 'about', 'md-panel-section', 'md-product-heading', 'app', 'ai', 'demo', 'arrival', 'tech', 'markets']);
   await expect(page.getByText('Your class starts at 10:20.')).toBeVisible();
 });
 
@@ -129,20 +131,28 @@ test('motion: the pipeline lights in order and tab screens crossfade', async ({ 
   await expect(page.locator('.duo-set.on img').first()).toHaveAttribute('src', '/media/v5-you.webp');
 });
 
-test('branding: the real ParkRight mark and wordmark, and every icon URL resolves', async ({ page, request }) => {
+test('Meridian Atlas identity: navbar, footer, SVG favicon and manifest resolve', async ({ page, request }) => {
   for (const id of ['nav-brand', 'footer-brand']) {
     const brand = page.getByTestId(id);
-    await expect(brand.locator('img[src="/brand/parkright-mark.png"]')).toBeVisible();
-    await expect(brand.getByRole('img', { name: 'ParkRight' })).toHaveAttribute('src', '/brand/parkright-wordmark.png');
+    await expect(brand.locator('img[src="/brand/meridian-atlas.svg"]')).toBeVisible();
+    await expect(brand).toContainText('MERIDIAN');
   }
-  const links = await page.locator('head link[rel~="icon"], head link[rel="apple-touch-icon"], head link[rel="manifest"]').evaluateAll((ls) => ls.map((l) => l.getAttribute('href')!));
-  expect(links).toEqual(['/favicon.ico', '/favicon-32x32.png', '/favicon-16x16.png', '/apple-touch-icon.png', '/site.webmanifest']);
+  await expect(page).toHaveTitle('Meridian · Arrive ready.');
+  const links = await page.locator('head link[rel~="icon"], head link[rel="manifest"]').evaluateAll((ls) => ls.map((l) => l.getAttribute('href')!));
+  expect(links).toEqual(['/favicon.svg', '/site.webmanifest']);
   const manifest = await (await request.get('/site.webmanifest')).json();
-  for (const url of [...links, ...manifest.icons.map((i: { src: string }) => i.src), '/brand/parkright-mark.png', '/brand/parkright-wordmark.png']) {
+  expect(manifest.name).toContain('Meridian');
+  for (const url of [...links, ...manifest.icons.map((i: { src: string }) => i.src), '/brand/meridian-atlas.svg']) {
     const r = await request.get(url);
     expect(r.status(), url).toBe(200);
     expect(r.headers()['content-type'], url).toMatch(/image|json|manifest|icon/);
   }
-  // The old placeholder is gone (the static server answers unknown paths with the page itself).
-  expect((await request.get('/icon.svg')).headers()['content-type']).not.toContain('image/svg');
+});
+
+test('Meridian content preserves prototype truth and functional product links', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: 'Spatial intelligence' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'From real spaces to real possibilities.' })).toBeAttached();
+  await expect(page.getByText('Open-space confirmation is not enabled.')).toBeAttached();
+  await expect(page.getByText('Today, a campus prototype. Tomorrow, more intelligent connections')).toBeAttached();
+  await expect(page.getByTestId('cta-hero-app')).toHaveAttribute('href', '#run');
 });
