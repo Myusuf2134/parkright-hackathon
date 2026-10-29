@@ -47,7 +47,7 @@ export function Arrival() {
               <span className="arr-swap" key={dep.state === 'ok' ? dep.leaveAt : dep.state}>
                 {dep.state === 'ok' && <><b className="arr-time">{dep.leaveAt}</b><span className="arr-sub">Arrive by {dep.arriveBy} · {dep.spareMinutes} min to spare</span></>}
                 {dep.state === 'not-needed' && <><b className="arr-time off">No trip needed</b><span className="arr-sub">Your class was canceled.</span></>}
-                {dep.state === 'unavailable' && <><b className="arr-time off">Not available</b><span className="arr-sub">Missing {dep.missing.join(', ')}. ParkRight won’t guess.</span></>}
+                {dep.state === 'unavailable' && <><b className="arr-time off">Not available</b><span className="arr-sub">Missing {dep.missing.join(', ')}. Meridian won’t guess.</span></>}
               </span>
               <Source>Demo estimate</Source>
             </div>
