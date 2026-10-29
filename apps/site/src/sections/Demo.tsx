@@ -23,7 +23,7 @@ export function Demo() {
         <SectionHead
           id="demo-title"
           eyebrow="Explore the real prototype"
-          title="See both sides of ParkRight."
+          title="See both sides of Meridian."
           lede="Use the real student app here. Explore parking, open the garage, plan a departure, and see the simulated AI pipeline beside it."
         />
         {interactive && src ? (
@@ -33,7 +33,7 @@ export function Demo() {
                 <span className="md-live-indicator" aria-hidden="true" />
                 <div>
                   <b>Interactive demo</b>
-                  <small>Connected to the ParkRight app server · simulated garage</small>
+                  <small>Connected to the Meridian app server · simulated garage</small>
                 </div>
               </div>
               <div className="md-demo-switch" role="tablist" aria-label="Embedded demo view">
@@ -67,7 +67,7 @@ export function Demo() {
                 key={selected}
                 className="md-demo-iframe"
                 src={src}
-                title={selected === 'split' ? 'Interactive ParkRight student app and AI presentation' : 'Interactive ParkRight student app'}
+                title={selected === 'split' ? 'Interactive Meridian student app and AI presentation' : 'Interactive Meridian student app'}
                 data-testid="demo-live-frame"
                 loading="lazy"
                 allow="fullscreen"
@@ -80,7 +80,7 @@ export function Demo() {
             <div className="browser-bar" aria-hidden><i /><i /><i /><span>/present/ · captured preview</span></div>
             <img
               src="/media/present-split.webp"
-              alt="Captured ParkRight presentation: the student phone app beside simulated garage occupancy and an AI pipeline"
+              alt="Captured Meridian presentation: the student phone app beside simulated garage occupancy and an AI pipeline"
               width={2000}
               height={1250}
               loading="lazy"
