@@ -5,7 +5,7 @@ const STEPS = [
   ['Camera', 'Eight simulated CCTV views send frames to the API.'],
   ['A2 detector', 'A fine-tuned Faster R-CNN finds vehicles in each frame.'],
   ['Space state', 'Detections map to bays: occupied, or can’t confirm.'],
-  ['ParkRight', 'Fresh state streams to the app. Nothing stale is offered.'],
+  ['Meridian', 'Fresh state streams to the app. Nothing stale is offered.'],
 ] as const;
 
 /** Lights the pipeline once, step by step, when it first comes into view. */
@@ -70,7 +70,7 @@ export function Ai() {
             <p>A2 reports <b>occupied</b> spaces. A bay with no vehicle in view stays <b>can’t confirm</b>, because no detection isn’t proof it’s empty. Open-space confirmation is off, and the app says so.</p>
           </Reveal>
           <Reveal className="truth-phone" delay={120}>
-            <Phone src="/media/v5-ohio-explore.webp" alt="ParkRight Explore on the Ohio-inspired garage: 36 spaces seen occupied, empty spaces can’t be confirmed yet, open-space confirmation isn’t enabled in this demo" />
+            <Phone src="/media/v5-ohio-explore.webp" alt="Meridian Explore on the Ohio-inspired garage: 36 spaces seen occupied, empty spaces can’t be confirmed yet, open-space confirmation isn’t enabled in this demo" />
           </Reveal>
         </div>
       </div>
