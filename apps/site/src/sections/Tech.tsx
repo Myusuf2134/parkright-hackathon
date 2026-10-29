@@ -6,7 +6,7 @@ const STACK = [
   ['WebSockets', 'A full snapshot on connect, then every space after each processed frame.', 'In the demo'],
   ['Three.js simulator', 'Renders the garage, traffic and eight CCTV cameras, then sends frames to the API.', 'In the demo'],
   ['A2 detector', 'torchvision Faster R-CNN (ResNet-50-FPN v2), fine-tuned on simulator imagery. Runs on CPU in the demo; GPU performance has not been measured yet.', 'In the demo'],
-  ['NVIDIA Nemotron via Nebius Token Factory', 'Optional parking advice: Nemotron picks from facts the API supplies, and ParkRight validates the choice. Without a key, a labelled local fallback is used.', 'Optional'],
+  ['NVIDIA Nemotron via Nebius Token Factory', 'Optional parking advice: Nemotron picks from facts the API supplies, and Meridian validates the choice. Without a key, a labelled local fallback is used.', 'Optional'],
   ['Shared contracts', 'Pydantic models exported to TypeScript, so the API and the app agree on every message.', 'In the demo'],
   ['Tests', 'Vitest unit tests and Playwright browser tests, including runs against the real API with scripted camera states.', 'In the repo'],
 ] as const;
