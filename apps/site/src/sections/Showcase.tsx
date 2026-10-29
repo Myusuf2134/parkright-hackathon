@@ -26,7 +26,7 @@ const TABS = [
     points: [
       ['No account', 'Preferences stay on the device.'],
       ['Eligibility narrows, never widens', 'Your vehicle and placard decide which confirmed-open spaces you’re offered.'],
-      ['Alerts while the app is open', 'If your space is taken on the way, ParkRight offers the next one.'],
+      ['Alerts while the app is open', 'If your space is taken on the way, Meridian offers the next one.'],
     ],
   },
 ] as const;
