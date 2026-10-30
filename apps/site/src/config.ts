@@ -1,6 +1,6 @@
 /**
  * Where the buttons go. Nothing here points at localhost in a production build: set the hosted URLs
- * at build time (VITE_PARKRIGHT_*), or the buttons fall back to the "Run it yourself" instructions.
+ * at build time (VITE_PARKRIGHT_*), or the buttons fall back to the demo section and its offline preview.
  * In `vite dev` they default to the local demo (npm run demo:ohio serves the web app on :5180).
  */
 const env = import.meta.env;
@@ -14,4 +14,5 @@ export const LINKS = {
   repo: env.VITE_PARKRIGHT_REPO_URL || 'https://github.com/Myusuf2134/parkright-hackathon',
 } as const;
 
-export const RUN_ANCHOR = '#run';
+/** Where demo buttons go while the hosted demo is unconfigured or unreachable: the demo section. */
+export const RUN_ANCHOR = '#demo';

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { LINKS, RUN_ANCHOR } from '../config.ts';
+import { useDemoStatus } from '../demoStatus.ts';
 
 /** Fades and lifts content in once, when it first scrolls into view. Reduced motion: shown as-is. */
 export function Reveal({ children, delay = 0, as: Tag = 'div', className = '' }: { children: ReactNode; delay?: number; as?: 'div' | 'section' | 'li' | 'figure'; className?: string }) {
@@ -30,9 +31,14 @@ export function Source({ children, tone = 'demo' }: { children: ReactNode; tone?
   return <span className={`src src-${tone}`}>{children}</span>;
 }
 
-/** A primary/secondary action that goes to the hosted app or demo, or to the run instructions. */
+/**
+ * A primary/secondary action that goes to the hosted app or demo. Until the demo server has answered a
+ * health check it points at the demo section instead, which explains what is (and isn't) reachable.
+ */
 export function Action({ to, children, kind = 'primary', testid }: { to: 'app' | 'demo' | 'repo'; children: ReactNode; kind?: 'primary' | 'secondary' | 'ghost'; testid?: string }) {
-  const href = LINKS[to] ?? RUN_ANCHOR;
+  const demo = useDemoStatus();
+  const hosted = to === 'repo' || demo.state === 'live' ? LINKS[to] : null;
+  const href = hosted ?? RUN_ANCHOR;
   const external = href.startsWith('http');
   return (
     <a className={`btn btn-${kind}`} href={href} data-testid={testid} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}>

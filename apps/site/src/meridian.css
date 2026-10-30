@@ -235,6 +235,22 @@ body { background: var(--md-deep); }
 .md-demo-iframe { display: block; width: 100%; height: 100%; border: 0; background: transparent; }
 .md-demo-help { margin: 0; padding: 15px 23px 17px; border-top: 1px solid rgba(242,216,182,.15); color: #becbd1; font-size: 12.5px; line-height: 1.6; text-shadow: none; }
 .md-demo-help b { color: #f7e7d0; font-weight: 580; }
+/* Offline / checking: a captured preview with an honest status, never a broken frame. */
+.md-status-indicator { width: 10px; height: 10px; flex: none; border-radius: 50%; background: #8d98a2; box-shadow: 0 0 0 5px rgba(141,152,162,.12); }
+.md-status-indicator.checking { background: #f0c996; box-shadow: 0 0 0 5px rgba(240,201,150,.14); animation: md-pulse 1.4s ease-in-out infinite; }
+@keyframes md-pulse { 50% { opacity: .35; } }
+.md-demo-retry { padding: 10px 18px; border: 1px solid rgba(235,211,178,.34); border-radius: 999px; background: rgba(2,9,17,.55); color: #f7ead8; font: 560 12.5px/1 var(--ui); cursor: pointer; transition: background-color 150ms,color 150ms; }
+.md-demo-retry:hover { background: #f7ead8; color: #0a1520; }
+.md-demo-retry:focus-visible { outline: 2px solid #f0c996; outline-offset: 3px; }
+.md-demo-preview { position: relative; margin: 0; background: #0a131d; }
+.md-demo-preview img { display: block; width: 100%; height: auto; opacity: .62; filter: saturate(.7); }
+.md-demo-preview figcaption { position: absolute; left: 18px; right: 18px; bottom: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 15px; border: 1px solid rgba(242,216,182,.2); border-radius: 14px; background: rgba(4,12,21,.84); backdrop-filter: blur(10px); color: #d6dee3; font-size: 12.5px; line-height: 1.5; text-shadow: none; }
+.md-demo-help code { padding: 2px 6px; border-radius: 6px; background: rgba(247,234,216,.09); color: #f7e7d0; font: 500 12px/1.4 var(--mono); }
+.md-demo-help a { color: #f0c996; }
+@media (prefers-reduced-motion: reduce) { .md-status-indicator.checking { animation: none; } }
+@media (max-width: 760px) {
+  .md-demo-preview figcaption { position: static; border-radius: 0; border-width: 1px 0 0; }
+}
 .md-demo .demo-row { margin-top: 24px; }
 .md-demo .run { margin-top: 36px; }
 @media (max-width: 760px) {

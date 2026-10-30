@@ -12,12 +12,12 @@ test('every section is present with its headline', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Arrive ready.');
   await expect(page.getByText('MERIDIAN').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'A higher standard for how people arrive.' })).toBeAttached();
-  for (const h of ['Your day, parked.', 'From camera to clarity.', 'See both sides of ParkRight.', 'Know when to leave. Not just where to park.', 'A clearer way to arrive.']) {
+  for (const h of ['Your day, parked.', 'From camera to clarity.', 'See both sides of Meridian.', 'Know when to leave. Not just where to park.', 'A clearer way to arrive.']) {
     await expect(page.getByRole('heading', { name: h })).toBeAttached();
   }
-  // The new editorial story still includes the real, interactive ParkRight product sections.
+  // The new editorial story still includes the real, interactive Meridian product sections.
   const order = await page.locator('main > section').evaluateAll((els) => els.map((e) => e.id || e.className.split(' ').pop()));
-  expect(order).toEqual(['capabilities', 'about', 'md-panel-section', 'md-product-heading', 'app', 'ai', 'demo', 'arrival', 'tech', 'markets']);
+  expect(order).toEqual(['capabilities', 'about', 'md-panel-section', 'md-product-heading', 'app', 'ai', 'demo', 'arrival', 'tech']);
   await expect(page.getByText('Your class starts at 10:20.')).toBeVisible();
 });
 
@@ -30,17 +30,17 @@ test('no failed requests, no errors, no horizontal overflow, every image loads',
   expect((page as unknown as { errors: string[] }).errors).toEqual([]);
 });
 
-test('without hosted URLs, app and demo buttons go to the run instructions, never localhost', async ({ page }) => {
+test('without hosted URLs, app and demo buttons go to the demo section, never localhost', async ({ page }) => {
   const hrefs = await page.locator('a').evaluateAll((as) => as.map((a) => a.getAttribute('href') ?? ''));
   expect(hrefs.filter((h) => h.includes('localhost') || h.includes('127.0.0.1'))).toEqual([]);
-  await expect(page.getByTestId('cta-hero-app')).toHaveAttribute('href', '#run');
-  await expect(page.getByTestId('cta-demo')).toHaveAttribute('href', '#run');
+  await expect(page.getByTestId('cta-hero-app')).toHaveAttribute('href', '#demo');
+  await expect(page.getByTestId('cta-hero-demo')).toHaveAttribute('href', '#demo');
   await expect(page.getByTestId('cta-repo')).toHaveAttribute('href', 'https://github.com/Myusuf2134/parkright-hackathon');
   // In-page anchors all resolve.
   const anchors = hrefs.filter((h) => h.startsWith('#') && h.length > 1);
   for (const a of new Set(anchors)) expect(await page.locator(a).count(), a).toBe(1);
   await page.getByTestId('cta-hero-app').click();
-  await expect(page.getByRole('heading', { name: 'Run it yourself' })).toBeInViewport();
+  await expect(page.getByTestId('demo-status-title')).toBeInViewport();
 });
 
 test('app tabs switch with mouse and arrow keys', async ({ page }) => {
@@ -153,14 +153,24 @@ test('Meridian content preserves prototype truth and functional product links', 
   await expect(page.getByRole('heading', { name: 'Spatial intelligence' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'From real spaces to real possibilities.' })).toBeAttached();
   await expect(page.getByText('Open-space confirmation is not enabled.')).toBeAttached();
-  await expect(page.getByText('Today, a campus prototype. Tomorrow, more intelligent connections')).toBeAttached();
-  await expect(page.getByTestId('cta-hero-app')).toHaveAttribute('href', '#run');
+  await expect(page.getByTestId('cta-hero-app')).toHaveAttribute('href', '#demo');
 });
 
 test('production without hosted app URLs keeps a clear static preview fallback', async ({ page }) => {
-  await expect(page.locator('#demo')).toContainText('This captured preview is not interactive.');
+  const offline = page.getByTestId('demo-offline');
+  await expect(offline).toHaveAttribute('data-demo-state', 'unconfigured');
+  await expect(page.getByTestId('demo-status-title')).toHaveText('Interactive demo not hosted');
+  await expect(offline).toContainText('Captured screenshot');
+  await expect(offline).toContainText('Not live and not interactive.');
+  await expect(offline).not.toContainText(/connected|reachable/i);
+  await expect(page.locator('.md-live-indicator')).toHaveCount(0);
   await expect(page.getByTestId('interactive-demo')).toHaveCount(0);
   await expect(page.getByTestId('demo-live-frame')).toHaveCount(0);
   await expect(page.locator('#demo img[src="/media/present-split.webp"]')).toBeAttached();
-  await expect(page.getByTestId('cta-demo-app')).toHaveAttribute('href', '#run');
+  await expect(page.getByTestId('cta-demo-app')).toHaveCount(0);
+});
+
+test('no visible ParkRight branding remains', async ({ page }) => {
+  await expect(page.locator('body')).not.toContainText(/park\s*right/i);
+  expect(await page.title()).not.toMatch(/parkright/i);
 });

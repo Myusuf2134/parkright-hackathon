@@ -1,7 +1,7 @@
 {
   "name": "Meridian | Intelligent mobility",
   "short_name": "Meridian",
-  "description": "Meridian's ParkRight campus mobility demonstration",
+  "description": "Meridian campus parking and arrival prototype",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#061421",
