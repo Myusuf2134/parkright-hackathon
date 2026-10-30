@@ -83,12 +83,12 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
         <div className="list">
           <div className="li">
             <span className="ic"><Bell /></span>
-            <span className="t"><b>In-app alerts</b><small>If your space is taken or a space opens. Only while ParkRight is open.</small></span>
+            <span className="t"><b>In-app alerts</b><small>If your space is taken or a space opens. Only while Meridian is open.</small></span>
             <Toggle on={prefs.spaceAlerts} onChange={(v) => update({ spaceAlerts: v })} label="In-app alerts" />
           </div>
           <div className="li" aria-disabled data-testid="push-row">
             <span className="ic"><Phone /></span>
-            <span className="t"><b>Push notifications</b><small>Not available yet. ParkRight can't alert you when it's closed.</small></span>
+            <span className="t"><b>Push notifications</b><small>Not available yet. Meridian can't alert you when it's closed.</small></span>
             <SourceTag source="unavailable">Not available</SourceTag>
           </div>
         </div>
@@ -97,7 +97,7 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
         <div className="list">
           <button type="button" className="li press" onClick={onAbout} data-testid="how-it-knows">
             <span className="ic"><Shield /></span>
-            <span className="t"><b>How ParkRight knows</b><small>Cameras, freshness, live, simulated and demo data</small></span>
+            <span className="t"><b>How Meridian knows</b><small>Cameras, freshness, live, simulated and demo data</small></span>
             <Chevron width={18} height={18} className="chev-i" />
           </button>
           <div className="li">

@@ -19,10 +19,10 @@ export function App() {
   return (
     <main>
       <header>
-        <h1>ParkRight</h1>
+        <h1>Meridian</h1>
         <p className="tagline">Find Parking</p>
       </header>
-      {error && <p className="notice">Cannot reach the ParkRight API ({error}). Is it running on :8400?</p>}
+      {error && <p className="notice">Cannot reach the Meridian API ({error}). Is it running on :8400?</p>}
       {selected ? (
         <FacilityView facilityId={selected} onBack={() => setSelected(null)} />
       ) : (

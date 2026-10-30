@@ -53,9 +53,9 @@ export function AboutData({ open, onClose, facility, spaces, health, demo, info,
   const model = spaces.find((s) => s.model)?.model ?? null;
   const detector = detectorKind(model?.provider ?? health?.perception.provider);
   return (
-    <Modal open={open} onClose={onClose} label="How ParkRight knows">
+    <Modal open={open} onClose={onClose} label="How Meridian knows">
       <div style={{ display: 'grid', gap: 18 }} data-testid="about">
-        <div className="row"><h2 className="title" style={{ fontSize: 28 }}>How ParkRight knows</h2><button type="button" className="circ flat press" aria-label="Close" onClick={onClose}><Close /></button></div>
+        <div className="row"><h2 className="title" style={{ fontSize: 28 }}>How Meridian knows</h2><button type="button" className="circ flat press" aria-label="Close" onClick={onClose}><Close /></button></div>
         <p className="body">Cameras watch each space. A detector decides whether it's open, occupied or unclear. Only a space seen open in the last few seconds is shown as open.</p>
         <div className="list">
           <div className="li"><span className="t"><b><span className="live">Live</span></b><small>Straight from the garage's cameras, updated as each frame is processed.</small></span></div>
@@ -107,7 +107,7 @@ export function SearchSheet({ open, onClose, scenario, onPick }: { open: boolean
             ))}
           </div>
         )}
-        <p className="body" style={{ fontSize: 13.5 }}>Building search isn't connected yet{scenario ? '; this demo includes one destination' : ''}. The garage ParkRight watches is shown either way.</p>
+        <p className="body" style={{ fontSize: 13.5 }}>Building search isn't connected yet{scenario ? '; this demo includes one destination' : ''}. The garage Meridian watches is shown either way.</p>
       </div>
     </Modal>
   );

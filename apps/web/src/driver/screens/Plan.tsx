@@ -49,7 +49,7 @@ export function Plan({ scenario, arrival, parking, onFind }: {
           <div className="ahero calm" data-testid="plan-empty">
             <span className="ic lg"><School /></span>
             <div className="h2">Class schedules aren't connected yet</div>
-            <p className="body">With university sign-in, ParkRight will plan around your classes: when to leave, what changed, where to park. Nothing is connected today.</p>
+            <p className="body">With university sign-in, Meridian will plan around your classes: when to leave, what changed, where to park. Nothing is connected today.</p>
             <button type="button" className="btn ink press" onClick={() => setPreview(true)} data-testid="preview-demo">Preview with a demo schedule</button>
           </div>
         ) : tripRemoved ? (
@@ -92,7 +92,7 @@ export function Plan({ scenario, arrival, parking, onFind }: {
             {r.shown.length === 0 && r.filtered.length === 0 && r.departure.state === 'ok' && (
               <p className="calm-line" data-testid="calm"><span className="ic sm ok"><Check /></span>Nothing affects this trip right now.</p>
             )}
-            <p className="fine">Schedule, travel times and disruptions on this screen are demo examples, not current information. Parking near class is {parking?.simulated ? 'live from a simulated garage' : 'live'}. ParkRight can't guarantee arrival times.</p>
+            <p className="fine">Schedule, travel times and disruptions on this screen are demo examples, not current information. Parking near class is {parking?.simulated ? 'live from a simulated garage' : 'live'}. Meridian can't guarantee arrival times.</p>
           </>
         )}
       </div>
@@ -150,7 +150,7 @@ function ArrivalHero({ r, parking, destShort, onFind, onRemove }: { r: ArrivalRe
         <div className="depart-na" data-testid="departure-unavailable">
           <div className="row"><span className="ey">Recommended departure</span><SourceTag source="unavailable" /></div>
           <div className="dtime off small">Not available</div>
-          <p className="body">No {d.missing.join(' or ')} estimate, so ParkRight won't guess a time.</p>
+          <p className="body">No {d.missing.join(' or ')} estimate, so Meridian won't guess a time.</p>
         </div>
       )}
       {d.state === 'not-needed' && (
@@ -233,7 +233,7 @@ function AlertCard({ j, index, destShort, onFind, onDismiss }: { j: Judged; inde
         {s.action === 'review-route' && (
           <>
             <button type="button" className="alink" onClick={() => setRouteOpen((v) => !v)} aria-expanded={routeOpen}>{routeOpen ? 'Hide' : 'Review route'}</button>
-            {routeOpen && <p className="body" style={{ fontSize: 13.5 }}>Live routing isn't connected, so ParkRight can't suggest a specific detour yet. Allow the extra time shown, or use another campus entrance you know.</p>}
+            {routeOpen && <p className="body" style={{ fontSize: 13.5 }}>Live routing isn't connected, so Meridian can't suggest a specific detour yet. Allow the extra time shown, or use another campus entrance you know.</p>}
           </>
         )}
         {(s.action === 'review-parking' || s.action === 'find-parking') && (

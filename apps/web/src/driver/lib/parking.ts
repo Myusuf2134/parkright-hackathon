@@ -25,7 +25,7 @@ export function eligibility(designation: SpaceDesignation, prefs: Prefs): Eligib
     case 'ev':
       return prefs.vehicle === 'ev' ? { ok: true, reason: null } : { ok: false, reason: 'EV charging space. Only offered when your car is set to electric.' };
     case 'reserved':
-      return { ok: false, reason: 'Reserved space. ParkRight never offers reserved spaces.' };
+      return { ok: false, reason: 'Reserved space. Meridian never offers reserved spaces.' };
     default:
       return { ok: false, reason: 'Unknown space type.' };
   }

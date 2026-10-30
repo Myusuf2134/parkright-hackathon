@@ -175,7 +175,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
   if (ctx.facilities.state === 'error' && !facility) {
     body = (
       <>
-        <div className="big"><span className="num off">—</span><span className="lbl"><b>Can't reach ParkRight</b><span>No spaces are shown as available.</span></span></div>
+        <div className="big"><span className="num off">—</span><span className="lbl"><b>Can't reach Meridian</b><span>No spaces are shown as available.</span></span></div>
         <div className="acts"><button type="button" className="btn ink press" onClick={p.onRetry}>Try again</button></div>
       </>
     );
@@ -303,7 +303,7 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
         <button type="button" className="btn ink press" onClick={() => setMode('space')} data-testid="choose-space">Choose a space</button>
         <button type="button" className="circ green lg press" aria-label={p.suggested ? `Go to space ${p.suggested.space_id}` : 'Go'} disabled={!p.suggested || !live.trusted || p.checking !== null} onClick={() => p.suggested && p.onGo(p.suggested.space_id)}><Arrow /></button>
       </div>
-      <p className="notice-line">ParkRight shows what its cameras see. Spaces aren't reserved or held for you.</p>
+      <p className="notice-line">Meridian shows what its cameras see. Spaces aren't reserved or held for you.</p>
     </div>
   );
 }

@@ -210,7 +210,7 @@ export function Splash({ variant, onReveal, onDone }: { variant: SplashVariant; 
 
   return (
     <div ref={root} className="splash" data-testid="splash" data-variant={variant} onClick={skip} role="presentation">
-      <span className="sr-only" role="status">ParkRight is starting</span>
+      <span className="sr-only" role="status">Meridian is starting</span>
       <svg ref={svg} viewBox={`0 0 ${MAP_W} ${MAP_H}`} preserveAspectRatio="xMidYMid slice" aria-hidden>
         <defs>
           <radialGradient id="sp-gSky" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 0) scale(330 560)"><stop offset="0" stopColor="#d3e4ff" /><stop offset="1" stopColor="#d3e4ff" stopOpacity="0" /></radialGradient>
@@ -237,8 +237,8 @@ export function Splash({ variant, onReveal, onDone }: { variant: SplashVariant; 
         <rect width={MAP_W} height={MAP_H} fill="url(#sp-gSky)" />
         <rect width={MAP_W} height={MAP_H} fill="url(#sp-gBlush)" />
         <g id="sp-word" fontFamily="'Geist Variable', -apple-system, system-ui, sans-serif" textAnchor="middle">
-          <text id="sp-wordT" x="195" y="318" fontSize="40" fontWeight="850" fill="#111316" letterSpacing="12">PARK<tspan fill="#12a15a">RIGHT</tspan></text>
-          <text id="sp-tag" x="195" y="350" fontSize="13" fontWeight="500" fill="#6b7078" letterSpacing="2.2">LEGAL PARKING, CONFIRMED LIVE</text>
+          <text id="sp-wordT" x="195" y="318" fontSize="40" fontWeight="850" fill="#111316" letterSpacing="12">MERI<tspan fill="#12a15a">DIAN</tspan></text>
+          <text id="sp-tag" x="195" y="350" fontSize="13" fontWeight="500" fill="#6b7078" letterSpacing="2.2">ARRIVE READY</text>
         </g>
         <g id="sp-scene">
           <path id="sp-ground" d="" fill="url(#sp-gGround)" opacity="0" />

@@ -1,6 +1,6 @@
 {
-  "name": "ParkRight",
-  "short_name": "ParkRight",
+  "name": "Meridian",
+  "short_name": "Meridian",
   "description": "Find a parking space a camera has confirmed open.",
   "start_url": "/app/",
   "scope": "/app/",

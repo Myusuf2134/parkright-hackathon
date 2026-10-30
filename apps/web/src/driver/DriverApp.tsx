@@ -198,7 +198,7 @@ export function DriverApp() {
         {showTabs && tab !== 'explore' && <div className="tabfade" aria-hidden />}
         <AnimatePresence>
           {showTabs && (
-            <motion.nav key="tabs" className="tabs" role="tablist" aria-label="ParkRight" style={{ x: '-50%' }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 14 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
+            <motion.nav key="tabs" className="tabs" role="tablist" aria-label="Meridian" style={{ x: '-50%' }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 14 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
               {(['explore', 'plan', 'you'] as Tab[]).map((t) => (
                 <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); if (t === 'explore') setMode('peek'); }} data-testid={`tab-${t}`}>
                   {tab === t && <motion.span layoutId="tab-bg" className="tab-bg" initial={false} transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.12 }} />}

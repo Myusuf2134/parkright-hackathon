@@ -31,7 +31,7 @@ export const DETECTOR_LABEL: Record<DetectorKind, string> = {
  * word and a "(N spaces)" suffix move out of the headline, never reworded.
  */
 export function siteHeadline(siteTitle: string | null | undefined, facilityName: string | null | undefined, simulated: boolean) {
-  const raw = (siteTitle || (facilityName ? garageTitle(facilityName) : '') || 'ParkRight garage').trim();
+  const raw = (siteTitle || (facilityName ? garageTitle(facilityName) : '') || 'Meridian garage').trim();
   const stripped = raw.replace(/\s+simulation$/i, '');
   return { title: stripped || raw, simulation: simulated || stripped !== raw };
 }

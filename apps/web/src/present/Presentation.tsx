@@ -69,7 +69,7 @@ export function Presentation() {
   return (
     <div className={`pz pz-mode-${mode}`} data-testid="presentation" data-mode={mode}>
       <header className="pz-top">
-        <div className="pz-brand"><span className="pz-mark" aria-hidden>P</span><span>Park<b>Right</b></span></div>
+        <div className="pz-brand"><span className="pz-mark" aria-hidden>M</span><span>Meri<b>dian</b></span></div>
         <div className="pz-site" data-testid="pz-site">
           <div className="pz-site-line">
             <b data-testid="pz-site-title">{head.title}</b>
@@ -126,7 +126,7 @@ function StudentStage({ tour, lastChange }: { tour: boolean; lastChange: Percept
       <div className="pz-stu-copy">
         <span className="pz-eyebrow">What the student sees</span>
         <h1 className="pz-h1">Parking you can trust, before you leave.</h1>
-        <p className="pz-lede">The real ParkRight app, running live. It only offers a space a camera has confirmed open and fresh.</p>
+        <p className="pz-lede">The real Meridian app, running live. It only offers a space a camera has confirmed open and fresh.</p>
         <ol className="pz-tour" aria-label="App tour">
           {TOUR.map((t) => (
             <li key={t.id}>
@@ -169,7 +169,7 @@ function Phone({ src }: { src: string }) {
     <div className="pz-phonebox" ref={box}>
       <div className="pz-phone" style={{ width: 421 * scale, height: 880 * scale }}>
         <div className="pz-phone-in" style={{ transform: `scale(${scale})` }}>
-          <iframe src={src} title="ParkRight student app" data-testid="pz-app" width={393} height={852} />
+          <iframe src={src} title="Meridian student app" data-testid="pz-app" width={393} height={852} />
           <span className="pz-island" aria-hidden />
         </div>
       </div>
@@ -226,9 +226,9 @@ function AiPanel({ full, status, live, events, changeLog, lastChange, simulated 
   const active = !lastEv ? 0 : detector !== 'a2' && detector !== 'scripted' ? 0 : live.trusted ? 3 : 2;
 
   return (
-    <section className={`pz-ai${full ? ' full' : ''}`} aria-label="What ParkRight's AI sees" data-testid="pz-ai">
+    <section className={`pz-ai${full ? ' full' : ''}`} aria-label="What Meridian's AI sees" data-testid="pz-ai">
       <div className="pz-ai-head">
-        <span className="pz-eyebrow dark">What ParkRight’s AI sees</span>
+        <span className="pz-eyebrow dark">What Meridian’s AI sees</span>
         <DetectorChip kind={detector} status={status} />
       </div>
       <PipelineFlow active={active} notes={notes} warn={[false, detector !== 'a2', false, !live.trusted]} />

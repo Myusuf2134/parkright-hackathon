@@ -77,8 +77,8 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
     <div className={`demo${opts.record ? ' record' : ''}${showcase ? ' showcase' : ''}`} data-step={step} data-phase={phase} data-ws={live.connection} data-updates={live.updates}>
       <header className="d-top">
         <div className="d-brand">
-          <span className="d-mark" aria-hidden="true">P</span>
-          <span className="d-word">Park<b>Right</b></span>
+          <span className="d-mark" aria-hidden="true">M</span>
+          <span className="d-word">Meri<b>dian</b></span>
           <span className="d-badge" data-testid="demo-badge">Demo mode · simulated data</span>
         </div>
         <div className="d-top-right">
@@ -94,7 +94,7 @@ export function DemoApp({ scenario }: { scenario: Scenario }) {
         <PipelineFlow active={step <= 2 ? 0 : step === 3 ? 1 : step <= 5 ? 2 : 3} />
       </div>
 
-      {status === 'down' && <p className="d-alert" role="alert">The ParkRight API is not answering. Run <code>npm run demo:check</code>.</p>}
+      {status === 'down' && <p className="d-alert" role="alert">The Meridian API is not answering. Run <code>npm run demo:check</code>.</p>}
 
       {tech && <TechView status={s} rec={rec} live={live.connection} wsUpdates={wsUpdates.current} record={opts.record} />}
 
@@ -249,7 +249,7 @@ function CameraCard({ status, spaces }: { status: DemoStatus | null; spaces: Par
           </li>
         ))}
       </ul>
-      <p className="d-note">Bays that look empty stay Uncertain: ParkRight never treats a missing detection as an open space.</p>
+      <p className="d-note">Bays that look empty stay Uncertain: Meridian never treats a missing detection as an open space.</p>
     </article>
   );
 }
