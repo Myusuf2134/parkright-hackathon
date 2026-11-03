@@ -37,3 +37,4 @@ export function AlertIcon({ kind, ...p }: P & { kind: 'traffic' | 'weather' | 'c
   const I = { traffic: TrafficIcon, weather: WeatherIcon, construction: ConeIcon, announcement: AnnounceIcon, parking: ParkIcon }[kind];
   return <I {...p} />;
 }
+export const Star = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="m12 4 2.5 5.1 5.6.8-4 4 .9 5.6-5-2.7-5 2.7.9-5.6-4-4 5.6-.8L12 4Z" /></svg>;

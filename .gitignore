@@ -32,3 +32,4 @@ experiments/3d-garage-simulator/work/
 experiments/garage-showcase/work/
 experiments/ohio-union-garage/work/
 .vercel
+apps/web/public/app/maplibre-worker.mjs

@@ -1,20 +1,24 @@
 import type { Facility, ParkingSpace } from '@parkright/contracts';
 import { AnimatePresence, animate, motion, useMotionValue, useTransform, type MotionValue } from 'motion/react';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AdviceState, DemoInfo, Load } from '../net/api.ts';
 import type { LiveView } from '../net/live.ts';
 import { spaceLabel, type Evidence } from '../lib/evidence.ts';
 import { siteHeadline } from '../lib/names.ts';
 import { bayState, describeSpace, eligibility, layoutPlan, offerable, type Counts } from '../lib/parking.ts';
 import type { Prefs } from '../lib/prefs.ts';
-import { greeting } from '../lib/time.ts';
-import { CampusStreets, DestinationPin, GaragePin, MAP_H, MAP_W, WalkLink } from '../ui/CampusMap.tsx';
+import { ago } from '../lib/time.ts';
+import type { GarageEntry, Ranked } from '../lib/directory.ts';
+import type { Saved } from '../lib/saved.ts';
+import { DirectionsBlock, FavoriteButton, GarageList, GarageSource } from './Garages.tsx';
 import { DemoMark, ObservationBar, Provenance } from '../ui/bits.tsx';
-import { Arrow, Back, Close, Info, Locate, Person } from '../ui/icons.tsx';
+import { Arrow, Back, Close, Info, Locate, Person, Star } from '../ui/icons.tsx';
+import { attributionText } from '../maps/mapStyle.ts';
+import type { MapLoad } from '../maps/MeridianMap.tsx';
 import { haptic } from '../ui/layout.ts';
 import { Sheet, type Detent } from '../ui/Sheet.tsx';
 
-export type Mode = 'peek' | 'garage' | 'space';
+export type Mode = 'peek' | 'list' | 'garage' | 'space' | 'route';
 
 export interface ParkingCtx {
   facilities: Load<Facility[]>;
@@ -35,7 +39,22 @@ export interface ParkingCtx {
   demo: DemoInfo | null | undefined;
   /** The detector can't report OPEN and nothing is open: show "can't confirm empty spaces", never "full". */
   openDisabled: boolean;
+  /** The garage on screen; its facility is null for a demo-feed garage, which has no spaces. */
+  entry: GarageEntry | null;
+  ranked: Ranked[];
+  saved: Saved;
+  /** The site description, only when it describes this garage. */
+  site: { title: string; tag: string; disclaimer: string } | null;
+  destinationIsClass: boolean;
+  destinationPlace: string | null;
+  /** Monitored garage ids in the server's order; gives map pins fixed positions. */
+  facilityOrder: string[];
+  /** Whether the garage on screen is the app's pick rather than one the driver opened. */
+  isPick: boolean;
 }
+
+const order = (ctx: ParkingCtx, r: Ranked) => ctx.ranked.length && r.entry.facility ? ctx.facilityOrder.indexOf(r.entry.id) : 1000 + r.entry.name.charCodeAt(0);
+const facilityHasSpaces = (ctx: ParkingCtx) => !!ctx.facility && ctx.entry?.source !== 'unavailable' && ctx.entry?.source !== 'demo';
 
 export function Explore(props: {
   ctx: ParkingCtx;
@@ -58,98 +77,100 @@ export function Explore(props: {
   onAbout: () => void;
   onProfile: () => void;
   onRetry: () => void;
+  onOpenGarage: (id: string) => void;
+  onToggleFavorite: (id: string) => void;
+  onDestination: (d: string) => void;
+  onClearRecents: () => void;
+  onCloseGarage: () => void;
+  /** Route to the garage on screen, then on foot to the destination. */
+  onRouteToGarage: () => void;
+  /** Routes for the destination on its own (best garage if driving). */
+  onDestinationRoute: (() => void) | null;
+  routePanel: ReactNode;
+  routeFooter: ReactNode;
+  mapLoad: MapLoad;
+  bearing: number;
+  geoActive: boolean;
+  locating: boolean;
+  onLocate: () => void;
+  onNorth: () => void;
+  onPitch: () => void;
+  mapNote: string | null;
 }) {
   const { ctx, viewport, safe, revealed, mode, setMode, sheetY } = props;
-  const { live, counts, facility } = ctx;
+  const { live } = ctx;
+  const [routeDetent, setRouteDetent] = useState<'route' | 'route-full'>('route');
+  useEffect(() => { if (mode !== 'route') setRouteDetent('route'); }, [mode]);
   const [peekH, setPeekH] = useState(286);
   const full = viewport - safe.top - 10;
-  const detents: Detent[] = [
-    { id: 'peek', height: Math.min(full, peekH + 21 + 84 + safe.bottom) },
-    { id: 'garage', height: Math.min(full, Math.round(viewport * 0.74)) },
-    { id: 'space', height: full },
-  ];
+  const peek = { id: 'peek', height: Math.min(full, peekH + 21 + 84 + safe.bottom) };
+  const tall = Math.min(full, Math.round(viewport * 0.74));
+  const detents: Detent[] = mode === 'route' ? [{ id: 'route', height: Math.min(full, Math.round(viewport * 0.52)) }, { id: 'route-full', height: full }]
+    : mode === 'list' || (mode === 'peek' && ctx.entry?.source !== 'simulated' && ctx.entry?.source !== 'live')
+    ? [peek, { id: 'list', height: full }]
+    : mode === 'garage' && !facilityHasSpaces(ctx) ? [peek, { id: 'garage', height: tall }]
+    : [peek, { id: 'garage', height: tall }, { id: 'space', height: full }];
 
-  // Map: slight pan, a reveal settle, and controls that ride above the sheet.
-  const mapX = useMotionValue(0), mapY = useMotionValue(0), mapScale = useMotionValue(1.06);
-  useEffect(() => { if (revealed) animate(mapScale, 1, { duration: 0.6, ease: [0.22, 1, 0.36, 1] }); }, [revealed, mapScale]);
+  // Controls ride above the sheet and fade once it covers most of the map.
   const ctlBottom = useTransform(sheetY, (v) => viewport - v + 14);
-  const ctlOpacity = useTransform(sheetY, (v) => (viewport - v > viewport * 0.6 ? 0 : 1));
-  const recenter = () => { animate(mapX, 0, { type: 'spring', bounce: 0.1 }); animate(mapY, 0, { type: 'spring', bounce: 0.1 }); };
-
-  const pinCount = live.trusted && !ctx.openDisabled ? counts.open : null;
-  const off = facility !== null && !live.trusted && live.connection !== 'connecting';
+  const ctlOpacity = useTransform(sheetY, (v) => (viewport - v > viewport * 0.72 ? 0 : 1));
 
   return (
-    <div className="screen" data-testid="explore">
-      <div className={`map${off ? ' off' : ''}`} role="group" aria-label="Illustrated campus map">
-        <motion.svg
-          viewBox={`0 0 ${MAP_W} ${MAP_H}`}
-          preserveAspectRatio="xMidYMid slice"
-          style={{ x: mapX, y: mapY, scale: mapScale, overflow: 'visible' }}
-          drag
-          dragConstraints={{ left: -70, right: 70, top: -90, bottom: 90 }}
-          dragElastic={0.2}
-          dragMomentum={false}
-        >
-          <CampusStreets />
-          {ctx.destination && <WalkLink />}
-          {facility && (
-            <g
-              className="pinbtn"
-              role="button"
-              tabIndex={0}
-              aria-label={`${facility.name}: ${pinCount === null ? (ctx.openDisabled && live.trusted ? 'open spaces can’t be confirmed yet' : 'availability unknown') : `${pinCount} confirmed open`}. Show garage details`}
-              onClick={() => setMode('garage')}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMode('garage'); } }}
-            >
-              <GaragePin count={pinCount} active={mode !== 'peek'} />
-            </g>
-          )}
-          {ctx.destination && <DestinationPin name={ctx.destination} />}
-        </motion.svg>
-      </div>
-      <motion.div className="wash" animate={{ opacity: mode === 'peek' ? 1 : 0.5 }} transition={{ duration: 0.3 }} />
-
+    <div className="screen map-screen" data-testid="explore">
       <motion.div className="top" animate={{ opacity: mode === 'peek' ? 1 : 0, y: mode === 'peek' ? 0 : -12 }} transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }} style={{ pointerEvents: mode === 'peek' ? 'auto' : 'none' }} aria-hidden={mode !== 'peek'}>
-        <div className="row">
-          <span className="greet">{greeting()}</span>
-          {/* Sits in the top row, not over the map, so it can never cover a pin whatever the sheet height. */}
-          <span className="toprt"><span className="maplbl" data-testid="map-label">Illustrated map</span><button type="button" className="circ avatar press" aria-label="You and settings" onClick={props.onProfile}><Person /></button></span>
-        </div>
-        <h1 className="hl" style={{ marginTop: -14 }}>Where to?</h1>
-        {live.connection === 'reconnecting' || live.silent ? (
-          <div className="banner" role="status" data-testid="reconnecting">{live.silent ? 'No recent update' : 'Reconnecting'} · nothing shown as available</div>
-        ) : (
-          <div className="search" data-testid="search">
+        <div className="toprow">
+        <div className="search" data-testid="search">
             <button type="button" className="main" onClick={props.onSearch} aria-label={ctx.destination ? `Destination: ${ctx.destination}. Change` : 'Search for a destination'}>
               <span className="sq" />
               <span className="t">
-                {ctx.destination ? <b>{ctx.destination}</b> : <b className="ph">Search a campus building</b>}
+                {ctx.destination ? <b>{ctx.destination}</b> : <b className="ph" data-testid="where-to">Where to?</b>}
                 {ctx.destination && ctx.classLine && <small>{ctx.leaveBy ? `${ctx.classLine.split(' · ')[0]} · Leave ${ctx.leaveBy}` : ctx.classLine}{ctx.destinationIsDemo && <> · <DemoMark /></>}</small>}
                 {!ctx.destination && <small>Parking near where you're going</small>}
               </span>
             </button>
+            {props.onDestinationRoute && <button type="button" className="circ ink press" aria-label={`Routes to ${ctx.destination}`} onClick={props.onDestinationRoute} data-testid="destination-route"><Arrow /></button>}
             {ctx.destination && <button type="button" className="circ flat press" aria-label="Clear destination" onClick={props.onClearDestination}><Close /></button>}
-          </div>
+        </div>
+        <button type="button" className="circ avatar press" aria-label="You and settings" onClick={props.onProfile}><Person /></button>
+        </div>
+        {(live.connection === 'reconnecting' || live.silent) && (
+          <div className="banner" role="status" data-testid="reconnecting">{live.silent ? 'No recent update' : 'Reconnecting'} · nothing shown as available</div>
         )}
       </motion.div>
 
-      <motion.button type="button" className="circ mapctl press" style={{ bottom: ctlBottom, opacity: ctlOpacity }} aria-label="Recenter map" onClick={recenter}><Locate /></motion.button>
+      <motion.div className="mapctls" style={{ bottom: ctlBottom, opacity: ctlOpacity }}>
+        {props.bearing !== 0 && <button type="button" className="circ press" aria-label="Reset map to north" onClick={props.onNorth} data-testid="map-north"><svg viewBox="0 0 24 24" width={22} height={22} aria-hidden style={{ rotate: `${-props.bearing}deg` }}><path d="M12 3l4 9h-8z" fill="#d63a3a" /><path d="M12 21l-4-9h8z" fill="#9aa0a6" /></svg></button>}
+        <button type="button" className="circ press mapctl-3d" aria-label="Tilt map" onClick={props.onPitch} data-testid="map-pitch">3D</button>
+        <button type="button" className={`circ press${props.geoActive ? ' located' : ''}`} aria-label={props.geoActive ? 'Center on my location' : 'Show my location'} onClick={props.onLocate} data-testid="locate" disabled={props.locating}><Locate /></button>
+      </motion.div>
+      <motion.div className="mapattr" style={{ bottom: ctlBottom, opacity: ctlOpacity }} data-testid="map-attribution">{attributionText}</motion.div>
+      {props.mapLoad === 'failed' && <div className="mapfail" role="status" data-testid="map-failed"><b>The map couldn't load.</b><span>Search, garages and directions still work.</span></div>}
+      {mode !== 'route' && props.mapNote && <div className="banner mapnote" role="status" data-testid="map-note">{props.mapNote}</div>}
 
       <Sheet
         y={sheetY}
         viewport={viewport}
         detents={detents}
-        active={mode}
+        active={mode === 'route' ? routeDetent : mode}
         hidden={!revealed}
-        onChange={(id) => setMode(id as Mode)}
+        onChange={(id) => { if (mode === 'route') setRouteDetent(id as 'route' | 'route-full'); else setMode(id as Mode); }}
         scroll={mode !== 'peek'}
-        label={mode === 'peek' ? 'Best parking' : mode === 'garage' ? 'Garage details' : 'Choose a space'}
+        label={mode === 'peek' ? 'Best parking' : mode === 'list' ? 'All garages' : mode === 'garage' ? 'Garage details' : mode === 'route' ? 'Routes' : 'Choose a space'}
       >
         {mode === 'peek' && <PeekPanel {...props} onMeasure={setPeekH} />}
+        {mode === 'list' && (
+          <GarageList
+            ranked={ctx.ranked} saved={ctx.saved} loading={ctx.facilities.state === 'loading'} failed={ctx.facilities.state === 'error'}
+            destination={ctx.destination} destinationIsClass={ctx.destinationIsClass}
+            onOpen={props.onOpenGarage} onToggle={props.onToggleFavorite} onRetry={props.onRetry} onClose={() => setMode('peek')}
+            onDestination={props.onDestination} onClearRecents={props.onClearRecents}
+          />
+        )}
         {mode === 'garage' && <GaragePanel {...props} />}
         {mode === 'space' && <SpacePanel {...props} />}
+        {mode === 'route' && props.routePanel}
       </Sheet>
+      {mode === 'route' && props.routeFooter}
     </div>
   );
 }
@@ -167,12 +188,30 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
     return () => ro.disconnect();
   }, [p.onMeasure]);
 
-  const eyebrow = ctx.destination ? `Best parking near ${ctx.destination}` : 'Monitored garage';
-  const name = facility ? siteHeadline(ctx.demo?.site?.title, facility.name, facility.is_simulated).title : '';
+  const recommendable = ctx.ranked.find((r) => r.entry.id === ctx.entry?.id)?.tier === 0;
+  const eyebrow = !ctx.isPick ? 'Selected garage' : !ctx.destination || !recommendable ? 'Monitored garage' : ctx.destinationIsClass ? `Best parking near ${ctx.destination}` : `Parking for ${ctx.destination}`;
+  const name = facility ? siteHeadline(ctx.site?.title, facility.name, facility.is_simulated).title : '';
   const openEnabled = ctx.demo?.allowOpen !== false;
   const forYouLine = counts.forYou === counts.open ? undefined : `${counts.forYou} usable by you`;
   let body;
-  if (ctx.facilities.state === 'error' && !facility) {
+  if (ctx.entry?.source === 'demo') {
+    const c = ctx.entry.candidate!;
+    body = (
+      <>
+        <div className="big" data-testid="demo-peek"><span className="num zero">{c.demo_available_spaces}</span><span className="lbl"><b>spaces in the demo feed</b><span className="fac">{ctx.entry.name}</span></span></div>
+        <div className="prov"><span className="dm">Example data · not live</span><span aria-hidden>·</span><span>No space map</span></div>
+        <div className="acts"><button type="button" className="btn ink press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
+      </>
+    );
+  } else if (ctx.entry?.source === 'unavailable') {
+    body = (
+      <>
+        <div className="big" data-testid="unavailable-peek"><span className="num off">—</span><span className="lbl"><b>Availability not available</b><span>{ctx.entry.name}</span></span></div>
+        <div className="prov"><span>No validated occupancy for this garage yet</span></div>
+        <div className="acts"><button type="button" className="btn press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
+      </>
+    );
+  } else if (ctx.facilities.state === 'error' && !facility) {
     body = (
       <>
         <div className="big"><span className="num off">—</span><span className="lbl"><b>Can't reach Meridian</b><span>No spaces are shown as available.</span></span></div>
@@ -252,36 +291,115 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
   }
   return (
     <div ref={ref} className="panel" style={{ paddingBottom: 4 }}>
-      <div className="ey">{eyebrow}</div>
+      <div className="row peek-head">
+        <div className="ey">{eyebrow}</div>
+        {ctx.ranked.length > 1 && <button type="button" className="alllink press" onClick={() => setMode('list')} data-testid="all-garages">All {ctx.ranked.length}</button>}
+      </div>
       {body}
+      <SavedStrip {...p} />
+    </div>
+  );
+}
+
+/** Saved garages one tap away. */
+function SavedStrip(p: Parameters<typeof Explore>[0]) {
+  const { ctx } = p;
+  const favs = ctx.saved.favorites.map((id) => ctx.ranked.find((r) => r.entry.id === id)).filter((r): r is Ranked => !!r && r.entry.id !== ctx.entry?.id);
+  if (!favs.length) return null;
+  return (
+    <div className="sstrip" data-testid="saved-strip">
+      {favs.map((r) => <button key={r.entry.id} type="button" className="rchip press" onClick={() => p.onOpenGarage(r.entry.id)} data-testid="saved-chip"><Star width={13} height={13} fill="currentColor" />{r.entry.name}</button>)}
     </div>
   );
 }
 
 // ---------------------------------------------------------------- garage
 
+/** Header shared by every garage: name, favorite, about, close, and what kind of data this is. */
+function GarageHead({ p, eyebrow, title }: { p: Parameters<typeof Explore>[0]; eyebrow: string; title: string }) {
+  const { ctx } = p;
+  const e = ctx.entry!;
+  return (
+    <>
+      <div className="row" style={{ alignItems: 'flex-start' }}>
+        <div style={{ display: 'grid', gap: 8, minWidth: 0 }}>
+          <div className="ey">{eyebrow}</div>
+          <h2 className={`title${title.length > 22 ? ' long' : ''}`} data-testid="garage-title">{title}</h2>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <FavoriteButton id={e.id} name={e.name} on={ctx.saved.favorites.includes(e.id)} onToggle={p.onToggleFavorite} />
+          <button type="button" className="circ flat press" aria-label="About this data" onClick={p.onAbout}><Info /></button>
+          <button type="button" className="circ flat press" aria-label="Close garage details" onClick={p.onCloseGarage}><Close /></button>
+        </div>
+      </div>
+      <div className="locline" data-testid="location">
+        <GarageSource source={e.source} />
+        <span data-testid="loc-text">{e.geo ? [e.standsInFor ? `Simulated stand-in for ${e.geo.name}` : null, e.geo.address, e.geo.capacity ? `${e.geo.capacity} spaces` : null].filter(Boolean).join(' · ') || 'Location from OpenStreetMap' : e.facility?.address ?? (e.standsInFor ? `Simulated stand-in for ${e.standsInFor}` : e.source === 'demo' ? 'Named in the demo fixture' : 'No real location')}</span>
+      </div>
+    </>
+  );
+}
+
+const walkLine = (ctx: ParkingCtx) => {
+  const r = ctx.ranked.find((x) => x.entry.id === ctx.entry?.id);
+  const walk = r?.walkMinutes ?? null;
+  if (!ctx.destination) return null;
+  return walk !== null ? `${walk} min walk to ${ctx.destination}${r?.walkSource === 'routed' ? '' : ' · demo estimate'}` : `Walking time to ${ctx.destination} isn't available`;
+};
+
+function DemoGaragePanel(p: Parameters<typeof Explore>[0]) {
+  const { ctx } = p;
+  const c = ctx.entry!.candidate!;
+  const walk = walkLine(ctx);
+  return (
+    <div className="panel" style={{ gap: 18, paddingBottom: p.safe.bottom + 24 }} data-testid="garage-panel">
+      <GarageHead p={p} eyebrow={`Capacity ${c.total_spaces} · demo fixture`} title={ctx.entry!.name} />
+      <div className="stats" data-testid="garage-stats" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="stat"><b data-testid="demo-count">{c.demo_available_spaces}</b><span>In the demo feed</span></div>
+        <div className="stat"><b>{c.total_spaces}</b><span>Capacity (demo)</span></div>
+      </div>
+      <div className="card occ-only" data-testid="no-space-map">
+        <span className="ey">Example data</span>
+        <b>This garage has no cameras connected, so there's no space map and no live count.</b>
+        <span>The number above is a fixed example. It never changes and isn't current information.</span>
+      </div>
+      {walk && <p className="body" style={{ fontSize: 14 }} data-testid="walk-line">{walk}</p>}
+      <DirectionsBlock entry={ctx.entry!} destination={ctx.destination} destinationPlace={ctx.destinationPlace} app={ctx.prefs.mapsApp} onRoute={p.onRouteToGarage} />
+    </div>
+  );
+}
+
+function UnavailablePanel(p: Parameters<typeof Explore>[0]) {
+  const { ctx } = p;
+  return (
+    <div className="panel" style={{ gap: 18, paddingBottom: p.safe.bottom + 24 }} data-testid="garage-panel">
+      <GarageHead p={p} eyebrow="Availability not available" title={ctx.entry!.name} />
+      <div className="card occ-only" data-testid="unavailable-card">
+        <span className="ey">Not validated</span>
+        <b>Meridian can't report availability for this garage yet.</b>
+        <span>{ctx.entry!.facility ? "Its occupancy hasn't been calibrated and validated, so no space is shown as open." : "Meridian has no cameras here, so it knows where this garage is but not how full it is."}</span>
+      </div>
+      <DirectionsBlock entry={ctx.entry!} destination={ctx.destination} destinationPlace={ctx.destinationPlace} app={ctx.prefs.mapsApp} onRoute={p.onRouteToGarage} />
+    </div>
+  );
+}
+
 function GaragePanel(p: Parameters<typeof Explore>[0]) {
   const { ctx, setMode } = p;
   const { live, counts, facility, spaces } = ctx;
+  if (ctx.entry?.source === 'demo') return <DemoGaragePanel {...p} />;
+  if (ctx.entry?.source === 'unavailable') return <UnavailablePanel {...p} />;
   if (!facility) return <div className="panel"><div className="skel" style={{ height: 200 }} /></div>;
   const level = facility.levels.length === 1 ? facility.levels[0].name : `${facility.levels.length} levels`;
   const camera = facility.cameras.length === 1 ? facility.cameras[0].camera_id : `${facility.cameras.length} cameras`;
   // The site's own title leads; the size is secondary metadata above it ("Simulated garage" sits below).
-  const head = siteHeadline(ctx.demo?.site?.title, facility.name, facility.is_simulated);
+  const head = siteHeadline(ctx.site?.title, facility.name, facility.is_simulated);
+  const walk = walkLine(ctx);
   return (
     <div className="panel" style={{ gap: 18, paddingBottom: p.safe.bottom + 24 }} data-testid="garage-panel">
-      <div className="row" style={{ alignItems: 'flex-start' }}>
-        <div style={{ display: 'grid', gap: 8, minWidth: 0 }}>
-          <div className="ey">{level} · {counts.total} spaces</div>
-          <h2 className={`title${head.title.length > 22 ? ' long' : ''}`} data-testid="garage-title">{head.title}</h2>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button type="button" className="circ flat press" aria-label="About this data" onClick={p.onAbout}><Info /></button>
-          <button type="button" className="circ flat press" aria-label="Close garage details" onClick={() => setMode('peek')}><Close /></button>
-        </div>
-      </div>
-      {ctx.demo?.site && (
-        <p className="site-note" data-testid="site-disclaimer"><b>{ctx.demo.site.tag}</b> {ctx.demo.site.disclaimer}</p>
+      <GarageHead p={p} eyebrow={`${level} · ${counts.total} spaces`} title={head.title} />
+      {ctx.site && (
+        <p className="site-note" data-testid="site-disclaimer"><b>{ctx.site.tag}</b> {ctx.site.disclaimer}</p>
       )}
       <div className="stats" data-testid="garage-stats">
         <div className={`stat open${ctx.openDisabled ? ' off' : ''}`}><b>{live.trusted && !ctx.openDisabled ? counts.open : '—'}</b><span>Open</span></div>
@@ -290,6 +408,8 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
       </div>
       <ObservationBar counts={counts} openEnabled={ctx.demo?.allowOpen !== false} title legend={false} note={false} />
       <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} extra={camera} />
+      <p className="updated" data-testid="last-updated">{live.lastMessageAt ? (live.trusted ? `Last update ${ago(ctx.now - live.lastMessageAt)} ago` : `Last update ${ago(ctx.now - live.lastMessageAt)} ago · no longer current`) : 'No update received yet'}</p>
+      {walk && <p className="body" style={{ fontSize: 14, marginTop: -8 }} data-testid="walk-line">{walk}</p>}
       {ctx.openDisabled && live.trusted && (
         <div className="card occ-only" data-testid="open-disabled-card">
           <span className="ey">Occupied-only detection</span>
@@ -303,6 +423,7 @@ function GaragePanel(p: Parameters<typeof Explore>[0]) {
         <button type="button" className="btn ink press" onClick={() => setMode('space')} data-testid="choose-space">Choose a space</button>
         <button type="button" className="circ green lg press" aria-label={p.suggested ? `Go to space ${p.suggested.space_id}` : 'Go'} disabled={!p.suggested || !live.trusted || p.checking !== null} onClick={() => p.suggested && p.onGo(p.suggested.space_id)}><Arrow /></button>
       </div>
+      <DirectionsBlock entry={ctx.entry!} destination={ctx.destination} destinationPlace={ctx.destinationPlace} app={ctx.prefs.mapsApp} onRoute={p.onRouteToGarage} />
       <p className="notice-line">Meridian shows what its cameras see. Spaces aren't reserved or held for you.</p>
     </div>
   );
@@ -353,6 +474,7 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
     return () => ro.disconnect();
   }, []);
   const plan = useMemo(() => layoutPlan(levelSpaces, width), [levelSpaces, width]);
+  const changed = useChangedBays(ctx.spaces);
   const small = plan.bays.length > 0 && Math.min(...plan.bays.map((b) => b.w)) < 50;
 
   // Keep the chosen bay in view on big garages.
@@ -386,13 +508,13 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
         <Provenance live={live} evidence={ctx.evidence} simulated={false} />
       </div>
       <div style={{ display: 'grid', gap: 8 }}>
-        <div className="ey">{facility.name} · {levelName}</div>
+        <div className="ey">{ctx.entry?.name ?? facility.name} · {levelName}</div>
         <h2 className="hl" style={{ fontSize: 36 }}>Choose a space</h2>
       </div>
       {levels.length > 1 && (
         <div className="seg" role="group" aria-label="Level">
           {[...levels].sort((a, b) => a.ordinal - b.ordinal).map((l) => (
-            <button key={l.level_id} type="button" aria-pressed={l.level_id === activeLevel} onClick={() => setLevelId(l.level_id)}>{l.name}</button>
+            <button key={l.level_id} type="button" aria-pressed={l.level_id === activeLevel} onClick={() => setLevelId(l.level_id)} data-testid={`level-${l.level_id}`}>{l.name}<small>{live.trusted && !ctx.openDisabled ? `${ctx.spaces.filter((s) => s.level_id === l.level_id && offerable(s, prefs)).length} open` : '—'}</small></button>
           ))}
         </div>
       )}
@@ -410,7 +532,7 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
               <button
                 key={s.space_id}
                 type="button"
-                className={`bay ${cls}${small ? ' sm' : ''}`}
+                className={`bay ${cls}${small ? ' sm' : ''}${changed.has(s.space_id) ? ' chg' : ''}`}
                 style={{ left: x + 3, top: y, width: w - 6, height: h }}
                 data-bay={s.space_id}
                 data-state={st}
@@ -461,6 +583,22 @@ function SpacePanel(p: Parameters<typeof Explore>[0]) {
       )}
     </div>
   );
+}
+
+/** Bays whose state just changed, so a live update is visible where it happened. */
+function useChangedBays(spaces: ParkingSpace[]): Set<string> {
+  const prev = useRef<Map<string, string> | null>(null);
+  const [changed, setChanged] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    const next = new Map(spaces.map((s) => [s.space_id, bayState(s)]));
+    const diff = prev.current ? [...next].filter(([id, st]) => prev.current!.has(id) && prev.current!.get(id) !== st).map(([id]) => id) : [];
+    prev.current = next;
+    if (!diff.length) return;
+    setChanged(new Set(diff));
+    const t = setTimeout(() => setChanged(new Set()), 1400);
+    return () => clearTimeout(t);
+  }, [spaces]);
+  return changed;
 }
 
 /** "Open · seen 3 s ago" for the chosen space: its own evidence, amber once it's past 12 s. */

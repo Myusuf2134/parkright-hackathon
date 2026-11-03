@@ -4,9 +4,40 @@ Two entries:
 
 | URL | What |
 | --- | --- |
-| `/app/` | **ParkRight driver app (V5)**: mobile-first PWA — splash, Explore (where to park), garage details, choose a space, trip, Plan with Arrival Intelligence (when to leave), You |
+| `/app/` | **ParkRight driver app (V5)**: mobile-first PWA — splash, Explore (where to park), garage list and search, garage details, choose a space, trip with maps links, Plan with Arrival Intelligence (when to leave), You |
 | `/present/` | **Hackathon presentation**: the real V5 app (embedded from `/app/`) beside what ParkRight's AI sees. `?mode=split` (default) · `student` · `ai`; keys 1 / 2 / 3 switch |
 | `/` | Legacy screens (`?classic=1`, `?record=1` demo screen) — the existing integration tests use these. The demo screen's progress bar is now the compact Camera → NVIDIA A2 → Space state → ParkRight flow |
+
+## Student app: quick start
+
+```bash
+# from the repo root, once
+uv sync --frozen --all-packages && npm ci --ignore-scripts
+
+npm run demo:student             # http://127.0.0.1:5180/app/  (this computer)
+npm run demo:student -- --lan    # also prints a URL for a phone on the same Wi-Fi
+```
+
+This runs the real API with three simulated garages (`e2e/student_api.py`: scripted states and traffic,
+no A2) plus the demo feed's garage. Every garage is labelled simulated or demo. For the real
+simulator → A2 path use `npm run demo:ohio`: A2 runs with OPEN disabled, so the app reports occupied
+spaces and offers none. That is correct behaviour, not a fault.
+
+| Data | Source | Label |
+| --- | --- | --- |
+| Space states, counts, freshness | API + WebSocket, one socket per garage | Simulated (or Live for a real facility) |
+| A garage named only in the demo fixture | `/api/v1/demo/scenario` | Demo feed: fixed example, no space map |
+| Walking minutes | Demo fixture, to the class building only | Demo estimate; otherwise "isn't available" |
+| Directions | Apple Maps or Google Maps links | Virtual garages with no real place link to the destination instead |
+| Favorites, recents, preferences | `localStorage` on the device | "Settings stay on this device" |
+
+Connecting validated physical occupancy needs no frontend rewrite: a facility with `is_simulated: false`
+and no spaces shows "Availability not available" (the Lorex validation facility has this shape); give it
+spaces and the same screens show them as Live. The mapper's `allow_open` stays the only gate on OPEN.
+
+PWA: the service worker only registers in a production build on a secure origin (`npm run build`, then
+`npx vite preview`; localhost counts). It caches the app shell and never `/api`. Over plain-HTTP LAN
+there is no worker, but Add to Home Screen and live data still work.
 
 ## Run it
 
@@ -66,7 +97,8 @@ npm run test:e2e -w @parkright/web       # browser: scripted backend (driver + a
 - While the socket is down, or silent for longer than any stale window, every space is shown as can't-confirm.
 - A space is re-read from the API before a trip starts and watched during it; if it is lost the trip says so
   and offers the next one. Nothing is a reservation.
-- Simulated garages, demo schedules, demo garages and the demo route are labelled where they appear.
+- Simulated garages, demo schedules and demo garages are labelled where they appear. Meridian draws no
+  route and gives no turn instructions; directions open in a maps app.
   The map is an illustration: no facility has real coordinates. A site's own disclaimer
   (`/api/v1/demo/status` → `site`) is shown verbatim in garage details and About; none is invented.
 - Freshness is per space: a garage reads "Live" only while its *oldest* current view is under 12 s,
@@ -79,3 +111,5 @@ npm run test:e2e -w @parkright/web       # browser: scripted backend (driver + a
 See [docs/arrival-intelligence.md](docs/arrival-intelligence.md): what is live (parking), what is demo
 (schedule, travel times, disruptions), how relevance and departure are computed, and what each real
 integration would require.
+
+Meridian Maps (real map, routing, guidance): see [docs/meridian-maps.md](../../docs/meridian-maps.md).

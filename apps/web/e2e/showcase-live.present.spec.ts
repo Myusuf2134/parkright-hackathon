@@ -7,7 +7,7 @@ test('34-space split: both sides agree, no Ohio disclaimer', async ({ page }) =>
   await page.goto('/present/');
   const app = page.frameLocator('[data-testid=pz-app]');
   await expect(app.getByTestId('open-count')).toHaveText('13', { timeout: 15_000 });
-  await expect(page.getByTestId('pz-site-title')).toHaveText('ParkRight Showcase Garage');
+  await expect(page.getByTestId('pz-site-title')).toHaveText('Meridian Showcase Garage');
   await expect(page.getByTestId('pz-simulation')).toBeVisible();
   await expect(page.getByTestId('pz-disclaimer')).toHaveCount(0);
   await expect(page.getByTestId('pz-m-cameras')).toContainText('4');

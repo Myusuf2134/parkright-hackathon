@@ -40,6 +40,7 @@
     "demo:showcase:live": "node scripts/demo/start.mjs --showcase --live",
     "calibration:showcase": "node scripts/generate-showcase-calibration.mjs",
     "calibration:showcase:check": "node scripts/generate-showcase-calibration.mjs --check",
+    "demo:student": "node scripts/demo/student.mjs",
     "demo:ohio": "node scripts/demo/start.mjs --ohio",
     "demo:ohio:live": "node scripts/demo/start.mjs --ohio --live",
     "calibration:ohio": "node scripts/generate-ohio-calibration.mjs",

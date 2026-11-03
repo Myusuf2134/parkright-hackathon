@@ -1,5 +1,8 @@
 /** Driver preferences. Stored on this device only: there are no accounts. */
 import { useCallback, useState } from 'react';
+import type { MapsApp } from './directions.ts';
+import type { Priority } from './directory.ts';
+import type { ThemePref } from '../maps/mapStyle.ts';
 
 export interface Prefs {
   vehicle: 'gas' | 'ev';
@@ -8,9 +11,16 @@ export interface Prefs {
   studentPermit: boolean;
   /** In-app alert while ParkRight is open. Not a push notification. */
   spaceAlerts: boolean;
+  /** In-app alert when a saved garage goes from nothing usable to a confirmed-open space. */
+  favoriteAlerts: boolean;
+  /** How garages are ranked. Eligibility and confirmed availability are never traded away by this. */
+  priority: Priority;
+  mapsApp: MapsApp;
+  /** Map appearance. auto follows the system. */
+  mapTheme: ThemePref;
 }
 
-export const DEFAULT_PREFS: Prefs = { vehicle: 'gas', accessiblePlacard: false, studentPermit: false, spaceAlerts: true };
+export const DEFAULT_PREFS: Prefs = { vehicle: 'gas', accessiblePlacard: false, studentPermit: false, spaceAlerts: true, favoriteAlerts: true, priority: 'closest', mapsApp: 'auto', mapTheme: 'auto' };
 
 const KEY = 'parkright.prefs.v1';
 

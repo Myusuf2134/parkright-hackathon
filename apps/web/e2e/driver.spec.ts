@@ -83,7 +83,8 @@ test('trip watches the space, warns when taken and offers the next one', async (
   await page.goto(APP);
   await page.getByTestId('go').click();
   await expect(page.getByTestId('trip')).toHaveAttribute('data-watch', 'ok');
-  await expect(page.getByText('Demo guidance · not live directions')).toBeVisible();
+  await expect(page.getByTestId('head-to')).toContainText('Level 1');
+  await expect(page.getByText(/turn right/i)).toHaveCount(0);
   await expect(page.getByTestId('trip-title')).toHaveText('A2 is still open');
   be.update({ A2: 'OCCUPIED' });
   await expect(page.getByTestId('trip')).toHaveAttribute('data-watch', 'taken');
@@ -141,7 +142,7 @@ test('without demo mode nothing pretends to be a schedule', async ({ page }) => 
   const be = new Backend(page, V4, { scenario: false });
   await be.install();
   await page.goto(APP);
-  await expect(page.getByText('Search a campus building')).toBeVisible();
+  await expect(page.getByTestId('where-to')).toBeVisible();
   await expect(page.locator('[data-demo]')).toHaveCount(0);
   await page.getByTestId('tab-plan').click();
   await expect(page.getByTestId('plan-empty')).toContainText("aren't connected yet");
@@ -151,7 +152,7 @@ test('no personal names in the UI', async ({ page }) => {
   const be = new Backend(page, V4, { scenario: true });
   await be.install();
   await page.goto(APP);
-  await expect(page.getByRole('heading', { name: 'Where to?' })).toBeVisible();
+  await expect(page.getByTestId('search')).toBeVisible();
   for (const tab of ['explore', 'plan', 'you']) {
     await page.getByTestId(`tab-${tab}`).click();
     await expect(page.locator('body')).not.toContainText('Mahdi');

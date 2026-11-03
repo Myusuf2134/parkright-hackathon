@@ -1,7 +1,7 @@
 /**
- * Trip. The route is a demo drawn on the illustration, labelled as such. The real part is the
- * live watch: the chosen space is re-evaluated on every update, and the moment it stops being
- * a confirmed-open space for this driver the sheet says so and offers the next one.
+ * Trip: the live watch on the chosen space. It is re-evaluated on every update, and the moment it stops
+ * being a confirmed-open space for this driver the sheet says so and offers the next one. The
+ * garage stays in view on the real map behind it, and a route to it is one tap away.
  */
 import type { Facility, ParkingSpace } from '@parkright/contracts';
 import { AnimatePresence, motion } from 'motion/react';
@@ -9,8 +9,9 @@ import type { LiveView } from '../net/live.ts';
 import { bayState, describeSpace, offerable, suggestSpace } from '../lib/parking.ts';
 import type { Prefs } from '../lib/prefs.ts';
 import { spaceLabel } from '../lib/evidence.ts';
-import { CampusStreets, GaragePin, GARAGE_PIN, MAP_H, MAP_W, TRIP_ROUTE } from '../ui/CampusMap.tsx';
-import { Close, TurnRight } from '../ui/icons.tsx';
+import type { GarageEntry } from '../lib/directory.ts';
+import { Close } from '../ui/icons.tsx';
+import { DirectionsBlock } from './Garages.tsx';
 
 export type TripWatch = 'ok' | 'taken' | 'unconfirmed' | 'paused' | 'ineligible';
 
@@ -24,8 +25,11 @@ export function tripStatus(space: ParkingSpace | undefined, live: LiveView, pref
 
 const SPRING = { type: 'spring' as const, visualDuration: 0.45, bounce: 0.1 };
 
-export function Trip({ facility, spaceId, live, spaces, prefs, now, onEnd, onChooseAnother, onSwitch }: {
+export function Trip({ facility, entry, destination, destinationPlace, spaceId, live, spaces, prefs, now, onEnd, onChooseAnother, onSwitch, onRoute }: {
   facility: Facility;
+  entry: GarageEntry;
+  destination: string | null;
+  destinationPlace: string | null;
   spaceId: string;
   live: LiveView;
   spaces: ParkingSpace[];
@@ -34,6 +38,7 @@ export function Trip({ facility, spaceId, live, spaces, prefs, now, onEnd, onCho
   onEnd: () => void;
   onChooseAnother: () => void;
   onSwitch: (spaceId: string) => void;
+  onRoute: () => void;
 }) {
   const space = spaces.find((s) => s.space_id === spaceId);
   const status = tripStatus(space, live, prefs);
@@ -52,32 +57,12 @@ export function Trip({ facility, spaceId, live, spaces, prefs, now, onEnd, onCho
 
   return (
     <div className="screen trip" data-testid="trip" data-watch={status}>
-      <div className="map trip-map" aria-hidden>
-        <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} preserveAspectRatio="xMidYMid slice" className="tilt">
-          <CampusStreets depth />
-          <path d={TRIP_ROUTE} stroke="#12a15a" strokeOpacity={0.16} strokeWidth={26} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          <path d={TRIP_ROUTE} stroke="#ffffff" strokeWidth={15} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          <motion.path d={TRIP_ROUTE} stroke="#12a15a" strokeWidth={9} fill="none" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.15 }} />
-          <path d={TRIP_ROUTE} className="route-flow" stroke="#ffffff" strokeOpacity={0.75} strokeWidth={2.4} fill="none" strokeLinecap="round" strokeDasharray="1 16" />
-          <GaragePin count={live.trusted ? spaces.filter((s) => bayState(s) === 'open').length : null} active />
-          <g transform={`translate(${GARAGE_PIN.x + 44} ${GARAGE_PIN.y - 70})`}>
-            <rect x={0} y={0} width={44} height={28} rx={9} fill={status === 'ok' ? '#12a15a' : '#b7791f'} />
-            <text x={22} y={19} textAnchor="middle" fontFamily="Geist Mono Variable, monospace" fontSize={13} fontWeight={650} fill="#fff">{spaceId}</text>
-          </g>
-        </svg>
-        <div className="horizon-fog" />
-      </div>
-
-      <motion.div className="navcard" initial={{ y: -24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING}>
-        <span className="demo">Demo guidance · not live directions</span>
-        <div className="maneuver">
-          <span className="turn"><TurnRight width={40} height={40} color="#fff" /></span>
-          <div className="mtext">
-            <div className="mverb">Turn right</div>
-            <div className="mnoun">into {facility.name}</div>
-          </div>
+      <motion.div className="navcard" initial={{ y: -24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING} data-testid="head-to">
+        <span className="then-k">Heading to</span>
+        <div className="mtext">
+          <div className="mnoun head">{entry.name}</div>
+          <div className="then flat"><span className="then-k">Park</span>{level} · {row || 'your space'}</div>
         </div>
-        <div className="then"><span className="then-k">Then</span>{level} · {row || 'your space'}</div>
       </motion.div>
 
       <motion.section
@@ -111,8 +96,8 @@ export function Trip({ facility, spaceId, live, spaces, prefs, now, onEnd, onCho
         <div className="chips">
           <span className="chip">Not reserved</span>
           <span className="chip">Rechecked live</span>
-          <span className="chip amber">Demo guidance</span>
         </div>
+        <DirectionsBlock entry={entry} destination={destination} destinationPlace={destinationPlace} app={prefs.mapsApp} onRoute={onRoute} />
         <div className="acts">
           {status === 'ok' ? (
             <button type="button" className="btn press" onClick={onChooseAnother}>Change space</button>

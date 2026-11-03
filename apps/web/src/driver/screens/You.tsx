@@ -1,13 +1,31 @@
 /** You: preferences stored on this phone. No account, nothing verified, nothing promised. */
 import { useState } from 'react';
 import type { Health } from '../net/api.ts';
+import type { ThemePref } from '../maps/mapStyle.ts';
 import type { Prefs } from '../lib/prefs.ts';
 import { Toggle } from '../ui/bits.tsx';
 import { SourceTag } from '../ui/SourceTag.tsx';
+import { FavoriteButton, GarageSource } from './Garages.tsx';
+import type { MapsApp } from '../lib/directions.ts';
+import type { GarageEntry, Priority } from '../lib/directory.ts';
+import type { Saved } from '../lib/saved.ts';
 import { Access, Badge, Bell, Car, Check, Chevron, Lock, Person, Phone, Plug, Replay, School, Shield } from '../ui/icons.tsx';
 import { Modal } from './Modals.tsx';
 
-export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntro }: {
+function Seg<T extends string>({ value, options, onChange, label }: { value: T; options: [T, string][]; onChange: (v: T) => void; label: string }) {
+  return (
+    <div className="seg" role="group" aria-label={label}>
+      {options.map(([v, text]) => <button key={v} type="button" aria-pressed={v === value} onClick={() => onChange(v)} data-testid={`${label.split(' ')[0].toLowerCase()}-${v}`}>{text}</button>)}
+    </div>
+  );
+}
+
+export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntro, saved, entries, onOpenGarage, onToggleFavorite, onClearRecents }: {
+  saved: Saved;
+  entries: GarageEntry[];
+  onOpenGarage: (id: string) => void;
+  onToggleFavorite: (id: string) => void;
+  onClearRecents: () => void;
   prefs: Prefs;
   update: (p: Partial<Prefs>) => void;
   health: Health | null;
@@ -16,6 +34,7 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
   onReplayIntro: () => void;
 }) {
   const [vehicleSheet, setVehicleSheet] = useState(false);
+  const favs = saved.favorites.map((id) => entries.find((e) => e.id === id)).filter((e): e is GarageEntry => !!e);
   const eligible = ['Standard', prefs.accessiblePlacard && 'Accessible', prefs.vehicle === 'ev' && 'EV charging'].filter(Boolean).join(' · ');
   return (
     <div className="screen" data-testid="you" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
@@ -35,6 +54,23 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
             <span className="chip"><Car width={14} height={14} />{prefs.vehicle === 'ev' ? 'Electric' : 'Gas or hybrid'}</span>
             <span className="chip">{eligible} spaces</span>
           </div>
+        </div>
+
+        <div className="sec">Saved garages</div>
+        <div className="list" data-testid="saved-list">
+          {favs.length ? favs.map((e) => (
+            <div key={e.id} className="li">
+              <button type="button" className="t press" style={{ textAlign: 'left' }} onClick={() => onOpenGarage(e.id)} data-testid={`saved-${e.id}`}><b>{e.name}</b><small><GarageSource source={e.source} /></small></button>
+              <FavoriteButton id={e.id} name={e.name} on onToggle={onToggleFavorite} />
+            </div>
+          )) : <div className="li"><span className="t"><b>Nothing saved yet</b><small>Tap the star on a garage to keep it here.</small></span></div>}
+        </div>
+
+        <div className="sec">Parking preferences</div>
+        <div className="pref-card">
+          <b>Recommend garages by</b>
+          <Seg<Priority> label="Priority" value={prefs.priority} onChange={(priority) => update({ priority })} options={[['closest', 'Closest walk'], ['most-spaces', 'Most spaces']]} />
+          <small>Only spaces confirmed open count. Walking times come from real routes once you choose a destination.</small>
         </div>
 
         <div className="sec">My vehicle</div>
@@ -86,11 +122,27 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
             <span className="t"><b>In-app alerts</b><small>If your space is taken or a space opens. Only while Meridian is open.</small></span>
             <Toggle on={prefs.spaceAlerts} onChange={(v) => update({ spaceAlerts: v })} label="In-app alerts" />
           </div>
+          <div className="li">
+            <span className="ic"><Bell /></span>
+            <span className="t"><b>Saved garage alerts</b><small>When a saved garage gets a space you can use. Only while Meridian is open.</small></span>
+            <Toggle on={prefs.favoriteAlerts} onChange={(v) => update({ favoriteAlerts: v })} label="Saved garage alerts" />
+          </div>
           <div className="li" aria-disabled data-testid="push-row">
             <span className="ic"><Phone /></span>
             <span className="t"><b>Push notifications</b><small>Not available yet. Meridian can't alert you when it's closed.</small></span>
             <SourceTag source="unavailable">Not available</SourceTag>
           </div>
+        </div>
+
+        <div className="sec">Directions</div>
+        <div className="pref-card">
+          <b>Open directions in</b>
+          <Seg<MapsApp> label="Maps app" value={prefs.mapsApp} onChange={(mapsApp) => update({ mapsApp })} options={[['auto', 'Automatic'], ['apple', 'Apple Maps'], ['google', 'Google Maps']]} />
+        </div>
+
+        <div className="sec">Map</div>
+        <div className="list">
+          <Seg<ThemePref> label="Appearance" value={prefs.mapTheme} onChange={(mapTheme) => update({ mapTheme })} options={[['auto', 'Automatic'], ['light', 'Light'], ['dark', 'Dark']]} />
         </div>
 
         <div className="sec">Privacy and information</div>
@@ -102,8 +154,12 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
           </button>
           <div className="li">
             <span className="ic"><Phone /></span>
-            <span className="t"><b>Data on this phone</b><small>Your settings and the scenario you previewed. Nothing is sent anywhere.</small></span>
+            <span className="t"><b>Data on this phone</b><small>Your settings, saved garages and recents stay here. When you ask for a route, your start and destination go to the directions service. Your location is never sent to Meridian's server.</small></span>
           </div>
+          <button type="button" className="li press" onClick={onClearRecents} disabled={!saved.recentGarages.length && !saved.recentDestinations.length} data-testid="you-clear-recents">
+            <span className="ic"><Replay /></span>
+            <span className="t"><b>Clear recent history</b><small>{saved.recentGarages.length + saved.recentDestinations.length} recent items</small></span>
+          </button>
           <button type="button" className="li press" onClick={onReplayIntro}>
             <span className="ic"><Replay /></span>
             <span className="t"><b>Replay the intro</b></span>

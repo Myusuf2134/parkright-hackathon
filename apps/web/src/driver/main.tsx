@@ -21,3 +21,20 @@ createRoot(document.getElementById('root')!).render(
     <DriverApp />
   </StrictMode>,
 );
+
+// The on-screen keyboard shrinks the visual viewport on iOS, not the layout one: sheets ride above it.
+const keyboard = () => {
+  const v = visualViewport;
+  document.documentElement.style.setProperty('--kb', `${v ? Math.max(0, innerHeight - v.height - v.offsetTop) : 0}px`);
+};
+visualViewport?.addEventListener('resize', keyboard);
+visualViewport?.addEventListener('scroll', keyboard);
+
+// Offline shell for the built app only. The worker never touches /api, so availability is never cached.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  void navigator.serviceWorker.register('/app/sw.js', { scope: '/app/' }).then(async () => {
+    const ready = await navigator.serviceWorker.ready;
+    const assets = performance.getEntriesByType('resource').map((r) => r.name).filter((u) => u.startsWith(location.origin) && !u.includes('/api/'));
+    ready.active?.postMessage({ type: 'cache', urls: assets });
+  }).catch(() => { /* no worker (e.g. plain http on a phone): the app still works online */ });
+}

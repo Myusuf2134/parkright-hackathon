@@ -1,9 +1,10 @@
 /**
  * Display names. Facility names may carry their size ("… (72 spaces)"), which the garage header
- * already shows beside the level, so it is dropped there to keep the title whole. Nothing is renamed.
+ * already shows beside the level, so it is dropped there to keep the title whole. Fixtures predating
+ * the rebrand keep their ids and names on the wire; only the old product word is swapped for display.
  */
 export function garageTitle(name: string): string {
-  return name.replace(/\s*\(\d+\s+spaces?\)\s*$/i, '').trim() || name;
+  return (name.replace(/\s*\(\d+\s+spaces?\)\s*$/i, '').trim() || name).replace(/^ParkRight\b/, 'Meridian');
 }
 
 export type DetectorKind = 'a2' | 'scripted' | 'none' | 'other' | 'unknown';

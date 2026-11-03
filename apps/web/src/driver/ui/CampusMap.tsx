@@ -8,6 +8,8 @@ export const MAP_H = 844;
 /** Where the monitored garage sits on the illustration (also the splash's vanishing point). */
 export const GARAGE_PIN = { x: 243, y: 405 };
 export const DEST_PIN = { x: 96, y: 318 };
+/** Where further garages sit. Positions are illustrative and say nothing about real distance. */
+export const PIN_SLOTS = [GARAGE_PIN, { x: 335, y: 345 }, { x: 176, y: 424 }, { x: 215, y: 318 }, { x: 56, y: 408 }, { x: 300, y: 290 }];
 
 const ARTERIALS = [
   'M-220 300 C 0 276, 120 262, 200 257 S 430 236, 620 210', // east–west
@@ -78,10 +80,11 @@ export function CampusStreets({ depth = false }: { depth?: boolean }) {
 }
 
 /** Garage pin: black capsule with "P" and the confirmed-open count (or a dash when not live). */
-export function GaragePin({ count, active = false, x = GARAGE_PIN.x, y = GARAGE_PIN.y }: { count: number | null; active?: boolean; x?: number; y?: number }) {
+export function GaragePin({ count, active = false, x = GARAGE_PIN.x, y = GARAGE_PIN.y, demo = false }: { count: number | null; active?: boolean; x?: number; y?: number; demo?: boolean }) {
   const label = count === null ? '—' : String(count);
   const w = 64 + (label.length > 1 ? 12 : 0);
-  const lit = !!count;
+  // Green only ever means live evidence: a demo-feed number stays grey.
+  const lit = !!count && !demo;
   return (
     <g transform={`translate(${x} ${y})`}>
       <ellipse cx={0} cy={2} rx={active ? 18 : 12} ry={active ? 6 : 4} fill={lit ? '#12a15a' : '#9aa0a7'} opacity={0.18} style={{ transition: 'rx 280ms, ry 280ms' }} />
@@ -89,7 +92,7 @@ export function GaragePin({ count, active = false, x = GARAGE_PIN.x, y = GARAGE_
         <rect x={-w / 2} y={-66} width={w} height={48} rx={24} fill="#111316" />
         <circle cx={-w / 2 + 24} cy={-42} r={15} fill={lit ? '#12a15a' : '#3a3f45'} />
         <text x={-w / 2 + 24} y={-36.5} fontFamily="Geist Variable, system-ui, sans-serif" fontSize={16} fontWeight={800} fill="#fff" textAnchor="middle">P</text>
-        <text x={-w / 2 + 44} y={-36} fontFamily="Geist Variable, system-ui, sans-serif" fontSize={18} fontWeight={800} fill={lit ? '#ffffff' : '#9aa0a7'}>{label}</text>
+        <text x={-w / 2 + 44} y={-36} fontFamily="Geist Variable, system-ui, sans-serif" fontSize={18} fontWeight={800} fill={lit || demo ? '#ffffff' : '#9aa0a7'}>{label}</text>
         <path d="M-6 -19 L0 -11 L6 -19 Z" fill="#111316" />
       </g>
       <circle r={6.5} fill={lit ? '#12a15a' : '#9aa0a7'} stroke="#fff" strokeWidth={3} />
@@ -112,10 +115,7 @@ export function DestinationPin({ name, x = DEST_PIN.x, y = DEST_PIN.y }: { name:
 }
 
 /** Dotted walking link between destination and garage. Dotted because no real walking route exists. */
-export function WalkLink() {
-  const { x: dx, y: dy } = DEST_PIN, { x: gx, y: gy } = GARAGE_PIN;
+export function WalkLink({ x: gx = GARAGE_PIN.x, y: gy = GARAGE_PIN.y }: { x?: number; y?: number }) {
+  const { x: dx, y: dy } = DEST_PIN;
   return <path d={`M${dx + 12} ${dy + 8} C ${dx + 40} ${dy + 74}, ${gx - 84} ${gy + 10}, ${gx - 12} ${gy + 2}`} stroke="#111316" strokeOpacity={0.55} strokeWidth={3} strokeDasharray="0.5 7" strokeLinecap="round" fill="none" />;
 }
-
-/** The demo drive into the garage along the drawn streets (Trip). */
-export const TRIP_ROUTE = `M140 1060 C 144 860, 136 700, 134 560 C 134 530, 140 512, 166 508 C 196 504, 214 500, 236 494 C 246 491, 246 470, 244 450 L ${GARAGE_PIN.x} ${GARAGE_PIN.y + 6}`;

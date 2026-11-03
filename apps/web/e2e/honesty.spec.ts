@@ -146,14 +146,12 @@ test('a stale space is counted beside the label, not hidden in it', async ({ pag
   await expect(page.getByTestId('prov-stale')).toHaveText('1 without a recent view');
 });
 
-test('the illustrated-map label never covers the garage pin (Ohio, tall peek sheet)', async ({ page }) => {
+test('the real map credits its data and marks a simulated garage on its pin (Ohio, tall peek sheet)', async ({ page }) => {
   await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
   await expect(page.getByTestId('open-count')).toHaveText('27');
-  const label = await page.getByTestId('map-label').boundingBox();
-  const pin = await page.locator('.pinbtn').boundingBox();
-  expect(label && pin).toBeTruthy();
-  const overlap = label!.x < pin!.x + pin!.width && pin!.x < label!.x + label!.width && label!.y < pin!.y + pin!.height && pin!.y < label!.y + label!.height;
-  expect(overlap).toBe(false);
+  await expect(page.getByTestId('map-attribution')).toContainText('OpenStreetMap');
+  await expect(page.getByText('Illustrated map')).toHaveCount(0);
+  await expect(page.getByTestId('pin-garage-01')).toHaveAttribute('aria-label', /in simulation, not real availability/);
 });
 
 test('the Ohio garage title is the site title, whole; size and simulation are secondary', async ({ page }) => {

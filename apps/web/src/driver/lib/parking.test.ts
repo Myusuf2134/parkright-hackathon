@@ -36,7 +36,7 @@ describe('eligibility', () => {
     expect(offerable(space('E1', { designation: 'ev' }), { ...DEFAULT_PREFS, vehicle: 'ev' })).toBe(true);
   });
   it('never offers reserved spaces, whatever the settings', () => {
-    const all = { vehicle: 'ev' as const, accessiblePlacard: true, studentPermit: true, spaceAlerts: true };
+    const all = { ...DEFAULT_PREFS, vehicle: 'ev' as const, accessiblePlacard: true, studentPermit: true };
     expect(eligibility('reserved', all).ok).toBe(false);
   });
   it('a self-reported permit unlocks nothing', () => {

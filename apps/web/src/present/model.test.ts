@@ -18,7 +18,7 @@ describe('presentation model', () => {
   });
   it('headline keeps the site’s words and moves "simulation" into the SIMULATION mark', () => {
     expect(siteHeadline('Ohio Union North Garage-inspired simulation', null, true)).toEqual({ title: 'Ohio Union North Garage-inspired', simulation: true });
-    expect(siteHeadline(null, 'ParkRight Showcase Garage (34 spaces)', true)).toEqual({ title: 'ParkRight Showcase Garage', simulation: true });
+    expect(siteHeadline(null, 'ParkRight Showcase Garage (34 spaces)', true)).toEqual({ title: 'Meridian Showcase Garage', simulation: true });
     expect(siteHeadline(null, 'Real Deck', false)).toEqual({ title: 'Real Deck', simulation: false });
   });
   it('garage titles drop only a size suffix', () => {

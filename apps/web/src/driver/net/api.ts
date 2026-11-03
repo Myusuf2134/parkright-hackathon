@@ -1,7 +1,7 @@
 /** REST calls the driver app makes. All go through the same-origin /api proxy. */
 import type { Facility, ParkingSpace } from '@parkright/contracts';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchScenario, type DemoStatus, type Scenario } from '../../demo/api.ts';
+import type { DemoStatus, Scenario } from '../../demo/api.ts';
 
 export type { Scenario };
 
@@ -27,13 +27,22 @@ export function useFacilities(): [Load<Facility[]>, () => void] {
     let alive = true;
     let attempt = 0;
     let timer: ReturnType<typeof setTimeout>;
+    let last = '';
     const run = () => {
       getJson<Facility[]>('/api/v1/facilities')
-        .then((f) => alive && setLoad({ state: 'ok', value: f }))
+        .then((f) => {
+          if (!alive) return;
+          attempt = 0;
+          // Refreshed so garages added or removed on the server appear; state itself comes over the socket.
+          const sig = JSON.stringify(f.map((x) => [x.facility_id, x.name, x.counts.total]));
+          if (sig !== last) { last = sig; setLoad({ state: 'ok', value: f }); }
+          timer = setTimeout(run, 30_000);
+        })
         .catch(() => {
           if (!alive) return;
           attempt++;
-          if (attempt >= 4) setLoad({ state: 'error' });
+          // A list that loaded once stays usable: each live view reports its own outage.
+          if (attempt >= 4 && !last) setLoad({ state: 'error' });
           timer = setTimeout(run, Math.min(5000, 600 * 2 ** attempt));
         });
     };
@@ -52,7 +61,22 @@ export function useHealth(): Health | null {
 /** Demo scenario, only served when the API runs in demo mode. null = not demo mode. */
 export function useScenario(): Scenario | null | undefined {
   const [s, setS] = useState<Scenario | null | undefined>(undefined);
-  useEffect(() => { void fetchScenario().then(setS); }, []);
+  useEffect(() => {
+    let alive = true;
+    let attempt = 0;
+    let timer: ReturnType<typeof setTimeout>;
+    const run = async () => {
+      const r = await fetch('/api/v1/demo/scenario').catch(() => null);
+      if (!alive) return;
+      if (r?.ok) { setS((await r.json()) as Scenario); return; }
+      if (r?.status === 404) { setS(null); return; }
+      // API down, not "no demo": stop waiting on screen, keep trying so it appears when the API returns.
+      if (++attempt >= 3) setS((v) => v ?? null);
+      timer = setTimeout(run, Math.min(5000, 600 * 2 ** attempt));
+    };
+    void run();
+    return () => { alive = false; clearTimeout(timer); };
+  }, []);
   return s;
 }
 
@@ -79,17 +103,20 @@ export function useDemoInfo(): DemoInfo | null | undefined {
           if (!r.ok) throw new Error(String(r.status));
           const d = (await r.json()) as DemoStatus;
           if (!alive) return;
+          attempt = 0;
+          timer = setTimeout(run, 30_000);
           const s = d.site;
-          setInfo({
+          const next = {
             site: s && s.title && s.disclaimer ? { title: s.title, tag: s.tag, disclaimer: s.disclaimer } : null,
             allowOpen: d.perception?.allow_open === true,
             detector: d.perception?.provider ?? 'unknown',
-          });
+          };
+          setInfo((v) => (JSON.stringify(v) === JSON.stringify(next) ? v : next));
         })
         .catch(() => {
           if (!alive) return;
-          if (++attempt >= 4) { setInfo(null); return; }
-          timer = setTimeout(run, 600 * 2 ** attempt);
+          if (++attempt >= 4) setInfo((v) => v ?? null);
+          timer = setTimeout(run, Math.min(5000, 600 * 2 ** attempt));
         });
     };
     run();
