@@ -12,13 +12,29 @@ import type { GarageEntry, Ranked } from '../lib/directory.ts';
 import type { Saved } from '../lib/saved.ts';
 import { DirectionsBlock, FavoriteButton, GarageList, GarageSource } from './Garages.tsx';
 import { DemoMark, ObservationBar, Provenance } from '../ui/bits.tsx';
-import { Arrow, Back, Close, Info, Locate, Person, Star } from '../ui/icons.tsx';
+import { pinLabel } from '../maps/Pins.tsx';
+import { Arrow, Back, Car, Close, Info, Locate, Person, Share, Star } from '../ui/icons.tsx';
+import { clockAt, formatDistance, formatDuration } from '../maps/nav/geo.ts';
+import type { DriveEstimate } from '../maps/nav/useDriveEstimate.ts';
+import { WalkIcon } from './RoutePanel.tsx';
 import { attributionText } from '../maps/mapStyle.ts';
 import type { MapLoad } from '../maps/MeridianMap.tsx';
 import { haptic } from '../ui/layout.ts';
 import { Sheet, type Detent } from '../ui/Sheet.tsx';
 
-export type Mode = 'peek' | 'list' | 'garage' | 'space' | 'route';
+/** peek: collapsed summary. half: breakdown and choices. place: a destination. garage, space, list: full height. route: directions. */
+export type Mode = 'peek' | 'half' | 'place' | 'list' | 'garage' | 'space' | 'route';
+
+/** A destination as the campus directory knows it, nothing more. */
+export interface PlaceInfo {
+  name: string;
+  short: string;
+  address: string | null;
+  /** In the campus directory (so it can be routed to), or only typed in. */
+  known: boolean;
+  category: string;
+  saved: boolean;
+}
 
 export interface ParkingCtx {
   facilities: Load<Facility[]>;
@@ -77,7 +93,7 @@ export function Explore(props: {
   onAbout: () => void;
   onProfile: () => void;
   onRetry: () => void;
-  onOpenGarage: (id: string) => void;
+  onOpenGarage: (id: string, to?: Mode) => void;
   onToggleFavorite: (id: string) => void;
   onDestination: (d: string) => void;
   onClearRecents: () => void;
@@ -95,21 +111,43 @@ export function Explore(props: {
   onLocate: () => void;
   onNorth: () => void;
   onPitch: () => void;
+  onMapRetry: () => void;
   mapNote: string | null;
+  /** Height the tab bar takes at the bottom of the screen while it shows, so sheet content clears it. */
+  tabsH: number;
+  onSheetHeight: (h: number) => void;
+  place: PlaceInfo | null;
+  estimate: DriveEstimate;
+  onToggleSavePlace: () => void;
+  onSharePlace: () => void;
 }) {
   const { ctx, viewport, safe, revealed, mode, setMode, sheetY } = props;
   const { live } = ctx;
   const [routeDetent, setRouteDetent] = useState<'route' | 'route-full'>('route');
   useEffect(() => { if (mode !== 'route') setRouteDetent('route'); }, [mode]);
-  const [peekH, setPeekH] = useState(286);
+  const [peekH, setPeekH] = useState(96);
+  const [halfH, setHalfH] = useState(360);
+  const [placeH, setPlaceH] = useState(420);
+  // Half way, so the building and its garage stay on the map above it; the rest is a swipe up.
+  const placeCap = Math.round(viewport * 0.58);
+  const [placeFull, setPlaceFull] = useState(false);
+  useEffect(() => { if (mode !== 'place') setPlaceFull(false); }, [mode]);
   const full = viewport - safe.top - 10;
-  const peek = { id: 'peek', height: Math.min(full, peekH + 21 + 84 + safe.bottom) };
-  const tall = Math.min(full, Math.round(viewport * 0.74));
+  const grab = 24;
+  // Collapsed: just the summary above the tab bar, so the map keeps most of the screen.
+  const peek = { id: 'peek', height: Math.min(full, peekH + grab + props.tabsH) };
+  const halfCap = Math.round(viewport * 0.62);
+  const halfNeeds = halfH + grab + props.tabsH;
+  const half = { id: 'half', height: Math.max(peek.height + 80, Math.min(halfCap, halfNeeds)) };
   const detents: Detent[] = mode === 'route' ? [{ id: 'route', height: Math.min(full, Math.round(viewport * 0.52)) }, { id: 'route-full', height: full }]
-    : mode === 'list' || (mode === 'peek' && ctx.entry?.source !== 'simulated' && ctx.entry?.source !== 'live')
-    ? [peek, { id: 'list', height: full }]
-    : mode === 'garage' && !facilityHasSpaces(ctx) ? [peek, { id: 'garage', height: tall }]
-    : [peek, { id: 'garage', height: tall }, { id: 'space', height: full }];
+    : mode === 'list' ? [peek, half, { id: 'list', height: full }]
+    : mode === 'space' ? [peek, half, { id: 'space', height: full }]
+    : mode === 'place' ? [peek, { id: 'place', height: Math.max(peek.height + 80, Math.min(placeCap, placeH + grab + props.tabsH)) }, { id: 'place-full', height: full }]
+    : [peek, half, { id: 'garage', height: full }];
+  const atTop = mode === 'peek' || mode === 'half' || mode === 'place';
+  const restH = detents.find((d) => d.id === (mode === 'route' ? routeDetent : mode === 'place' && placeFull ? 'place-full' : mode))?.height ?? 0;
+  const { onSheetHeight } = props;
+  useEffect(() => { if (revealed) onSheetHeight(restH); }, [restH, revealed, onSheetHeight]);
 
   // Controls ride above the sheet and fade once it covers most of the map.
   const ctlBottom = useTransform(sheetY, (v) => viewport - v + 14);
@@ -117,7 +155,7 @@ export function Explore(props: {
 
   return (
     <div className="screen map-screen" data-testid="explore">
-      <motion.div className="top" animate={{ opacity: mode === 'peek' ? 1 : 0, y: mode === 'peek' ? 0 : -12 }} transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }} style={{ pointerEvents: mode === 'peek' ? 'auto' : 'none' }} aria-hidden={mode !== 'peek'}>
+      <motion.div className="top" animate={{ opacity: atTop ? 1 : 0, y: atTop ? 0 : -12 }} transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }} style={{ pointerEvents: atTop ? 'auto' : 'none' }} aria-hidden={!atTop}>
         <div className="toprow">
         <div className="search" data-testid="search">
             <button type="button" className="main" onClick={props.onSearch} aria-label={ctx.destination ? `Destination: ${ctx.destination}. Change` : 'Search for a destination'}>
@@ -144,20 +182,22 @@ export function Explore(props: {
         <button type="button" className={`circ press${props.geoActive ? ' located' : ''}`} aria-label={props.geoActive ? 'Center on my location' : 'Show my location'} onClick={props.onLocate} data-testid="locate" disabled={props.locating}><Locate /></button>
       </motion.div>
       <motion.div className="mapattr" style={{ bottom: ctlBottom, opacity: ctlOpacity }} data-testid="map-attribution">{attributionText}</motion.div>
-      {props.mapLoad === 'failed' && <div className="mapfail" role="status" data-testid="map-failed"><b>The map couldn't load.</b><span>Search, garages and directions still work.</span></div>}
+      <MapStatus load={props.mapLoad} revealed={revealed} onRetry={props.onMapRetry} />
       {mode !== 'route' && props.mapNote && <div className="banner mapnote" role="status" data-testid="map-note">{props.mapNote}</div>}
 
       <Sheet
         y={sheetY}
         viewport={viewport}
         detents={detents}
-        active={mode === 'route' ? routeDetent : mode}
+        active={mode === 'route' ? routeDetent : mode === 'place' && placeFull ? 'place-full' : mode}
         hidden={!revealed}
-        onChange={(id) => { if (mode === 'route') setRouteDetent(id as 'route' | 'route-full'); else setMode(id as Mode); }}
-        scroll={mode !== 'peek'}
-        label={mode === 'peek' ? 'Best parking' : mode === 'list' ? 'All garages' : mode === 'garage' ? 'Garage details' : mode === 'route' ? 'Routes' : 'Choose a space'}
+        onChange={(id) => { if (mode === 'route') setRouteDetent(id as 'route' | 'route-full'); else if (mode === 'place' && (id === 'place' || id === 'place-full')) setPlaceFull(id === 'place-full'); else setMode(id as Mode); }}
+        scroll={mode !== 'peek' && (mode !== 'half' || halfNeeds > halfCap) && (mode !== 'place' || placeFull)}
+        label={mode === 'peek' ? 'Parking summary' : mode === 'half' ? 'Parking near you' : mode === 'place' ? (props.place?.name ?? 'Place') : mode === 'list' ? 'All garages' : mode === 'garage' ? 'Garage details' : mode === 'route' ? 'Routes' : 'Choose a space'}
       >
         {mode === 'peek' && <PeekPanel {...props} onMeasure={setPeekH} />}
+        {mode === 'half' && <HalfPanel {...props} onMeasure={setHalfH} />}
+        {mode === 'place' && props.place && <PlacePanel {...props} place={props.place} onMeasure={setPlaceH} />}
         {mode === 'list' && (
           <GarageList
             ranked={ctx.ranked} saved={ctx.saved} loading={ctx.facilities.state === 'loading'} failed={ctx.facilities.state === 'error'}
@@ -175,24 +215,144 @@ export function Explore(props: {
   );
 }
 
-// ---------------------------------------------------------------- peek
+/**
+ * What the map is doing when it isn't showing a map: loading (after a moment, so a fast load shows nothing)
+ * or failed, with a retry. A plain background is never left to pass for a loaded map.
+ */
+function MapStatus({ load, revealed, onRetry }: { load: MapLoad; revealed: boolean; onRetry: () => void }) {
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    // Nothing to say until the map exists (it mounts when the intro reveals the app).
+    if (load !== 'loading' || !revealed) { setSlow(false); return; }
+    const t = setTimeout(() => setSlow(true), 1200);
+    return () => clearTimeout(t);
+  }, [load, revealed]);
+  if (load === 'failed') {
+    return (
+      <div className="mapfail" role="alert" data-testid="map-failed">
+        <b>The map didn't load</b>
+        <span>Roads and buildings couldn't be fetched. Search, garages and directions still work.</span>
+        <button type="button" className="btn ink press" onClick={onRetry} data-testid="map-retry">Try again</button>
+      </div>
+    );
+  }
+  if (load === 'loading' && slow) return <div className="maploading" role="status" data-testid="map-loading"><i aria-hidden />Loading map…</div>;
+  return null;
+}
 
-function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) => void }) {
-  const { ctx, setMode } = p;
-  const { live, counts, facility, spaces } = ctx;
+// ---------------------------------------------------------------- collapsed
+
+type PanelProps = Parameters<typeof Explore>[0] & { onMeasure: (h: number) => void };
+
+function useMeasure(onMeasure: (h: number) => void) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const el = ref.current!;
-    const ro = new ResizeObserver(() => p.onMeasure(el.offsetHeight));
+    const ro = new ResizeObserver(() => onMeasure(el.offsetHeight));
     ro.observe(el);
     return () => ro.disconnect();
-  }, [p.onMeasure]);
+  }, [onMeasure]);
+  return ref;
+}
 
+const eyebrowFor = (ctx: ParkingCtx) => {
   const recommendable = ctx.ranked.find((r) => r.entry.id === ctx.entry?.id)?.tier === 0;
-  const eyebrow = !ctx.isPick ? 'Selected garage' : !ctx.destination || !recommendable ? 'Monitored garage' : ctx.destinationIsClass ? `Best parking near ${ctx.destination}` : `Parking for ${ctx.destination}`;
+  return !ctx.isPick ? 'Selected garage' : !ctx.destination || !recommendable ? 'Monitored garage' : ctx.destinationIsClass ? `Best near ${ctx.destination}` : `Parking for ${ctx.destination}`;
+};
+
+/**
+ * The collapsed sheet: one line about the garage on screen and one action, so the map keeps the screen.
+ * Every state the half sheet can be in has a short form here, with the same honesty: nothing reads as
+ * available without fresh OPEN evidence, and simulated numbers say so.
+ */
+function PeekPanel(p: PanelProps) {
+  const { ctx, setMode } = p;
+  const { live, counts, facility } = ctx;
+  const ref = useMeasure(p.onMeasure);
+  const name = facility ? siteHeadline(ctx.site?.title, facility.name, facility.is_simulated).title : ctx.entry?.name ?? '';
+  const openEnabled = ctx.demo?.allowOpen !== false;
+  const sim = ctx.entry?.source === 'simulated' || !!facility?.is_simulated;
+  const expand = () => setMode('half');
+  // count: the number and what it counts. sub: status line. action: the one primary button.
+  let count: ReactNode, unit: string, sub: ReactNode, action: ReactNode = null, bar = false, testid: string | undefined;
+  if (ctx.entry?.source === 'demo') {
+    const c = ctx.entry.candidate!;
+    testid = 'demo-peek';
+    count = <span className="pk-num zero">{c.demo_available_spaces}</span>; unit = 'demo';
+    sub = <span className="prov"><span className="dm">Example data · not live</span></span>;
+    action = <button type="button" className="pk-act press" onClick={() => setMode('garage')} data-testid="view-garage">Details</button>;
+  } else if (ctx.entry?.source === 'unavailable') {
+    testid = 'unavailable-peek';
+    count = <span className="pk-num off">—</span>; unit = 'n/a';
+    sub = <span className="prov"><span>Availability not available</span></span>;
+    action = <button type="button" className="pk-act press" onClick={() => setMode('garage')} data-testid="view-garage">Details</button>;
+  } else if (ctx.facilities.state === 'error' && !facility) {
+    count = <span className="pk-num off">—</span>; unit = '';
+    sub = <span className="prov"><span>Can't reach Meridian · nothing shown as available</span></span>;
+    action = <button type="button" className="pk-act ink press" onClick={p.onRetry}>Retry</button>;
+  } else if (!facility || (live.connection === 'connecting' && !live.everLive)) {
+    count = <span className="skel pk-skel" aria-hidden />; unit = '';
+    sub = <span className="prov" role="status">Waiting for the first live snapshot…</span>;
+    action = <button type="button" className="circ ink pk-go" disabled aria-label="Go"><Arrow /></button>;
+  } else if (!live.trusted) {
+    count = <span className="pk-num off" data-testid="open-count">—</span>; unit = 'paused';
+    sub = <span className="prov"><span className="paused">Live data paused</span></span>; bar = true;
+    action = <button type="button" className="circ ink pk-go" disabled aria-label="Go (unavailable)"><Arrow /></button>;
+  } else if (ctx.openDisabled && ctx.evidence.fresh === 0) {
+    testid = 'stale-state';
+    count = <span className="pk-num off">—</span>; unit = 'no view';
+    sub = <Provenance live={live} evidence={ctx.evidence} simulated={false} />; bar = true;
+    action = <button type="button" className="pk-act press" onClick={() => setMode('garage')} data-testid="view-garage">Details</button>;
+  } else if (ctx.openDisabled) {
+    testid = 'open-disabled';
+    count = <span className="pk-num zero" data-testid="occupied-count">{counts.occupied}</span>; unit = 'occupied';
+    sub = <><Provenance live={live} evidence={ctx.evidence} simulated={false} /><span className="prov pk-note" data-testid="open-disabled-line">Open-space confirmation isn’t enabled in this demo yet.</span></>; bar = true;
+    action = <button type="button" className="pk-act press" onClick={() => setMode('garage')} data-testid="view-garage">Details</button>;
+  } else if (counts.forYou === 0) {
+    count = <span className="pk-num zero" data-testid="open-count">{counts.open}</span>; unit = 'open';
+    sub = <Provenance live={live} evidence={ctx.evidence} simulated={false} />; bar = true;
+    action = <button type="button" className="pk-act ink press" onClick={p.onWatch} disabled={p.watching} data-testid="watch" aria-label={p.watching ? 'Watching while the app is open' : 'Tell me when one opens'}>{p.watching ? 'Watching…' : 'Notify me'}</button>;
+  } else {
+    const s = p.suggested;
+    count = <Count value={counts.open} small />; unit = 'open';
+    sub = <Provenance live={live} evidence={ctx.evidence} simulated={false} />; bar = true;
+    action = (
+      <button type="button" className="circ ink pk-go press" aria-label={s ? `Go to space ${s.space_id}` : 'Go'} disabled={!s || p.checking !== null} onClick={() => s && p.onGo(s.space_id)} data-testid="go">
+        <Arrow />
+      </button>
+    );
+  }
+  return (
+    <div ref={ref} className="pk" data-testid={testid}>
+      <div className="pk-head">
+        <span className="ey">{eyebrowFor(ctx)}</span>
+        {ctx.ranked.length > 1 && <button type="button" className="pk-all press" onClick={() => setMode('list')} data-testid="all-garages">All {ctx.ranked.length}</button>}
+      </div>
+      <div className="pk-row">
+        <button type="button" className="pk-sum" onClick={expand} data-testid="peek-summary" aria-label={`${name}. Show parking details`}>
+          <span className={`pk-count${sim ? ' sim' : ''}`}>{count}{unit && <small>{unit}</small>}</span>
+          <span className="pk-text"><span className="pk-title"><b>{name}</b>{sim && <span className="tag tag-simulated" data-testid="peek-sim" title="Simulated garage, not real availability">SIM</span>}</span>{sub}</span>
+        </button>
+        {action}
+      </div>
+      {bar && <ObservationBar counts={counts} openEnabled={openEnabled} legend={false} note={false} thin />}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------- half
+
+/** The half sheet: the full count for the garage on screen, how to get there, and other garages to choose from. */
+function HalfPanel(p: PanelProps) {
+  const { ctx, setMode } = p;
+  const { live, counts, facility } = ctx;
+  const ref = useMeasure(p.onMeasure);
   const name = facility ? siteHeadline(ctx.site?.title, facility.name, facility.is_simulated).title : '';
   const openEnabled = ctx.demo?.allowOpen !== false;
   const forYouLine = counts.forYou === counts.open ? undefined : `${counts.forYou} usable by you`;
+  const walk = walkLine(ctx);
+  const canRoute = !!ctx.entry?.geo;
+  const route = canRoute ? <button type="button" className="btn press" onClick={p.onRouteToGarage} data-testid="half-route">Directions</button> : null;
   let body;
   if (ctx.entry?.source === 'demo') {
     const c = ctx.entry.candidate!;
@@ -200,7 +360,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
       <>
         <div className="big" data-testid="demo-peek"><span className="num zero">{c.demo_available_spaces}</span><span className="lbl"><b>spaces in the demo feed</b><span className="fac">{ctx.entry.name}</span></span></div>
         <div className="prov"><span className="dm">Example data · not live</span><span aria-hidden>·</span><span>No space map</span></div>
-        <div className="acts"><button type="button" className="btn ink press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
+        <div className="acts">{route}<button type="button" className="btn ink press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
       </>
     );
   } else if (ctx.entry?.source === 'unavailable') {
@@ -208,7 +368,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
       <>
         <div className="big" data-testid="unavailable-peek"><span className="num off">—</span><span className="lbl"><b>Availability not available</b><span>{ctx.entry.name}</span></span></div>
         <div className="prov"><span>No validated occupancy for this garage yet</span></div>
-        <div className="acts"><button type="button" className="btn press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
+        <div className="acts">{route}<button type="button" className="btn press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
       </>
     );
   } else if (ctx.facilities.state === 'error' && !facility) {
@@ -224,7 +384,6 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
         <div className="skel" style={{ height: 64, width: '62%' }} aria-hidden />
         <ObservationBar counts={counts} openEnabled={openEnabled} legend={false} note={false} />
         <div className="prov" role="status">Waiting for the first live snapshot…</div>
-        <div className="acts"><button type="button" className="btn" disabled>View spaces</button><button type="button" className="circ lg" disabled aria-label="Go"><Arrow /></button></div>
       </>
     );
   } else if (!live.trusted) {
@@ -233,7 +392,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
         <div className="big"><span className="num off" data-testid="open-count">—</span><span className="lbl"><b>Live data paused</b><span>{name}</span></span></div>
         <ObservationBar counts={counts} openEnabled={openEnabled} note={false} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
-        <div className="acts"><button type="button" className="btn press" onClick={() => setMode('garage')}>View garage</button><button type="button" className="circ lg" disabled aria-label="Go (unavailable)"><Arrow /></button></div>
+        <div className="acts">{route}<button type="button" className="btn press" onClick={() => setMode('garage')}>View garage</button></div>
       </>
     );
   } else if (ctx.openDisabled && ctx.evidence.fresh === 0) {
@@ -243,7 +402,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
         <div className="big" data-testid="stale-state"><span className="num off">—</span><span className="lbl"><b>No recent camera view</b><span>Spaces can’t be confirmed until the cameras report again</span></span></div>
         <ObservationBar counts={counts} openEnabled={openEnabled} note={false} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
-        <div className="acts"><button type="button" className="btn press" onClick={() => setMode('garage')}>View garage</button></div>
+        <div className="acts">{route}<button type="button" className="btn press" onClick={() => setMode('garage')}>View garage</button></div>
       </>
     );
   } else if (ctx.openDisabled) {
@@ -256,7 +415,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
         </div>
         <ObservationBar counts={counts} openEnabled={false} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
-        <div className="acts"><button type="button" className="btn ink press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
+        <div className="acts">{route}<button type="button" className="btn ink press" onClick={() => setMode('garage')} data-testid="view-garage">View garage</button></div>
       </>
     );
   } else if (counts.forYou === 0) {
@@ -266,6 +425,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
         <ObservationBar counts={counts} openEnabled={openEnabled} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} />
         <div className="acts">
+          {route}
           <button type="button" className="btn ink press" onClick={p.onWatch} disabled={p.watching} data-testid="watch">{p.watching ? 'Watching while the app is open…' : 'Tell me when one opens'}</button>
         </div>
       </>
@@ -281,6 +441,7 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
         <ObservationBar counts={counts} openEnabled={openEnabled} />
         <Provenance live={live} evidence={ctx.evidence} simulated={facility.is_simulated} extra={forYouLine} />
         <div className="acts">
+          {route}
           <button type="button" className="btn press" onClick={() => setMode('garage')} data-testid="view-spaces">View spaces</button>
           <button type="button" className="circ ink lg press" aria-label={s ? `Go to space ${s.space_id}` : 'Go'} disabled={!s || p.checking !== null} onClick={() => s && p.onGo(s.space_id)} data-testid="go">
             <Arrow />
@@ -290,13 +451,108 @@ function PeekPanel(p: Parameters<typeof Explore>[0] & { onMeasure: (h: number) =
     );
   }
   return (
-    <div ref={ref} className="panel" style={{ paddingBottom: 4 }}>
+    <div ref={ref} className="panel half" style={{ paddingBottom: p.tabsH ? p.tabsH + 8 : p.safe.bottom + 16 }} data-testid="half-panel">
       <div className="row peek-head">
-        <div className="ey">{eyebrow}</div>
-        {ctx.ranked.length > 1 && <button type="button" className="alllink press" onClick={() => setMode('list')} data-testid="all-garages">All {ctx.ranked.length}</button>}
+        <div className="ey">{eyebrowFor(ctx)}</div>
+        {!ctx.isPick && <button type="button" className="circ flat sm press" aria-label="Close garage" onClick={p.onCloseGarage} data-testid="half-close"><Close /></button>}
       </div>
       {body}
+      {walk && <p className="body half-walk" data-testid="walk-line">{walk}</p>}
+      <NearbyGarages {...p} />
       <SavedStrip {...p} />
+    </div>
+  );
+}
+
+
+// ---------------------------------------------------------------- place
+
+/**
+ * A destination: what it is, the way Meridian would get there (drive, park, walk) with each part's source,
+ * and the garages around it. Times come from the directions service; nothing here is invented.
+ */
+function PlacePanel(p: PanelProps & { place: PlaceInfo }) {
+  const { ctx, place, estimate } = p;
+  const ref = useMeasure(p.onMeasure);
+  const rec = place.known ? ctx.ranked.find((r) => r.tier === 0 && r.entry.geo) ?? null : null;
+  const recLabel = rec ? pinLabel(rec) : null;
+  const walk = rec?.walkMinutes ?? null;
+  const walkDemo = rec?.walkSource !== 'routed';
+  const driveS = estimate.state === 'ok' ? estimate.seconds : null;
+  const total = driveS !== null && walk !== null ? driveS + walk * 60 : null;
+  const source = rec ? ({ simulated: 'Simulated', live: 'Live', demo: 'Demo feed', unavailable: 'No data' } as const)[rec.entry.source] : null;
+  return (
+    <div ref={ref} className="panel place" style={{ paddingBottom: p.tabsH ? p.tabsH + 8 : p.safe.bottom + 16 }} data-testid="place-panel">
+      <div className="pl-head">
+        <div style={{ display: 'grid', gap: 6, minWidth: 0 }}>
+          <div className="ey" data-testid="place-category">{place.category}</div>
+          <h2 className={`title${place.name.length > 22 ? ' long' : ''}`} data-testid="place-name">{place.name}</h2>
+          {(place.address || ctx.classLine) && <p className="pl-sub">{[ctx.destinationIsDemo && ctx.classLine ? ctx.classLine : null, place.address].filter(Boolean).join(' · ')}</p>}
+        </div>
+        <button type="button" className="circ flat press" aria-label="Close place" onClick={() => p.setMode('peek')} data-testid="place-close"><Close /></button>
+      </div>
+      <div className="pl-actions">
+        {p.onDestinationRoute && <button type="button" className="btn green press pl-go" onClick={p.onDestinationRoute} data-testid="place-directions"><Arrow width={18} height={18} />Directions</button>}
+        <button type="button" className={`pl-act press${place.saved ? ' on' : ''}`} aria-pressed={place.saved} onClick={p.onToggleSavePlace} data-testid="place-save"><Star width={18} height={18} fill={place.saved ? 'currentColor' : 'none'} />{place.saved ? 'Saved' : 'Save'}</button>
+        <button type="button" className="pl-act press" onClick={p.onSharePlace} data-testid="place-share"><Share width={18} height={18} />Share</button>
+      </div>
+
+      {!place.known ? (
+        <div className="card occ-only" data-testid="place-unknown"><b>This place isn't in Meridian's campus directory.</b><span>It can't be routed to, and walking times to it aren't known.</span></div>
+      ) : rec && recLabel ? (
+        <div className="pl-plan" data-testid="place-plan">
+          <div className="row"><span className="ey">Park, then walk</span>{total !== null && <span className="pl-total" data-testid="place-total">{formatDuration(total)} · arrive {clockAt(ctx.now + total * 1000)}</span>}</div>
+          <ol className="pl-legs">
+            <li>
+              <span className="pl-ic drive"><Car width={16} height={16} /></span>
+              <div>
+                <b data-testid="place-drive">{estimate.state === 'ok' ? `Drive ${formatDuration(estimate.seconds)}` : estimate.state === 'loading' ? 'Drive · finding the time…' : 'Drive'}</b>
+                <span>{estimate.state === 'ok' ? `${formatDistance(estimate.metres)} from you · ${estimate.trafficAware ? 'with live traffic' : 'no live traffic'}` : estimate.state === 'failed' ? "Drive time isn't available right now" : estimate.state === 'none' ? 'Share your location for a drive time' : ' '}</span>
+              </div>
+            </li>
+            <li>
+              <span className={`pl-ic park ${recLabel.tone}`}>{recLabel.text}</span>
+              <div>
+                <b data-testid="place-garage">{rec.entry.name}</b>
+                <span>{recLabel.say}{source && <span className={`tag tag-${rec.entry.source}`} data-testid="place-source">{source}</span>}</span>
+              </div>
+            </li>
+            <li>
+              <span className="pl-ic walk"><WalkIcon size={16} /></span>
+              <div>
+                <b data-testid="place-walk">{walk !== null ? `Walk ${walk} min` : 'Walk'}</b>
+                <span>{walk !== null ? `to ${place.name}${walkDemo ? ' · demo estimate' : ''}` : 'Walking time not available yet'}</span>
+              </div>
+            </li>
+          </ol>
+        </div>
+      ) : (
+        <div className="card occ-only" data-testid="place-no-plan"><b>No garage near here has confirmed space right now.</b><span>Directions will walk you there, or choose a garage below.</span></div>
+      )}
+      <NearbyGarages {...p} exclude={rec?.entry.id ?? null} title={`Garages near ${place.short}`} limit={4} />
+    </div>
+  );
+}
+
+/** A few other garages, ranked the same way as the full list, with what each can honestly show. */
+function NearbyGarages(p: Parameters<typeof Explore>[0] & { exclude?: string | null; title?: string; limit?: number }) {
+  const { ctx } = p;
+  const skip = p.exclude === undefined ? ctx.entry?.id : p.exclude;
+  const others = ctx.ranked.filter((r) => r.entry.id !== skip).slice(0, p.limit ?? 3);
+  if (!others.length) return null;
+  return (
+    <div className="nearby" data-testid="nearby">
+      <div className="row"><span className="ey">{p.title ?? 'Other garages'}</span>{ctx.ranked.length > 1 && <button type="button" className="pk-all press" onClick={() => p.setMode('list')} data-testid="all-garages">All {ctx.ranked.length}</button>}</div>
+      {others.map((r) => {
+        const l = pinLabel(r);
+        return (
+          <button key={r.entry.id} type="button" className="nb-row press" onClick={() => p.onOpenGarage(r.entry.id, 'half')} data-testid={`nearby-${r.entry.id}`} aria-label={`${r.entry.name}: ${l.say}`}>
+            <span className={`nb-tag ${l.tone}`}>{l.text}{l.note && <small>{l.note}</small>}</span>
+            <span className="nb-name">{r.entry.name}</span>
+            {r.walkMinutes !== null && r.walkMinutes !== undefined && <span className="nb-walk">{r.walkMinutes} min walk{r.walkSource === 'routed' ? '' : ' (est.)'}</span>}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -608,9 +864,9 @@ function ChosenAge({ space, now, offsetMs }: { space: ParkingSpace; now: number;
 }
 
 /** The big number, rolling when the live count changes. */
-function Count({ value }: { value: number }) {
+function Count({ value, small = false }: { value: number; small?: boolean }) {
   return (
-    <span className="num rolling" data-testid="open-count" aria-live="polite">
+    <span className={`${small ? 'pk-num' : 'num'} rolling`} data-testid="open-count" aria-live="polite">
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span key={value} initial={{ y: '45%', opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: '-45%', opacity: 0 }} transition={{ type: 'spring', visualDuration: 0.38, bounce: 0.1 }}>{value}</motion.span>
       </AnimatePresence>

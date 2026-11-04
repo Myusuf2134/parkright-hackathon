@@ -21,8 +21,8 @@ export const attributionText = 'OpenFreeMap · © OpenMapTiles · © OpenStreetM
 
 /** Meridian's colours on top of whichever OpenMapTiles-based style loaded. Layers it can't find are skipped. */
 export const PALETTE: Record<MapTheme, { ground: string; water: string; park: string; building: string; buildingTop: string; route: string; routeCasing: string; alt: string; walk: string; casing: string; footprint: string }> = {
-  light: { ground: '#f4f4f0', water: '#cfe0ee', park: '#dcebd9', building: '#e4e3dd', buildingTop: '#e9e8e2', route: '#12a15a', routeCasing: '#0a6b3b', alt: '#a3aba6', walk: '#1a5fb4', casing: '#ffffff', footprint: '#5b6770' },
-  dark: { ground: '#14171a', water: '#0d2233', park: '#17261f', building: '#23272b', buildingTop: '#2a2f34', route: '#2fd07f', routeCasing: '#0d4a2c', alt: '#66716b', walk: '#7db8ff', casing: '#10253a', footprint: '#aab4bd' },
+  light: { ground: '#f4f4f0', water: '#cfe0ee', park: '#dcebd9', building: '#e4e3dd', buildingTop: '#e9e8e2', route: '#12a15a', routeCasing: '#0a6b3b', alt: '#a3aba6', walk: '#111316', casing: '#ffffff', footprint: '#5b6770' },
+  dark: { ground: '#14171a', water: '#0d2233', park: '#17261f', building: '#23272b', buildingTop: '#2a2f34', route: '#2fd07f', routeCasing: '#0d4a2c', alt: '#66716b', walk: '#f1f2f3', casing: '#10253a', footprint: '#aab4bd' },
 };
 
 export const resolveTheme = (pref: ThemePref, systemDark: boolean): MapTheme => (pref === 'auto' ? (systemDark ? 'dark' : 'light') : pref);

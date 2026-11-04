@@ -47,6 +47,17 @@ export function RoutePanel({ j, geo, provider, now, parkingLine, parkingSource, 
         </div>
       </div>
 
+      <div className="rsum" data-testid="route-summary">
+        <b>{mode === 'drive' && target.garage && target.destination ? target.destination.name : toName}</b>
+        {mode === 'drive' && target.garage && target.destination && <small className="rvia">Park at {target.garage.name}</small>}
+        {picked && (
+          <span data-testid="route-total">
+            {mode === 'drive' && walkLeg ? `${formatDuration(totalS)} door to door · arrive about ${clockAt(now + totalS * 1000)}` : `${formatDuration(picked.duration)} · arrive about ${clockAt(now + picked.duration * 1000)}`}
+          </span>
+        )}
+        {picked && mode === 'drive' && walkLeg && <small>Drive, park, then walk. Finding a space isn't included.</small>}
+      </div>
+
       {load.state === 'loading' && (
         <div style={{ display: 'grid', gap: 10 }} data-testid="routes-loading" role="status" aria-label="Finding routes">
           <div className="skel" style={{ height: 76, borderRadius: 22 }} />
@@ -62,7 +73,7 @@ export function RoutePanel({ j, geo, provider, now, parkingLine, parkingSource, 
       )}
 
       {routes.length > 0 && (
-        <div className="rlist" role="radiogroup" aria-label="Routes">
+        <div className={`rlist${routes.length > 1 ? ' multi' : ''}`} role="radiogroup" aria-label={routes.length > 1 ? `${routes.length} routes from the directions service` : 'Route'}>
           {routes.map((r, i) => (
             <button key={r.id} type="button" role="radio" aria-checked={i === selected} className={`rcard press${i === selected ? ' on' : ''}`} onClick={() => j.select(i)} data-testid="route-option">
               <span className="rtime" data-testid="route-time">{formatDuration(r.duration)}</span>
@@ -141,7 +152,6 @@ export function RoutePanel({ j, geo, provider, now, parkingLine, parkingSource, 
           )}
         </ol>
       )}
-      {picked && mode === 'drive' && walkLeg && <p className="rtotal" data-testid="route-total">{formatDuration(totalS)} in all · arrive about {clockAt(now + totalS * 1000)}, before finding a space</p>}
 
       {picked && (
         <>

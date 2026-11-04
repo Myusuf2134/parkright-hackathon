@@ -1,5 +1,5 @@
 // App shell only. /api is never intercepted: availability must come from the network or not at all.
-const CACHE = 'meridian-shell-v3';
+const CACHE = 'meridian-shell-v4';
 const SHELL = ['/app/', '/app/manifest.webmanifest', '/app/icon.svg', '/app/icon-192.png', '/app/icon-512.png'];
 
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });

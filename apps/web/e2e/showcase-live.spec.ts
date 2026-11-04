@@ -7,7 +7,7 @@ test('34-space showcase: counts, layout and a trip, with no Ohio disclaimer', as
   await expect(page.getByTestId('open-count')).toHaveText('13', { timeout: 15_000 });
   await expect(page.getByTestId('prov-live')).toBeVisible();
   await expect(page.getByTestId('open-disabled')).toHaveCount(0);
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await expect(page.getByTestId('site-disclaimer')).toHaveCount(0);
   await expect(page.getByTestId('advice')).toContainText('Local fallback', { timeout: 10_000 });
   await page.getByTestId('choose-space').click();

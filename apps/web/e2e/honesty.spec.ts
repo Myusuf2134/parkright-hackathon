@@ -25,7 +25,7 @@ const tapBay = (page: Page, id: string) => page.locator(`[data-bay=${id}]`).clic
 
 test('Ohio: the site disclaimer comes from the backend and is shown in garage details and About', async ({ page }) => {
   await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   const note = page.getByTestId('site-disclaimer');
   await expect(note).toContainText(OHIO_SITE.tag);
   await expect(note).toContainText('Not an official or exact digital twin');
@@ -36,7 +36,7 @@ test('Ohio: the site disclaimer comes from the backend and is shown in garage de
 
 test('no site metadata, no disclaimer card (nothing is invented)', async ({ page }) => {
   await open(page, SCRIPTED, demoStatus(true, null));
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await expect(page.getByTestId('garage-panel')).toBeVisible();
   await expect(page.getByTestId('site-disclaimer')).toHaveCount(0);
 });
@@ -44,7 +44,7 @@ test('no site metadata, no disclaimer card (nothing is invented)', async ({ page
 test('Ohio 72-space layout renders and only fresh OPEN spaces are selectable', async ({ page }) => {
   await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
   await expect(page.getByTestId('open-count')).toHaveText('27');
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await page.getByTestId('choose-space').click();
   await expect(page.locator('[data-bay]')).toHaveCount(72);
   await expect(page.locator('[data-bay][aria-disabled=false]')).toHaveCount(27);
@@ -117,7 +117,7 @@ test('a space last observed ~17 s ago never shows a 1-second freshness label', a
   await expect(page.getByTestId('prov-live')).toHaveCount(0);
   await expect(page.getByText(/Live · 1 s/)).toHaveCount(0);
 
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await page.getByTestId('choose-space').click();
   await tapBay(page, ids[70]);
   await expect(page.getByTestId('chosen')).toHaveText(ids[70]);
@@ -156,7 +156,7 @@ test('the real map credits its data and marks a simulated garage on its pin (Ohi
 
 test('the Ohio garage title is the site title, whole; size and simulation are secondary', async ({ page }) => {
   await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await expect(page.getByTestId('garage-title')).toHaveText('Ohio Union North Garage-inspired');
   await expect(page.getByTestId('garage-panel').locator('.ey').first()).toHaveText('Level 1 · 72 spaces');
   // Clipped = the text needs more height than the clamped box shows (measured on an unclamped copy).
@@ -173,7 +173,7 @@ test('the Ohio garage title is the site title, whole; size and simulation are se
 
 test('About names the actual source: a scripted run is never called real detection', async ({ page }) => {
   await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await page.getByRole('button', { name: 'About this data' }).click();
   await expect(page.getByTestId('about-simulated')).toContainText('scripted test source, not a detector');
   await expect(page.getByTestId('about')).not.toContainText('The detection is real');
@@ -190,6 +190,7 @@ test('deep links open Plan or garage details directly (used by the presentation 
 
 test('parking observations: no green segment and an explanation when open detection is off', async ({ page }) => {
   await open(page, DETECTOR, demoStatus(false, OHIO_SITE));
+  await page.getByTestId('peek-summary').click();
   const obs = page.getByTestId('obs');
   await expect(obs).toHaveAttribute('data-open-enabled', 'false');
   await expect(obs.locator('[data-seg=open]')).toHaveCount(0);
@@ -203,6 +204,7 @@ test('parking observations: no green segment and an explanation when open detect
 
 test('parking observations: confirmed open appears only from real OPEN evidence', async ({ page }) => {
   const be = await open(page, SCRIPTED, demoStatus(true, OHIO_SITE));
+  await page.getByTestId('peek-summary').click();
   const obs = page.getByTestId('obs');
   await expect(obs).toContainText('27 Confirmed open');
   await expect(obs.locator('[data-seg=open]')).toHaveCount(1);

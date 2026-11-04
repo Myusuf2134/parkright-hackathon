@@ -115,14 +115,19 @@ export function SearchSheet({ open, onClose, destinations, ranked, saved, onPick
   const [cursor, setCursor] = useState(0);
   useEffect(() => { if (open) { setQ(''); setCursor(0); } }, [open]);
   const typed = q.trim();
-  const dests: Option[] = destinations.filter((d) => typed || d.isClass || destinations.indexOf(d) < 7).filter((d) => matches(typed, d.name, d.short, d.terms)).map((d) => ({ kind: 'destination', key: `d:${d.short}`, name: d.name, short: d.short, line: d.line, demo: d.isClass }));
+  // Saved places first, with the directory's own wording; a saved typed place stays as it was typed.
+  const savedOpts: Option[] = saved.places.filter((name) => matches(typed, name, destinations.find((d) => d.short === name)?.name)).map((name) => {
+    const d = destinations.find((x) => x.short === name);
+    return { kind: 'destination', key: `s:${name}`, name: d?.name ?? name, short: name, line: d?.line ? `Saved · ${d.line}` : 'Saved', demo: false };
+  });
+  const dests: Option[] = destinations.filter((d) => !saved.places.includes(d.short)).filter((d) => typed || d.isClass || destinations.indexOf(d) < 7).filter((d) => matches(typed, d.name, d.short, d.terms)).map((d) => ({ kind: 'destination', key: `d:${d.short}`, name: d.name, short: d.short, line: d.line, demo: d.isClass }));
   const recents: Option[] = saved.recentDestinations
-    .filter((d) => !destinations.some((k) => k.short === d) && matches(typed, d))
+    .filter((d) => !destinations.some((k) => k.short === d) && !saved.places.includes(d) && matches(typed, d))
     .map((d) => ({ kind: 'destination', key: `r:${d}`, name: d, short: d, line: 'Recent', demo: false }));
   const garages: Option[] = ranked.filter((r) => matches(typed, r.entry.name, r.entry.standsInFor, r.entry.geo?.short, r.entry.geo?.terms) && (typed || r.tier < 2 || !!r.entry.facility)).map((r) => ({ kind: 'garage', key: `g:${r.entry.id}`, r }));
-  const exact = [...dests, ...recents].some((o) => o.kind === 'destination' && (o.short.toLowerCase() === typed.toLowerCase() || o.name.toLowerCase() === typed.toLowerCase()));
+  const exact = [...savedOpts, ...dests, ...recents].some((o) => o.kind === 'destination' && (o.short.toLowerCase() === typed.toLowerCase() || o.name.toLowerCase() === typed.toLowerCase()));
   const free: Option[] = typed && !exact ? [{ kind: 'free', key: 'free', text: typed }] : [];
-  const options = [...dests, ...recents, ...garages, ...free];
+  const options = [...savedOpts, ...dests, ...recents, ...garages, ...free];
   const at = Math.min(cursor, Math.max(0, options.length - 1));
 
   const pick = (o: Option) => {
@@ -152,6 +157,7 @@ export function SearchSheet({ open, onClose, destinations, ranked, saved, onPick
         <h2 className="hl" style={{ fontSize: 34 }}>Where to?</h2>
         <label className="field"><SearchIcon width={20} height={20} /><input value={q} onChange={(e) => { setQ(e.target.value); setCursor(0); }} onKeyDown={onKey} placeholder="Building or garage on campus" aria-label="Search buildings and garages" role="combobox" aria-expanded={options.length > 0} aria-controls="search-results" aria-activedescendant={options.length ? `opt-${at}` : undefined} autoFocus data-testid="search-input" enterKeyHint="search" autoComplete="off" /></label>
         <div id="search-results" role="listbox" aria-label="Results" style={{ display: 'grid', gap: 12 }}>
+          {savedOpts.length > 0 && <><div className="sec">Saved</div><div className="list" data-testid="saved-places">{savedOpts.map(row)}</div></>}
           {[...dests, ...recents].length > 0 && <><div className="sec">Destinations</div><div className="list">{[...dests, ...recents].map(row)}</div></>}
           {garages.length > 0 && <><div className="sec">Garages</div><div className="list">{garages.map(row)}</div></>}
           {free.length > 0 && <div className="list">{free.map(row)}</div>}

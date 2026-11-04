@@ -69,6 +69,10 @@ test('tapping a pin opens the garage, with its real location and honest availabi
   await routing(page);
   await open(page);
   await page.getByTestId('pin-osu-arps').click();
+  // From the map, the sheet opens half way so the garage stays in view; details are one tap further.
+  await expect(page.getByTestId('sheet')).toHaveAttribute('data-detent', 'half');
+  await expect(page.getByTestId('unavailable-peek')).toContainText('Availability not available');
+  await page.getByTestId('view-garage').click();
   await expect(page.getByTestId('garage-title')).toHaveText('Arps Garage');
   await expect(page.getByTestId('location')).toContainText('892 spaces');
   await expect(page.getByTestId('unavailable-card')).toContainText('no cameras');
@@ -154,6 +158,60 @@ test('routing failures: unreachable and no-route both explain, offer retry and s
   r.drive = 'ok';
   await page.getByTestId('routes-retry').click();
   await expect(page.getByTestId('route-option').first()).toBeVisible();
+});
+
+test('the instruction banner swipes through the real upcoming steps without changing the route or progress', async ({ page, context }) => {
+  await located(context);
+  const r = await routing(page);
+  await open(page);
+  await toRoute(page);
+  await expect(page.getByTestId('route-option').first()).toBeVisible();
+  await page.getByTestId('toggle-steps').click();
+  const steps = (await page.getByTestId('steps-main').locator('li > span').allTextContents()).map((t) => t.trim());
+  expect(steps.length).toBeGreaterThan(3);
+  await page.getByTestId('start-nav').click();
+  await expect(page.getByTestId('navigate')).toHaveAttribute('data-phase', 'navigating');
+  const card = page.getByTestId('nav-card');
+  // The next maneuver is the provider's second step, and the preview names the one after it.
+  await expect(page.getByTestId('nav-instruction')).toHaveText(steps[1]);
+  await expect(page.getByTestId('nav-then')).toContainText(steps[2]);
+  const remaining = await page.getByTestId('nav-remaining').textContent();
+  const calls = r.driveCalls;
+  const shown = () => card.locator('[aria-hidden=false] .nav-ins');
+
+  // Swipe left: the following step, in order.
+  const box = (await page.locator('.nsb-window').boundingBox())!;
+  await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++) await page.mouse.move(box.x + box.width * (0.8 - 0.06 * i), box.y + box.height / 2);
+  await page.mouse.up();
+  await expect(card).toHaveAttribute('data-view', '2');
+  await expect(shown()).toHaveText(steps[2]);
+  // Buttons do the same for anyone who can't swipe.
+  await page.getByTestId('nav-step-next').click();
+  await expect(shown()).toHaveText(steps[3]);
+  await expect(page.getByTestId('nav-step-count')).toHaveText(`3/${steps.length - 1}`);
+  await page.getByTestId('nav-step-prev').click();
+  await expect(shown()).toHaveText(steps[2]);
+  // Back to the next turn; nothing about the trip changed.
+  await page.getByTestId('nav-step-return').click();
+  await expect(card).toHaveAttribute('data-view', '1');
+  await expect(page.getByTestId('nav-step-return')).toHaveCount(0);
+  await expect(page.getByTestId('nav-instruction')).toHaveText(steps[1]);
+  await expect(page.getByTestId('nav-remaining')).toHaveText(remaining!);
+  expect(r.driveCalls).toBe(calls);
+
+  // The step list previews a step in the banner too.
+  await page.getByTestId('nav-steps-toggle').click();
+  await page.getByTestId('nav-steps').locator('li').nth(3).getByRole('button').click();
+  await expect(card).toHaveAttribute('data-view', '3');
+
+  // Overview frames the route and offers the way back; Recenter returns to following.
+  await page.getByTestId('nav-overview').click();
+  await expect(page.getByTestId('nav-overview')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByTestId('nav-recenter').click();
+  await expect(page.getByTestId('nav-overview')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByTestId('nav-recenter')).toHaveCount(0);
 });
 
 test('full journey on real GPS updates: progress, off-route reroute, arrival at garage, walk, arrival', async ({ page, context }) => {

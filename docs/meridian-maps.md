@@ -82,6 +82,34 @@ self-hosted OSRM or a paid provider. When cut off, the app shows "Can't reach th
 - A parking source: it reaches the map through `lib/directory.ts`, which ties a source to a campus garage. A
   campus garage with no source is listed as having no data.
 
+## Explore, places and guidance
+
+- **Explore** is map first: the sheet rests collapsed (one line and one action), half way (breakdown, other
+  garages) or full (details, space picker). A map pin opens the half sheet; a list row opens details.
+- **Place sheet** (search a building, tap its pin, or open `/app/?dest=<short name>`): category and address from
+  the campus directory, Directions, Save (this device only, listed first in search) and Share (the system share
+  sheet, or a copied link). "Park, then walk" pairs the best garage with confirmed space with a drive time from
+  the directions service (one request per garage and ~100 m of position) and the routed walk.
+- **Guidance**: the banner shows the next maneuver; swipe, the arrow buttons or the arrow keys show the ones after
+  it, in the provider's order, each with its distance from where you are (`maps/nav/steps.ts`). Looking ahead
+  never changes the route or progress; "Back to next turn", or 10 s without a touch, returns to it. The bottom bar
+  has arrival time, minutes and distance left, the destination, and the garage's availability with its source.
+  Overview frames what's left of the route and the walk after it; 3D switches the following camera between
+  perspective and flat; Steps lists every step and can show any of them in the banner.
+- **Park to walk**: reaching the garage never means you've parked. The arrival card shows availability with its
+  source and the walk to come, and the walk starts only from "I've parked — start walking".
+
+## What would need a new provider, key or licence
+
+| Feature | Status | Needs |
+| --- | --- | --- |
+| Live traffic in drive times | Off; screens say "No live traffic" | `VITE_MAPBOX_TOKEN` (Mapbox Directions, traffic profile) |
+| Satellite imagery | Not offered (no toggle) | A licensed imagery provider and style URL |
+| Terrain / photorealistic 3D | Not offered; "3D" is pitched streets with OSM building heights | A terrain/DEM source |
+| Voice guidance | Not offered; no mute control is shown | Speech synthesis work and testing on iOS |
+| Place ratings, hours, photos, phone | Not shown | A places data provider with display rights |
+| Background or lock-screen guidance, CarPlay | Not possible in a browser | A native app |
+
 ## Honesty rules the code keeps
 
 - Durations, geometry and instructions come only from the provider. Only a provider's traffic-aware duration is

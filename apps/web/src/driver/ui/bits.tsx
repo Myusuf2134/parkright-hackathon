@@ -8,14 +8,14 @@ import type { LiveView } from '../net/live.ts';
  * detector can report OPEN and some space actually is fresh OPEN. With open detection off it says so
  * instead, so unconfirmed spaces never read as available.
  */
-export function ObservationBar({ counts, openEnabled, title = false, legend = true, note = true }: {
-  counts: Pick<Counts, 'total' | 'open' | 'occupied' | 'uncertain'>; openEnabled: boolean; title?: boolean; legend?: boolean; note?: boolean;
+export function ObservationBar({ counts, openEnabled, title = false, legend = true, note = true, thin = false }: {
+  counts: Pick<Counts, 'total' | 'open' | 'occupied' | 'uncertain'>; openEnabled: boolean; title?: boolean; legend?: boolean; note?: boolean; thin?: boolean;
 }) {
   const open = openEnabled ? counts.open : 0;
   const segs = ([['occupied', counts.occupied], ['uncertain', counts.uncertain], ['open', open]] as const).filter(([, n]) => n > 0);
   const label = `${counts.occupied} occupied, ${counts.uncertain} can't confirm${openEnabled ? `, ${open} confirmed open` : ''}, of ${counts.total} spaces`;
   return (
-    <div className="obs" data-testid="obs" data-open={open} data-open-enabled={openEnabled}>
+    <div className={`obs${thin ? ' thin' : ''}`} data-testid="obs" data-open={open} data-open-enabled={openEnabled}>
       {title && <div className="obs-head"><span className="ey">Parking observations</span><span className="obs-total">{counts.total} spaces</span></div>}
       <div className="obs-bar" role="img" aria-label={`Parking observations: ${label}`}>
         {segs.map(([k, n]) => <i key={k} className={k} data-seg={k} style={{ flexGrow: n }} />)}

@@ -6,7 +6,7 @@ test('72-space Ohio garage: counts, disclaimer, layout and a trip through the re
   await page.goto(APP);
   await expect(page.getByTestId('open-count')).toHaveText('27', { timeout: 15_000 });
   await expect(page.getByTestId('prov-live')).toBeVisible();
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await expect(page.getByTestId('site-disclaimer')).toContainText('Not an official or exact digital twin');
   await expect(page.getByTestId('garage-stats')).toContainText('27');
   await expect(page.getByTestId('advice')).toContainText('Local fallback', { timeout: 10_000 });

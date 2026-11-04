@@ -8,7 +8,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import type { LatLng } from './campus/types.ts';
-import { PALETTE, styleFor, type MapTheme } from './mapStyle.ts';
+import { PALETTE, styleFor, usesBlankStyle, type MapTheme } from './mapStyle.ts';
 import type { Fix } from './nav/engine.ts';
 
 export interface MapPin {
@@ -27,15 +27,22 @@ export interface RouteLine { id: string; coords: [number, number][]; role: 'sele
 
 export interface MapHandle {
   fit: (points: LatLng[], opts?: { maxZoom?: number; animate?: boolean }) => void;
-  fly: (at: LatLng, zoom?: number) => void;
-  follow: (at: LatLng, heading: number | null, profile: 'driving' | 'walking') => void;
+  fly: (at: LatLng, zoom?: number, padding?: { top: number; bottom: number; left: number; right: number }) => void;
+  /** Keep the position in view, heading up. pitched: perspective; zoom: how close for this moment of the trip. */
+  follow: (at: LatLng, heading: number | null, profile: 'driving' | 'walking', opts?: { pitched?: boolean; zoom?: number; padding?: Padding }) => void;
   flat: () => void;
   north: () => void;
   togglePitch: () => void;
-  setPadding: (p: { top?: number; bottom?: number; left?: number; right?: number }) => void;
+  setPadding: (p: { top?: number; bottom?: number; left?: number; right?: number }, animate?: boolean) => void;
+  /** A line, framed whole: the route overview. Leaves pitch and bearing flat. */
+  frame: (coords: [number, number][], padding: Padding) => void;
 }
 
 export type MapLoad = 'loading' | 'ready' | 'failed';
+type Padding = { top: number; bottom: number; left: number; right: number };
+
+/** How long a basemap may take to draw something before the app says it didn't load. */
+const DRAW_TIMEOUT_MS = 15_000;
 
 const prefersReduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const EMPTY = { type: 'FeatureCollection' as const, features: [] };
@@ -108,11 +115,15 @@ export const MeridianMap = forwardRef<MapHandle, {
   const [, force] = useState(0);
   const latest = useRef(props);
   latest.current = props;
+  const state = useRef<MapLoad>('loading');
+  const [load, setLoad] = useState<MapLoad>('loading');
+  const drawTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const rewatch = useRef(() => {});
 
   // ---- create once
   useEffect(() => {
     let dead = false, map: MlMap | null = null;
-    const loaded = { current: false };
+    latest.current.onLoad('loading');
     void import('maplibre-gl').then((ml) => {
       if (dead || !box.current) return;
       lib.current = ml;
@@ -124,30 +135,64 @@ export const MeridianMap = forwardRef<MapHandle, {
           attributionControl: false, fadeDuration: prefersReduced() ? 0 : 200,
         });
       } catch {
+        state.current = 'failed';
+        setLoad('failed');
         latest.current.onLoad('failed'); // no WebGL, for example
         return;
       }
       mapRef.current = map;
       const m = map;
       const setPaletteAttr = () => box.current?.setAttribute('data-style', currentTheme.current);
+      // "ready" means the basemap drew roads or buildings, not just that its style JSON arrived: a dead tile
+      // worker or blocked tiles leave a plain background that must never pass for a loaded map.
+      const blank = usesBlankStyle();
+      let errors = 0;
+      const basemapDrawn = () => {
+        const sources = new Set(Object.entries(m.getStyle().sources ?? {}).filter(([, v]) => (v as { type: string }).type === 'vector').map(([id]) => id));
+        return m.queryRenderedFeatures().some((f) => sources.has(f.source));
+      };
+      const settle = (s: MapLoad) => {
+        if (state.current === s) return;
+        state.current = s;
+        clearTimeout(drawTimer.current);
+        setLoad(s);
+        latest.current.onLoad(s);
+      };
+      const watchDraw = () => {
+        if (blank) return;
+        clearTimeout(drawTimer.current);
+        drawTimer.current = setTimeout(() => { if (state.current !== 'ready') settle('failed'); }, DRAW_TIMEOUT_MS);
+      };
+      // A new theme is a new style: watch it draw too. The app only hears about it if it fails.
+      rewatch.current = () => { if (blank) return; state.current = 'loading'; setLoad('loading'); watchDraw(); };
+      m.on('idle', () => {
+        if (blank || state.current === 'ready') return;
+        if (basemapDrawn()) settle('ready');
+        else if (errors) settle('failed'); // everything settled, nothing drew, and something failed on the way
+      });
       const onStyle = () => {
         if (!m.getSource('meridian-routes')) { paint(m, currentTheme.current); addLayers(m, currentTheme.current); }
         setPaletteAttr();
-        if (!loaded.current) { loaded.current = true; latest.current.onLoad('ready'); }
         setReady(true);
         setStyleEpoch((n) => n + 1);
+        if (blank) settle('ready');
       };
       m.on('style.load', onStyle);
-      // The basemap can fail after the page opened; only a map that never drew counts as failed.
-      m.on('error', () => { if (!loaded.current && !m.isStyleLoaded()) latest.current.onLoad('failed'); });
+      // The basemap can fail after it drew (one tile, say); only a map that never drew counts as failed.
+      m.on('error', (e) => {
+        errors++;
+        if (import.meta.env.DEV) console.warn('[meridian map]', e.error?.message ?? e);
+        if (state.current !== 'ready' && !m.isStyleLoaded()) settle('failed');
+      });
+      watchDraw();
       for (const ev of ['dragstart', 'rotatestart', 'pitchstart', 'zoomstart'] as const) m.on(ev, (e: { originalEvent?: unknown }) => { if (e.originalEvent) latest.current.onGesture(); });
       m.on('rotate', () => latest.current.onBearing(m.getBearing()));
       for (const id of ['route-alt', 'route-alt-case']) {
         m.on('click', id, (e) => { const f = e.features?.[0]; if (f) latest.current.onSelectRoute(String(f.properties?.id)); });
       }
       force((n) => n + 1);
-    }).catch(() => latest.current.onLoad('failed'));
-    return () => { dead = true; map?.remove(); mapRef.current = null; markers.current.clear(); userMarker.current = null; };
+    }).catch(() => { state.current = 'failed'; setLoad('failed'); latest.current.onLoad('failed'); });
+    return () => { dead = true; clearTimeout(drawTimer.current); map?.remove(); mapRef.current = null; markers.current.clear(); userMarker.current = null; };
   }, []);
 
   // ---- theme: a new style drops custom layers; style.load puts them back
@@ -156,6 +201,7 @@ export const MeridianMap = forwardRef<MapHandle, {
     if (currentTheme.current === props.theme) return;
     currentTheme.current = props.theme;
     mapRef.current?.setStyle(styleFor(props.theme));
+    rewatch.current();
   }, [props.theme]);
 
   // ---- a hidden map doesn't redraw; catching up on size when it returns
@@ -233,20 +279,40 @@ export const MeridianMap = forwardRef<MapHandle, {
       const edge = Math.max(0, Math.min(28, Math.floor(room / 4)));
       map.fitBounds(b, { padding: { top: edge, bottom: edge, left: edge + 16, right: edge + 40 }, maxZoom: opts?.maxZoom ?? 16.5, pitch: 0, bearing: 0, duration: prefersReduced() || opts?.animate === false ? 0 : 800 });
     },
-    fly(at, zoom) {
-      mapRef.current?.easeTo({ center: [at.lng, at.lat], zoom: zoom ?? Math.max(mapRef.current.getZoom(), 15.5), duration: prefersReduced() ? 0 : 700 });
+    fly(at, zoom, padding) {
+      mapRef.current?.easeTo({ center: [at.lng, at.lat], zoom: zoom ?? Math.max(mapRef.current.getZoom(), 15.5), ...(padding ? { padding } : {}), duration: prefersReduced() ? 0 : 700 });
     },
-    follow(at, heading, profile) {
-      mapRef.current?.easeTo({ center: [at.lng, at.lat], zoom: profile === 'driving' ? 16.5 : 17.5, pitch: profile === 'driving' ? 58 : 45, bearing: heading ?? mapRef.current.getBearing(), duration: prefersReduced() ? 0 : 900, easing: (t) => t });
+    follow(at, heading, profile, opts) {
+      const m = mapRef.current;
+      if (!m) return;
+      // Small swings in heading (GPS noise, a gentle bend) don't turn the map; a real turn does.
+      const was = m.getBearing();
+      const turn = heading === null ? 0 : ((heading - was + 540) % 360) - 180;
+      const bearing = heading === null || Math.abs(turn) < 6 ? was : heading;
+      const pitch = opts?.pitched === false ? 0 : profile === 'driving' ? 58 : 45;
+      m.easeTo({ center: [at.lng, at.lat], zoom: opts?.zoom ?? (profile === 'driving' ? 16.5 : 17.5), pitch, bearing, ...(opts?.padding ? { padding: opts.padding } : {}), duration: prefersReduced() ? 0 : 900, easing: (t) => t });
+    },
+    frame(coords, padding) {
+      const m = mapRef.current, ml = lib.current;
+      if (!m || !ml || coords.length < 2) return;
+      const b = new ml.LngLatBounds();
+      for (const c of coords) b.extend(c);
+      const h = m.getContainer().clientHeight, w = m.getContainer().clientWidth;
+      // Never more padding than leaves room for the line.
+      const vert = Math.max(0, padding.top + padding.bottom - (h - 80)), horiz = Math.max(0, padding.left + padding.right - (w - 80));
+      const pad = { top: Math.max(0, padding.top - vert / 2), bottom: Math.max(0, padding.bottom - vert / 2), left: Math.max(0, padding.left - horiz / 2), right: Math.max(0, padding.right - horiz / 2) };
+      // fitBounds adds its padding to the map's own, and the follow camera's leaves no room: clear it first.
+      m.setPadding({ top: 0, bottom: 0, left: 0, right: 0 });
+      m.fitBounds(b, { padding: pad, maxZoom: 17, pitch: 0, bearing: 0, duration: prefersReduced() ? 0 : 700 });
     },
     flat() { mapRef.current?.easeTo({ pitch: 0, bearing: 0, duration: prefersReduced() ? 0 : 500 }); },
     north() { mapRef.current?.easeTo({ bearing: 0, pitch: 0, duration: prefersReduced() ? 0 : 400 }); },
     togglePitch() { const m = mapRef.current; m?.easeTo({ pitch: m.getPitch() > 5 ? 0 : 55, duration: prefersReduced() ? 0 : 500 }); },
-    setPadding(p) { mapRef.current?.easeTo({ padding: { top: p.top ?? 0, bottom: p.bottom ?? 0, left: p.left ?? 0, right: p.right ?? 0 }, duration: 0 }); },
+    setPadding(p, animate) { mapRef.current?.easeTo({ padding: { top: p.top ?? 0, bottom: p.bottom ?? 0, left: p.left ?? 0, right: p.right ?? 0 }, duration: animate && !prefersReduced() ? 380 : 0 }); },
   }), []);
 
   return (
-    <div className={`mstage${props.dimmed ? ' off' : ''}`} style={{ visibility: props.visible ? 'visible' : 'hidden' }} data-theme={props.theme} data-map-ready={ready ? 'yes' : 'no'} data-testid="map">
+    <div className={`mstage${props.dimmed ? ' off' : ''}`} style={{ visibility: props.visible ? 'visible' : 'hidden' }} data-theme={props.theme} data-map-ready={ready ? 'yes' : 'no'} data-map-state={load} data-testid="map">
       <div ref={box} className="mcanvas" role="application" aria-label="Map of campus. Drag to pan, pinch to zoom, two fingers to rotate and tilt." />
       {props.pins.map((p) => {
         const host = markers.current.get(p.id)?.el;

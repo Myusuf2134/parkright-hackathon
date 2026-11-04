@@ -17,6 +17,9 @@ test('Explore answers with the confirmed-open count only', async ({ page }) => {
   // V4 has 7 open; A6 is now "OPEN but stale", which must not count.
   await expect(page.getByTestId('open-count')).toHaveText('6');
   await expect(page.getByTestId('prov-live')).toBeVisible();
+  // Collapsed, the simulation is a SIM tag beside the name; half way up it's spelled out.
+  await expect(page.getByTestId('peek-sim')).toHaveAttribute('title', /Simulated garage, not real availability/);
+  await page.getByTestId('peek-summary').click();
   await expect(page.getByText('Simulated garage').first()).toBeVisible();
 });
 
@@ -24,7 +27,7 @@ test('only fresh OPEN spaces can be chosen; others explain why', async ({ page }
   const be = new Backend(page, { ...V4, A6: 'STALE' });
   await be.install();
   await page.goto(APP);
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await page.getByTestId('choose-space').click();
   await expect(page.locator('[data-bay]')).toHaveCount(12);
   const ids = await openBays(page).evaluateAll((els) => els.map((e) => e.getAttribute('data-bay')).sort());
@@ -42,7 +45,7 @@ test('a chosen space that stops being open is withdrawn with a message', async (
   const be = new Backend(page);
   await be.install();
   await page.goto(APP);
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await page.getByTestId('choose-space').click();
   await page.locator('[data-bay=B4]').click();
   await expect(page.getByTestId('chosen')).toHaveText('B4');
@@ -101,7 +104,7 @@ test('accessible and EV spaces need the matching setting; a permit unlocks nothi
   be.designations = { B6: 'accessible', B5: 'ev', B4: 'reserved' };
   await be.install();
   await page.goto(APP);
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await page.getByTestId('choose-space').click();
   for (const id of ['B4', 'B5', 'B6']) await expect(page.locator(`[data-bay=${id}]`)).toHaveAttribute('aria-disabled', 'true');
   await tapBay(page, 'B4');
@@ -116,7 +119,7 @@ test('accessible and EV spaces need the matching setting; a permit unlocks nothi
   await page.getByTestId('vehicle-card').click();
   await page.getByTestId('vehicle-ev').click();
   await page.getByTestId('tab-explore').click();
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await page.getByTestId('choose-space').click();
   await expect(page.locator('[data-bay=B6]')).toHaveAttribute('aria-disabled', 'false');
   await expect(page.locator('[data-bay=B5]')).toHaveAttribute('aria-disabled', 'false');
@@ -205,6 +208,6 @@ test('no horizontal overflow on any screen', async ({ page }) => {
   const check = async () => expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(393);
   await check();
   for (const tab of ['plan', 'you', 'explore']) { await page.getByTestId(`tab-${tab}`).click(); await check(); }
-  await page.getByTestId('view-spaces').click(); await check();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click(); await check();
   await page.getByTestId('choose-space').click(); await check();
 });

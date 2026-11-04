@@ -43,6 +43,6 @@ test('when the camera stops, spaces go stale and nothing is offered', async ({ p
 test('advice comes from the API and says where it came from', async ({ page }) => {
   await page.goto('/app/?device=iphone15&splash=off');
   await expect(page.getByTestId('open-count')).toHaveText('7', { timeout: 10_000 });
-  await page.getByTestId('view-spaces').click();
+  await page.getByTestId('peek-summary').click(); await page.getByTestId('view-spaces').click();
   await expect(page.getByTestId('advice')).toContainText('Local fallback', { timeout: 10_000 });
 });

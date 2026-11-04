@@ -37,4 +37,5 @@ export function AlertIcon({ kind, ...p }: P & { kind: 'traffic' | 'weather' | 'c
   const I = { traffic: TrafficIcon, weather: WeatherIcon, construction: ConeIcon, announcement: AnnounceIcon, parking: ParkIcon }[kind];
   return <I {...p} />;
 }
+export const Share = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="M12 15V4M8 7.5 12 3.5l4 4" /><path d="M7 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1" /></svg>;
 export const Star = (p: P) => <svg {...base(p)} strokeWidth={1.9}><path d="m12 4 2.5 5.1 5.6.8-4 4 .9 5.6-5-2.7-5 2.7.9-5.6-4-4 5.6-.8L12 4Z" /></svg>;

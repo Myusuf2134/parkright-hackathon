@@ -1,21 +1,35 @@
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
-import { copyFileSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { createRequire } from 'node:module';
 import { defineConfig, type Plugin } from 'vite';
 
 const api = process.env.PARKRIGHT_API_URL ?? 'http://127.0.0.1:8400';
 
 /**
- * MapLibre's tile worker, served byte for byte from public/. Vite's dev server would inject its client into
- * the file (WebKit refuses that in a worker), and a production build can't see MapLibre's own path to it.
+ * MapLibre's tile worker at /app/maplibre-worker.mjs, byte for byte from node_modules. Vite's transform would
+ * inject its client into the file (WebKit refuses that in a worker), and a production build can't see MapLibre's
+ * own path to it. It used to be copied into public/ at startup, but Vite indexes public/ before plugins run, so on
+ * a fresh checkout the dev server answered with index.html: the worker died and every tile stayed blank.
  */
+const WORKER_PATH = '/app/maplibre-worker.mjs';
+const workerFile = () => resolve(createRequire(import.meta.url).resolve('maplibre-gl/package.json'), '../dist/maplibre-gl-worker.mjs');
 function mapWorker(): Plugin {
+  const serve = (server: { middlewares: { use: (fn: (req: IncomingMessage, res: ServerResponse, next: () => void) => void) => void } }) => {
+    server.middlewares.use((req, res, next) => {
+      if (req.url?.split('?')[0] !== WORKER_PATH) return next();
+      res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.end(readFileSync(workerFile()));
+    });
+  };
   return {
     name: 'meridian-map-worker',
-    buildStart() {
-      const entry = createRequire(import.meta.url).resolve('maplibre-gl/package.json');
-      copyFileSync(resolve(entry, '../dist/maplibre-gl-worker.mjs'), resolve(import.meta.dirname, 'public/app/maplibre-worker.mjs'));
+    configureServer: serve,
+    configurePreviewServer: serve,
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: WORKER_PATH.slice(1), source: readFileSync(workerFile()) });
     },
   };
 }
@@ -27,8 +41,8 @@ export default defineConfig({
   plugins: [react(), mapWorker()],
   server: {
     https,
-    // Only the active Cloudflare quick tunnel; update when the tunnel is restarted.
-    allowedHosts: ['joined-warming-stars-changing.trycloudflare.com'],
+    // Cloudflare quick tunnels get a new hostname each time they start.
+    allowedHosts: ['.trycloudflare.com'],
     // Vite's default (localhost only) plus the Meridian site, which probes /api/v1/health before embedding.
     cors: { origin: [/^https?:\/\/(?:(?:[^:]+\.)?localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/, 'https://meridian-site-murex.vercel.app', 'https://meridian-site-mmoodyy21-2297s-projects.vercel.app'] },
     port: 5180,

@@ -132,6 +132,7 @@ test('favorites, recents and preferences survive a reload', async ({ page }) => 
   await expect(page.getByTestId('maps-google')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('switch', { name: 'Saved garage alerts' })).toHaveAttribute('aria-checked', 'false');
   await page.getByTestId('tab-explore').click();
+  await page.getByTestId('peek-summary').click();
   await expect(page.getByTestId('saved-chip')).toContainText('Meridian Two-Level Demo Deck');
   await page.getByTestId('all-garages').click();
   await expect(page.getByTestId('recent-garage').first()).toHaveText('Meridian Two-Level Demo Deck');

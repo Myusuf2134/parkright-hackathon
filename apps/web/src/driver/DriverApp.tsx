@@ -9,7 +9,8 @@ import { summarize } from './lib/evidence.ts';
 import { countSpaces, offerable, readingOrder, suggestSpace } from './lib/parking.ts';
 import { flags, usePrefs } from './lib/prefs.ts';
 import { prefersReducedMotion, useNow } from './lib/time.ts';
-import { Explore, type Mode, type ParkingCtx } from './screens/Explore.tsx';
+import { Explore, type Mode, type ParkingCtx, type PlaceInfo } from './screens/Explore.tsx';
+import { useDriveEstimate } from './maps/nav/useDriveEstimate.ts';
 import { AboutData, SearchSheet } from './screens/Modals.tsx';
 import { Plan } from './screens/Plan.tsx';
 import { Splash, type SplashVariant } from './screens/Splash.tsx';
@@ -33,6 +34,8 @@ import { haptic, useFrameHeight, useSafeArea } from './ui/layout.ts';
 import { useArrival, type LiveParking } from './arrival/useArrival.ts';
 
 type Tab = 'explore' | 'plan' | 'you';
+/** The tab bar's height from the bottom of the screen above the safe area (styles.css .tabs), plus a gap. */
+const TABS_H = 64;
 interface Toast { id: number; text: string; tone: 'warn' | 'good' }
 
 function initialSplash(): SplashVariant | null {
@@ -48,7 +51,8 @@ function initialSplash(): SplashVariant | null {
 function initialView(): { tab: Tab; mode: Mode; garage: string | null } {
   const q = new URLSearchParams(location.search);
   const t = q.get('tab'), m = q.get('sheet');
-  return { tab: t === 'plan' || t === 'you' ? t : 'explore', mode: m === 'garage' || m === 'space' || m === 'list' ? m : 'peek', garage: q.get('garage') };
+  const sheet = m === 'half' || m === 'place' || m === 'garage' || m === 'space' || m === 'list' ? m : q.get('dest') ? 'place' : 'peek';
+  return { tab: t === 'plan' || t === 'you' ? t : 'explore', mode: sheet, garage: q.get('garage') };
 }
 
 function useDebounced<T>(value: T, ms: number): T {
@@ -69,14 +73,15 @@ export function DriverApp() {
   const scenario = useScenario();
   const health = useHealth();
   const demo = useDemoInfo();
-  const { saved, toggleFavorite, viewedGarage, usedDestination, clearRecents } = useSaved();
+  const { saved, toggleFavorite, togglePlace, viewedGarage, usedDestination, clearRecents } = useSaved();
   const facilityList = useMemo(() => (facilities.state === 'ok' ? facilities.value : []), [facilities]);
   const fleet = useLiveFleet(useMemo(() => facilityList.map((f) => f.facility_id), [facilityList]));
   const campus = useMemo(activeCampus, []);
   const provider = useMemo(() => createProvider(), []);
   const entries = useMemo(() => buildDirectory(facilityList, scenario, campus), [facilityList, scenario, campus]);
   // ---- destination (from the demo schedule until the driver changes it)
-  const [dest, setDest] = useState<string | null | undefined>(undefined);
+  // A shared link (?dest=) opens that place; otherwise the demo schedule's class, until the driver changes it.
+  const [dest, setDest] = useState<string | null | undefined>(() => new URLSearchParams(location.search).get('dest') ?? undefined);
   const destination = dest ?? null;
   const classDestination = scenario?.next_class.destination_short ?? null;
   const destinationIsClass = destination !== null && destination === classDestination;
@@ -128,6 +133,8 @@ export function DriverApp() {
   // ---- navigation state
   const [tab, setTab] = useState<Tab>(() => initialView().tab);
   const [mode, setMode] = useState<Mode>(() => initialView().mode);
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
   const cameFromList = useRef(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [trip, setTrip] = useState<string | null>(null);
@@ -142,8 +149,17 @@ export function DriverApp() {
   // ---- map, location and the journey
   const mapApi = useRef<MapHandle>(null);
   const [mapLoad, setMapLoad] = useState<MapLoad>('loading');
+  // A retry builds a new map, which also starts new tile workers.
+  const [mapKey, setMapKey] = useState(0);
+  const retryMap = useCallback(() => { setMapLoad('loading'); setMapKey((k) => k + 1); }, []);
+  /** Resting height of the Explore sheet, so the map frames what's left above it. */
+  const [sheetH, setSheetH] = useState(0);
   const [bearing, setBearing] = useState(0);
   const [following, setFollowing] = useState(true);
+  // Guidance camera: the whole remaining route at once, and perspective or flat while following.
+  const [overview, setOverview] = useState(false);
+  const [pitched, setPitched] = useState(true);
+  const [navInsets, setNavInsets] = useState({ top: 0, bottom: 0 });
   const [centerOnFix, setCenterOnFix] = useState(false);
   const [askedLocation, setAskedLocation] = useState(false);
   const [systemDark, setSystemDark] = useState(() => matchMedia('(prefers-color-scheme: dark)').matches);
@@ -203,13 +219,14 @@ export function DriverApp() {
   const advice = useAdvice(facilityId, signature, tab === 'explore' && mode === 'garage' && !trip && live.trusted && counts.open > 0);
 
   // ---- actions
-  const openGarage = useCallback((id: string) => {
+  /** From a list, a garage opens in full; from the map it opens half way, so the map stays in view. */
+  const openGarage = useCallback((id: string, to: Mode = 'garage') => {
     cameFromList.current = mode === 'list';
     setChosen(id);
     setSelected(null);
     viewedGarage(id);
     setTab('explore');
-    setMode('garage');
+    setMode(to);
   }, [mode, viewedGarage]);
   const closeGarage = useCallback(() => {
     if (cameFromList.current) setMode('list');
@@ -221,7 +238,7 @@ export function DriverApp() {
     usedDestination(d);
     setChosen(null);
     setTab('explore');
-    setMode('peek');
+    setMode('place');
   }, [usedDestination]);
   // Hardware and browser back steps through the app's own views.
   const fromPop = useRef(false);
@@ -293,6 +310,29 @@ export function DriverApp() {
   }, [mode, geo, j]);
   const closeRoute = useCallback(() => { j.close(); setFollowing(true); setMode(beforeRoute.current === 'route' ? 'peek' : beforeRoute.current); mapApi.current?.flat(); }, [j]);
   const routeGarage = ranked.find((r) => r.tier === 0 && r.entry.geo) ?? null;
+  // The place sheet's drive time: to the garage it recommends, from here, only while it's open.
+  const estimateTo = useMemo(() => {
+    const g = routeGarage?.entry.geo;
+    return g ? { id: routeGarage.entry.id, ...(driveTargets(g)[0] ?? g) } : null;
+  }, [routeGarage?.entry.id, routeGarage?.entry.geo]);
+  const estimate = useDriveEstimate(provider, tab === 'explore' && mode === 'place' && destinationGeo ? geo.fix : null, estimateTo);
+  const place: PlaceInfo | null = destination ? {
+    name: destinationGeo?.name ?? destination, short: destinationGeo?.short ?? destination, address: destinationGeo?.address ?? null,
+    known: !!destinationGeo, category: destinationGeo ? 'Campus building' : 'Typed destination', saved: saved.places.includes(destination),
+  } : null;
+  const sharePlace = useCallback(async () => {
+    if (!destination) return;
+    const url = new URL('/app/', location.origin);
+    url.searchParams.set('dest', destination);
+    const title = destinationGeo?.name ?? destination;
+    try {
+      if (navigator.share) { await navigator.share({ title, text: `${title}, on Meridian`, url: url.href }); return; }
+      await navigator.clipboard.writeText(url.href);
+      say('Link copied', 'good');
+    } catch (e) {
+      if ((e as Error).name !== 'AbortError') say("Couldn't share this place from this browser.");
+    }
+  }, [destination, destinationGeo?.name, say]);
   const onDestinationRoute = destinationTarget
     // Best confirmed garage if there is one; otherwise walk, and the sheet can switch to a drive to the building.
     ? () => openRoute(targetFor(routeGarage?.entry ?? null), routeGarage ? 'drive' : 'walk')
@@ -341,13 +381,13 @@ export function DriverApp() {
       const anchor = side === 'west' ? 'left' : side === 'east' ? 'right' : side === 'north' ? 'top' : side === 'south' ? 'bottom' : inJourney ? 'left' : undefined;
       list.push({
         id: inJourney ? `${r.entry.id}:${anchor}` : r.entry.id, at: { lat: r.entry.geo!.lat, lng: r.entry.geo!.lng }, focused: r.entry.id === entry?.id, priority: r.tier < 2, anchor,
-        node: <GarageMapPin r={r} flat={inJourney} active={!inJourney && r.entry.id === entry?.id && mode !== 'peek'} onOpen={() => { if (!inJourney) openGarage(r.entry.id); }} />,
+        node: <GarageMapPin r={r} flat={inJourney} active={!inJourney && r.entry.id === entry?.id && mode !== 'peek'} onOpen={() => { if (!inJourney) openGarage(r.entry.id, 'half'); }} />,
       });
     }
     if (j.journey.phase === 'preview' && j.manualOrigin) list.push({ id: 'mark-start', at: j.manualOrigin.at, anchor: 'center', priority: true, node: <RouteMark kind="start" label={`Start: ${j.manualOrigin.name}`} /> });
     if (travel === 'drive' && ends?.driveTo && ends.driveTo.kind !== 'garage-centre') list.push({ id: 'mark-entrance', at: ends.driveTo, anchor: 'center', focused: true, node: <RouteMark kind="entrance" label={`${ends.driveTo.side} vehicle entrance`} /> });
     if (ends?.walkFrom && ends.walkFrom.kind === 'door') list.push({ id: 'mark-exit', at: ends.walkFrom, anchor: 'center', priority: true, node: <RouteMark kind="exit" label={`${ends.walkFrom.side} pedestrian door`} /> });
-    if (destinationGeo) list.push({ id: 'destination', at: inJourney && ends?.walkTo ? ends.walkTo : destinationGeo, anchor: 'top', node: <DestinationMapPin name={destinationGeo.short} /> });
+    if (destinationGeo) list.push({ id: 'destination', at: inJourney && ends?.walkTo ? ends.walkTo : destinationGeo, anchor: 'top', node: <DestinationMapPin name={destinationGeo.short} onOpen={inJourney ? undefined : () => { setChosen(null); setTab('explore'); setMode('place'); }} /> });
     return list;
   }, [pinRanked, entry?.id, mode, destinationGeo, j.journey.phase, j.manualOrigin, jGarage?.id, openGarage, ends, travel]);
   const footprints = useMemo(() => {
@@ -359,31 +399,45 @@ export function DriverApp() {
 
   // ---- camera
   const wide = () => matchMedia('(min-width: 1024px)').matches && !document.documentElement.dataset.device;
-  const padForSheet = useCallback(() => {
-    const isWide = wide();
-    mapApi.current?.setPadding(isWide ? { left: 440, top: 40, bottom: 24, right: 60 } : { top: safe.top + 92, bottom: Math.max(0, viewport - sheetY.get()), left: 0, right: 0 });
-  }, [safe.top, viewport, sheetY]);
+  // Above the sheet's resting height and below the search bar. A full-height sheet covers the map anyway.
+  const sheetBottom = Math.min(sheetH || Math.max(0, viewport - sheetY.get()), Math.round(viewport * 0.62));
+  const padding = useCallback(() => (wide() ? { left: 440, top: 40, bottom: 24, right: 60 } : { top: safe.top + 96, bottom: sheetBottom, left: 0, right: 0 }), [safe.top, sheetBottom]);
+  const padForSheet = useCallback((animate = false) => { mapApi.current?.setPadding(padding(), animate); }, [padding]);
   const destKey = destinationGeo?.id ?? null;
   const pinKey = pinRanked.filter((r) => r.tier === 0).map((r) => r.entry.id).slice(0, 2).join();
+  /** The collapsed view: the destination and the best garages near it. */
+  const fitOverview = () => {
+    padForSheet();
+    const near = pinRanked.filter((r) => r.tier === 0).slice(0, 2).map((r) => r.entry.geo!);
+    const points = destinationGeo ? [destinationGeo, ...near] : near.length ? near : campus.garages;
+    mapApi.current?.fit(points, { maxZoom: 16 });
+  };
   useEffect(() => {
-    if (mapLoad !== 'ready' || j.journey.phase !== 'idle' || chosen || !revealed) return;
-    const t = setTimeout(() => {
-      padForSheet();
-      const near = pinRanked.filter((r) => r.tier === 0).slice(0, 2).map((r) => r.entry.geo!);
-      const points = destinationGeo ? [destinationGeo, ...near] : near.length ? near : campus.garages;
-      mapApi.current?.fit(points, { maxZoom: 16 });
-    }, 450);
+    if (mapLoad !== 'ready' || j.journey.phase !== 'idle' || chosen || !revealed || modeRef.current !== 'peek') return;
+    const t = setTimeout(fitOverview, 450);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destKey, pinKey, mapLoad, revealed]);
+  // When the sheet comes to rest, the map frames what's left above it: half way up, the garage the sheet is
+  // about; back down from there, the overview. Not while a route or navigation owns the camera.
+  const restingSheet = tab === 'explore' && (mode === 'peek' || mode === 'half' || mode === 'place') ? `${mode}:${sheetBottom}:${chosen}:${destKey}` : null;
+  const lastRest = useRef<Mode | null>(null);
   useEffect(() => {
-    if (mapLoad !== 'ready' || !chosen || j.journey.phase !== 'idle') return;
-    const g = entries.find((e) => e.id === chosen)?.geo;
-    if (!g) return;
-    const t = setTimeout(() => { padForSheet(); mapApi.current?.fly(g, 16.2); }, 450);
+    if (mapLoad !== 'ready' || restingSheet === null || j.journey.phase !== 'idle') return;
+    // The new mode lands a render before the sheet's measured height: act once both have settled.
+    const t = setTimeout(() => {
+      const was = lastRest.current;
+      lastRest.current = mode;
+      // A place: the building and the garage Meridian would send you to.
+      if (mode === 'place' && destinationGeo) { padForSheet(); mapApi.current?.fit([destinationGeo, ...(routeGarage?.entry.geo ? [routeGarage.entry.geo] : [])], { maxZoom: 16.8 }); return; }
+      const g = chosen || mode === 'half' ? entry?.geo : null;
+      if (g) mapApi.current?.fly(g, 16.2, padding());
+      else if (was === 'half') fitOverview();
+      else padForSheet(true);
+    }, 60);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chosen, mapLoad]);
+  }, [restingSheet, mapLoad]);
   useEffect(() => {
     if (j.journey.phase !== 'preview' || !j.journey.routes.length) return;
     const t = setTimeout(() => {
@@ -397,23 +451,53 @@ export function DriverApp() {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [j.journey.phase === 'preview' ? j.journey.routes : null, j.journey.phase === 'preview' ? j.journey.selected : null]);
+  // Between the banner and the bottom bar, with the position in the lower part of that space so more of
+  // the road ahead shows. Closer in as a maneuver comes up; further out at speed.
+  const navPadding = useCallback(() => {
+    if (wide()) return { left: 440, top: 40, bottom: 40, right: 40 };
+    const top = navInsets.top || Math.round(viewport * 0.24), bottom = navInsets.bottom || Math.round(viewport * 0.3);
+    const room = Math.max(0, viewport - top - bottom);
+    return { top: top + Math.round(room * 0.3), bottom: bottom + 12, left: 0, right: 0 };
+  }, [navInsets, viewport]);
   useEffect(() => {
-    if (j.journey.phase !== 'navigating' || !fix || !following) return;
-    if (wide()) mapApi.current?.setPadding({ left: 440 });
-    else mapApi.current?.setPadding({ top: Math.round(viewport * 0.34), bottom: Math.round(viewport * 0.2) });
-    mapApi.current?.follow(j.nav?.snapped ?? fix, j.nav?.heading ?? null, j.journey.route.profile);
+    if (j.journey.phase !== 'navigating' || !fix || !following || overview) return;
+    const driving = j.journey.route.profile === 'driving';
+    const toTurn = j.nav?.toManeuver ?? Infinity, speed = fix.speed ?? 0;
+    const zoom = driving ? (toTurn < 150 ? 17.2 : speed > 18 ? 15.7 : 16.5) : (toTurn < 40 ? 18 : 17.5);
+    mapApi.current?.follow(j.nav?.snapped ?? fix, j.nav?.heading ?? null, j.journey.route.profile, { pitched, zoom, padding: navPadding() });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [j.nav, following, j.journey.phase]);
-  useEffect(() => { if (centerOnFix && fix) { setCenterOnFix(false); padForSheet(); mapApi.current?.fly(fix, 16); } }, [centerOnFix, fix, padForSheet]);
+  }, [j.nav, following, overview, pitched, navPadding, j.journey.phase]);
+  // Overview: what's left of this leg, and the walk after it.
+  useEffect(() => {
+    if (!overview || j.journey.phase !== 'navigating') return;
+    const s = j.journey;
+    const rest = preparedNav && j.nav ? remainingGeometry(preparedNav, j.nav) : s.route.geometry;
+    const pad = navPadding();
+    mapApi.current?.frame([...rest, ...(s.walkLeg?.geometry ?? [])], { top: (navInsets.top || 0) + 24, bottom: pad.bottom + 24, left: 32, right: 48 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [overview, j.journey.phase === 'navigating' ? j.journey.route : null]);
+  useEffect(() => { if (j.journey.phase !== 'navigating') setOverview(false); }, [j.journey.phase]);
+  // At the garage: the garage and the walk still to come, above the arrival card.
+  useEffect(() => {
+    const s = j.journey;
+    if (s.phase !== 'at-garage') return;
+    const t = setTimeout(() => {
+      const pts: [number, number][] = [...(s.walkLeg?.geometry ?? []), ...(s.target.garage ? [[s.target.garage.lng, s.target.garage.lat] as [number, number]] : []), ...(fix ? [[fix.lng, fix.lat] as [number, number]] : [])];
+      if (pts.length > 1) mapApi.current?.frame(pts, { top: safe.top + 40, bottom: (navInsets.bottom || Math.round(viewport * 0.5)) + 24, left: 40, right: 40 });
+    }, 350);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [j.journey.phase, navInsets.bottom]);
+  useEffect(() => { if (centerOnFix && fix) { setCenterOnFix(false); mapApi.current?.fly(fix, 16, padding()); } }, [centerOnFix, fix, padding]);
   useEffect(() => { if (j.journey.phase === 'at-garage' || j.journey.phase === 'arrived') { setFollowing(true); mapApi.current?.flat(); } }, [j.journey.phase]);
 
   const onMapGesture = useCallback(() => setFollowing(false), []);
   const locate = useCallback(() => {
-    if (geo.status === 'on' && fix) { padForSheet(); mapApi.current?.fly(fix, 16); return; }
+    if (geo.status === 'on' && fix) { mapApi.current?.fly(fix, 16, padding()); return; }
     setCenterOnFix(true);
     setAskedLocation(true);
     geo.request();
-  }, [geo, fix, padForSheet]);
+  }, [geo, fix, padding]);
   const mapNote = geo.status === 'denied' ? 'Location is off. You can still search and preview routes.' : geo.status === 'insecure' ? 'Location needs HTTPS. Open the https:// address from npm run demo:student -- --lan.' : geo.status === 'unavailable' ? "Your location isn't available right now." : !online ? "You're offline. Parts of the map and routes may be missing." : null;
   // Only once the student has asked for location: a refusal they didn't just cause isn't news.
   const noteVisible = !!mapNote && mode === 'peek' && (askedLocation || !online);
@@ -434,13 +518,16 @@ export function DriverApp() {
   // The tab pill arrives after the sheet has sprung up, never on top of it.
   const [settled, setSettled] = useState(revealed);
   useEffect(() => { if (!revealed) return; const t = setTimeout(() => setSettled(true), 420); return () => clearTimeout(t); }, [revealed]);
-  const showTabs = settled && !trip && !inNav && (tab !== 'explore' || mode === 'peek');
+  // Explore keeps its tabs while the sheet is collapsed or half way; a full sheet has its own way back.
+  const tabsOnExplore = !trip && !inNav && (mode === 'peek' || mode === 'half' || mode === 'place');
+  const showTabs = settled && !trip && !inNav && (tab !== 'explore' || tabsOnExplore);
+  const tabsH = tabsOnExplore ? TABS_H + safe.bottom : 0;
 
   return (
     <MotionConfig reducedMotion="user">
       <div ref={frame} className="app" data-testid="driver-app" data-theme={resolveTheme(prefs.mapTheme, systemDark)} data-tab={tab} data-mode={mode} data-live={live.trusted ? 'live' : live.connection}>
         {revealed && <MeridianMap
-          ref={mapApi} theme={resolveTheme(prefs.mapTheme, systemDark)} center={campus.center} zoom={campus.zoom}
+          key={mapKey} ref={mapApi} theme={resolveTheme(prefs.mapTheme, systemDark)} center={campus.center} zoom={campus.zoom}
           visible={tab === 'explore' || showTrip || inNav}
           dimmed={facility !== null && !live.trusted && live.connection !== 'connecting' && !inNav && j.journey.phase === 'idle'}
           pins={pins} routes={routeLines} footprints={footprints} user={fix} userHeading={j.nav?.heading ?? fix?.heading ?? null}
@@ -449,7 +536,11 @@ export function DriverApp() {
         />}
         {inNav ? (
           <div className="screen nav-screen" data-testid="navigate" data-phase={j.journey.phase}>
-            <Navigate j={j} fix={fix} geo={geo} now={now} provider={provider} following={following} onRecenter={() => setFollowing(true)} parkingLine={parkingLine} parkingSource={parkingSource} online={online} onEnd={endJourney} />
+            <Navigate
+              j={j} fix={fix} geo={geo} now={now} provider={provider} following={following} onRecenter={() => { setOverview(false); setFollowing(true); }}
+              overview={overview} onOverview={() => { if (overview) { setOverview(false); setFollowing(true); } else { setOverview(true); setFollowing(false); } }}
+              pitched={pitched} onTogglePitch={() => { setPitched((v) => !v); setOverview(false); setFollowing(true); }} onInsets={setNavInsets}
+              parkingLine={parkingLine} parkingSource={parkingSource} online={online} onEnd={endJourney} />
           </div>
         ) : (
         <AnimatePresence mode="popLayout" initial={false}>
@@ -474,7 +565,8 @@ export function DriverApp() {
                   onRouteToGarage={() => openRoute(targetFor(entry), 'drive')} onDestinationRoute={onDestinationRoute}
                   routePanel={<RoutePanel j={j} geo={geo} provider={provider} now={now} parkingLine={parkingLine} parkingSource={parkingSource} onClose={closeRoute} />}
                   routeFooter={<RouteStartBar j={j} geo={geo} gate={gate} />}
-                  mapLoad={mapLoad} bearing={bearing} geoActive={geo.status === 'on'} locating={geo.status === 'requesting'} onLocate={locate} onNorth={() => mapApi.current?.north()} onPitch={() => mapApi.current?.togglePitch()} mapNote={noteVisible ? mapNote : null}
+                  place={place} estimate={estimate} onToggleSavePlace={() => destination && togglePlace(destination)} onSharePlace={() => void sharePlace()}
+                  mapLoad={mapLoad} onMapRetry={retryMap} tabsH={tabsH} onSheetHeight={setSheetH} bearing={bearing} geoActive={geo.status === 'on'} locating={geo.status === 'requesting'} onLocate={locate} onNorth={() => mapApi.current?.north()} onPitch={() => mapApi.current?.togglePitch()} mapNote={noteVisible ? mapNote : null}
                   onProfile={() => setTab('you')} onRetry={retryFacilities}
                 />
               )}
@@ -485,12 +577,12 @@ export function DriverApp() {
         </AnimatePresence>
         )}
 
-        {showTabs && tab !== 'explore' && <div className="tabfade" aria-hidden />}
+        {showTabs && (tab !== 'explore' || mode === 'half' || mode === 'place') && <div className="tabfade" aria-hidden />}
         <AnimatePresence>
           {showTabs && (
             <motion.nav key="tabs" className="tabs" role="tablist" aria-label="Meridian" style={{ x: '-50%' }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 14 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
               {(['explore', 'plan', 'you'] as Tab[]).map((t) => (
-                <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); if (t === 'explore') { setMode('peek'); setChosen(null); } }} data-testid={`tab-${t}`}>
+                <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); if (t === 'explore' && tab === 'explore') { setMode('peek'); setChosen(null); } }} data-testid={`tab-${t}`}>
                   {tab === t && <motion.span layoutId="tab-bg" className="tab-bg" initial={false} transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.12 }} />}
                   <span>{t === 'explore' ? 'Explore' : t === 'plan' ? 'Plan' : 'You'}</span>
                 </button>
