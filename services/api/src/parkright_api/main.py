@@ -17,7 +17,7 @@ from .errors import install_error_handlers
 from .realtime import RealtimeHub
 from .recommendations.client import NemotronClient
 from .routes import recommendations
-from .routes import facilities, frames, health, realtime, perception as perception_routes
+from .routes import facilities, frames, health, realtime, your_day, perception as perception_routes
 from .state import FacilityRegistry
 from .stream_tracker import FrameStreamTracker
 from .upload_limit import UploadLimitMiddleware
@@ -89,6 +89,7 @@ def create_app(settings: Settings | None = None, perception: PerceptionProvider 
 
     api = APIRouter(prefix=API_PREFIX)
     api.include_router(health.router)
+    api.include_router(your_day.router)
     api.include_router(recommendations.router)
     api.include_router(recommendations.facility_router)
     api.include_router(perception_routes.router)
