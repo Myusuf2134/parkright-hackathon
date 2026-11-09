@@ -17,7 +17,7 @@ from .errors import install_error_handlers
 from .realtime import RealtimeHub
 from .recommendations.client import NemotronClient
 from .routes import recommendations
-from .routes import facilities, frames, health, realtime, your_day, perception as perception_routes
+from .routes import facilities, frames, health, perception as perception_routes, realtime, your_day
 from .state import FacilityRegistry
 from .stream_tracker import FrameStreamTracker
 from .upload_limit import UploadLimitMiddleware
