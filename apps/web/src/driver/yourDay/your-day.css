@@ -1,0 +1,41 @@
+/* Optional My Day view — Meridian's existing green/ink/light/dark tokens. */
+.yd-screen { overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.yd-content { position: relative; z-index: 1; width: min(100%, 690px); margin: 0 auto; padding: calc(var(--safe-top, 0px) + 22px) 20px calc(var(--safe-bottom, 0px) + 140px); display: grid; gap: 16px; }
+.yd-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 3px 4px 12px; }
+.yd-header h1 { font: 800 clamp(35px, 8vw, 48px)/1.1 var(--ui); letter-spacing: -.04em; margin: 8px 0; color: var(--ink); }
+.yd-header p, .yd-card p, .yd-privacy p { font: 500 14px/1.4 var(--ui); color: var(--ink-2); margin: 7px 0; }
+.yd-ey { font: 700 11px/1.3 var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); }
+.yd-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.yd-section { padding: 5px 4px 0; }
+.yd-section h2, .yd-schedule h2, .yd-privacy h2 { font: 750 21px/1.15 var(--ui); letter-spacing: -.025em; color: var(--ink); }
+.yd-card { padding: 22px; background: var(--bg); color: var(--ink); border-radius: 28px; box-shadow: var(--sh-soft), inset 0 0 0 1px var(--hairline); }
+.yd-next { background: linear-gradient(135deg, var(--mint), var(--bg)); }
+.yd-next h2 { font: 800 30px/1.1 var(--ui); margin: 18px 0 5px; letter-spacing: -.035em; }
+.yd-next .yd-bold { color: var(--ink); font-size: 16px; font-weight: 700; }
+.yd-next .yd-disclaimer { margin: 15px 0; }
+.yd-tag { border-radius: 14px; padding: 7px 10px; font: 650 11px/1 var(--ui); background: var(--warm); color: var(--ink-2); white-space: nowrap; }
+.yd-primary { width: 100%; border: 0; border-radius: 18px; padding: 13px 17px; min-height: 48px; background: var(--green); color: #fff; cursor: pointer; font: 700 15px/1.2 var(--ui); }
+.yd-primary:disabled { opacity: .5; }
+.yd-updates { padding-block: 5px; }
+.yd-item { display: flex; gap: 13px; align-items: flex-start; padding: 15px 0; }
+.yd-item + .yd-item { border-top: 1px solid var(--hairline); }
+.yd-item > div { min-width: 0; }
+.yd-item b, .yd-class b { color: var(--ink); font: 700 15px/1.25 var(--ui); }
+.yd-symbol { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: var(--mint); color: var(--green-deep); font: 750 22px/1 var(--ui); }
+.yd-linkbtn { border: 0; background: transparent; color: var(--green-deep); font: 700 13px/1.3 var(--ui); padding: 7px 3px; cursor: pointer; }
+.yd-source-link { font: 600 12px/1.4 var(--ui); color: var(--green-deep); text-decoration: underline; overflow-wrap: anywhere; }
+.yd-form { display: grid; gap: 13px; margin-top: 15px; }
+.yd-form label { display: grid; gap: 6px; font: 600 12px/1.4 var(--ui); color: var(--ink-2); }
+.yd-form input { min-width: 0; width: 100%; height: 45px; padding: 0 12px; border: 1px solid var(--hairline); border-radius: 12px; background: var(--warm); color: var(--ink); font: 600 14px var(--ui); }
+.yd-class-list { margin-top: 15px; }
+.yd-class { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 0; border-top: 1px solid var(--hairline); }
+.yd-class button { color: var(--ink-2); font: 600 12px var(--ui); }
+.yd-privacy { display: grid; gap: 7px; padding: 14px 18px; }
+.yd-privacy h2 { font-size: 16px; }
+.yd-remember { display: flex; gap: 9px; align-items: center; font: 650 13px/1.3 var(--ui); color: var(--ink); }
+.yd-remember input { accent-color: var(--green); width: 18px; height: 18px; }
+.app[data-theme='dark'] .yd-card { background: #1b1e20; }
+.app[data-theme='dark'] .yd-next { background: linear-gradient(135deg, #142f22, #1b1e20); }
+.app[data-theme='dark'] .yd-symbol, .app[data-theme='dark'] .yd-tag { background: #27342c; color: #b4eaca; }
+.app[data-theme='dark'] .yd-linkbtn, .app[data-theme='dark'] .yd-source-link { color: #85d9a4; }
+@media (max-width: 350px) { .yd-content { padding-inline: 12px; } .yd-card { padding: 18px; } .yd-next h2 { font-size: 27px; } }

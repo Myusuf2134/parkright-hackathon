@@ -11,6 +11,7 @@ import type { Scenario } from '../net/api.ts';
 import { SourceTag } from '../ui/SourceTag.tsx';
 import { AlertIcon, Arrow, Check, Chevron, Close, School } from '../ui/icons.tsx';
 import { Modal } from './Modals.tsx';
+import { YourDay } from '../yourDay/YourDay.tsx';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -25,6 +26,7 @@ export function Plan({ scenario, arrival, parking, onFind }: {
   const [tripRemoved, setTripRemoved] = useState(false);
   const [picker, setPicker] = useState(false);
   const [showFiltered, setShowFiltered] = useState(false);
+  const [personal, setPersonal] = useState(false);
   const today = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
   const r = arrival.result;
   const demoOn = !!scenario || preview;
@@ -32,6 +34,8 @@ export function Plan({ scenario, arrival, parking, onFind }: {
   const destShort = r.movedTo?.buildingShort ?? r.session.buildingShort;
 
   const changeScenario = (id: string) => { arrival.setId(id); setDismissed({}); setTripRemoved(false); setShowFiltered(false); setPicker(false); };
+
+  if (personal) return <YourDay onFind={onFind} parking={parking} onDemo={() => setPersonal(false)} />;
 
   return (
     <div className="screen" data-testid="plan" data-arrival={arrival.id} style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
@@ -42,6 +46,7 @@ export function Plan({ scenario, arrival, parking, onFind }: {
           {demoOn && <button type="button" className="scen-pill press" onClick={() => setPicker(true)} data-testid="scenario-pill"><span className="dm">Demo</span>{arrival.defs.find((d) => d.id === arrival.id)?.label}<Chevron width={14} height={14} /></button>}
         </div>
         <h1 className="hl xl">Your day,<br />parked.</h1>
+        <button type="button" className="scen-pill press" style={{justifySelf: "start", marginBottom: 12}} onClick={() => setPersonal(true)} data-testid="open-your-day">Use my own classes · Private</button>
 
         {scenario === undefined && !preview ? (
           <div className="skel" style={{ height: 380, borderRadius: 34 }} />
