@@ -31,11 +31,12 @@ import { useJourney } from './maps/nav/useJourney.ts';
 import { useWalkTimes } from './maps/nav/useWalkTimes.ts';
 import { createProvider } from './maps/routing/index.ts';
 import { haptic, useFrameHeight, useSafeArea } from './ui/layout.ts';
+import { ExploreTabIcon, PlanTabIcon, YouTabIcon } from './ui/TabIcons.tsx';
 import { useArrival, type LiveParking } from './arrival/useArrival.ts';
 
 type Tab = 'explore' | 'plan' | 'you';
-/** The tab bar's height from the bottom of the screen above the safe area (styles.css .tabs), plus a gap. */
-const TABS_H = 64;
+/** Floating tab bar, bottom offset and breathing room above the device safe area. */
+const TABS_H = 94;
 interface Toast { id: number; text: string; tone: 'warn' | 'good' }
 
 function initialSplash(): SplashVariant | null {
@@ -580,13 +581,53 @@ export function DriverApp() {
         {showTabs && (tab !== 'explore' || mode === 'half' || mode === 'place') && <div className="tabfade" aria-hidden />}
         <AnimatePresence>
           {showTabs && (
-            <motion.nav key="tabs" className="tabs" role="tablist" aria-label="Meridian" style={{ x: '-50%' }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 14 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
-              {(['explore', 'plan', 'you'] as Tab[]).map((t) => (
-                <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); if (t === 'explore' && tab === 'explore') { setMode('peek'); setChosen(null); } }} data-testid={`tab-${t}`}>
-                  {tab === t && <motion.span layoutId="tab-bg" className="tab-bg" initial={false} transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.12 }} />}
-                  <span>{t === 'explore' ? 'Explore' : t === 'plan' ? 'Plan' : 'You'}</span>
-                </button>
-              ))}
+            <motion.nav
+              key="tabs"
+              className="tabs"
+              role="tablist"
+              aria-label="Meridian"
+              style={{ x: '-50%' }}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 14 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+              onKeyDown={(event) => {
+                const order: Tab[] = ['plan', 'explore', 'you'];
+                const idx = order.indexOf(tab);
+                const next = event.key === 'Home' ? order[0]
+                  : event.key === 'End' ? order[order.length - 1]
+                  : event.key === 'ArrowRight' ? order[(idx + 1) % order.length]
+                  : event.key === 'ArrowLeft' ? order[(idx + order.length - 1) % order.length]
+                  : null;
+                if (!next) return;
+                event.preventDefault();
+                setTab(next);
+                event.currentTarget.querySelector<HTMLButtonElement>(`[data-testid="tab-${next}"]`)?.focus();
+              }}
+            >
+              {(['plan', 'explore', 'you'] as Tab[]).map((t) => {
+                const Icon = t === 'plan' ? PlanTabIcon : t === 'explore' ? ExploreTabIcon : YouTabIcon;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    className={`tab-${t}`}
+                    role="tab"
+                    aria-selected={tab === t}
+                    tabIndex={tab === t ? 0 : -1}
+                    onClick={() => {
+                      if (tab !== t) haptic(8);
+                      setTab(t);
+                      if (t === 'explore' && tab === 'explore') { setMode('peek'); setChosen(null); }
+                    }}
+                    data-testid={`tab-${t}`}
+                  >
+                    {tab === t && <motion.span layoutId="tab-bg" className="tab-bg" aria-hidden="true" initial={false} transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.12 }} />}
+                    <span className="tab-icon"><Icon /></span>
+                    <span className="tab-label">{t === 'explore' ? 'Explore' : t === 'plan' ? 'Plan' : 'You'}</span>
+                  </button>
+                );
+              })}
             </motion.nav>
           )}
         </AnimatePresence>
