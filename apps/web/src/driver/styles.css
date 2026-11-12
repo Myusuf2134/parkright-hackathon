@@ -175,80 +175,66 @@ p, h1, h2, h3 { margin: 0; }
 .sheet .content.scroll { overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
 .panel { display: grid; gap: 16px; align-content: start; padding-bottom: 20px; }
 
-/* ---------- floating tab bar (Meridian original, inspired by the shared CSS tab bar) ---------- */
+/* ---------- five-position floating bar with centered, gaze-tracking smile ---------- */
 .tabs {
   position: absolute;
   left: 50%;
-  bottom: calc(var(--safe-bottom) + 12px);
+  bottom: calc(var(--safe-bottom) + 13px);
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: center;
-  gap: 3px;
-  width: min(340px, calc(100% - 28px));
-  min-height: 76px;
-  padding: 8px 9px;
-  border-radius: 33px;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  background: linear-gradient(165deg, #302a43 0%, #1f1b2c 70%, #191827 100%);
-  color: #b6bac7;
-  box-shadow: 0 21px 42px -17px rgba(17, 19, 35, 0.55), 0 5px 12px rgba(17, 19, 35, 0.16), inset 0 1px rgba(255, 255, 255, 0.11);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  place-items: center;
+  gap: 0;
+  width: min(360px, calc(100% - 30px));
+  height: 72px;
+  padding: 10px 13px;
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  background: linear-gradient(175deg, #332c49 0%, #252036 58%, #1f1b2c 100%);
+  color: #eaf4ff;
+  box-shadow: 0 18px 32px -10px rgba(21, 20, 38, 0.34), 0 5px 13px rgba(25, 22, 38, 0.15), inset 0 1px rgba(255, 255, 255, 0.1);
 }
 .tabs button {
   --tab-accent: #24a1fd;
-  position: relative;
-  isolation: isolate;
+  width: 100%;
   min-width: 0;
-  height: 58px;
-  padding: 7px 5px 6px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  border-radius: 25px;
-  background: transparent;
-  color: #adb0c1;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: color 150ms ease;
-}
-.tabs .tab-plan { --tab-accent: #ffc600; }
-.tabs .tab-explore { --tab-accent: #24a1fd; }
-.tabs .tab-you { --tab-accent: #74efb5; }
-.tabs button[aria-selected='true'] { color: #fff; }
-.tabs .tab-bg {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.085);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.045);
-}
-.tabs .tab-icon {
-  width: 24px;
-  height: 24px;
+  height: 50px;
   display: grid;
   place-items: center;
-  color: inherit;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  background: none;
+  color: #e9f2ff;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color 200ms ease;
 }
-.tabs .tab-icon svg { display: block; width: 24px; height: 24px; }
-.tabs .tab-label { color: inherit; font: 650 11px/1.1 var(--ui); letter-spacing: 0.015em; }
-.tabs button[aria-selected='true'] .tab-icon { color: var(--tab-accent); animation: meridian-tab-bump 280ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-.tabs button[aria-selected='true'] .tab-smile-mouth { transform: translateY(-0.4px) scaleX(1.06); transform-origin: center; }
-.tabs button:focus-visible { outline: 2px solid #d9e9ff; outline-offset: -3px; }
+.tabs .tab-plan { --tab-accent: #ffc600; }
+.tabs .tab-explore { --tab-accent: #23ee67; }
+.tabs .tab-you { --tab-accent: #24a1fd; }
+.tabs .tab-alerts { --tab-accent: #ff2757; }
+.tabs .tab-search { --tab-accent: #e546ff; }
+.tabs .tab-icon { width: 28px; height: 28px; display: grid; place-items: center; color: inherit; }
+.tabs .tab-icon svg { width: 28px; height: 28px; display: block; overflow: visible; }
+.tabs .tab-you .tab-icon svg { width: 30px; height: 30px; }
+.tabs button[data-active='true'] .tab-icon { color: var(--tab-accent); animation: meridian-tab-bump 285ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.tabs .tab-face-shell { fill: #eaf4ff; transition: fill 210ms ease; }
+.tabs .tab-you[data-active='true'] .tab-face-shell { fill: #24a1fd; }
+.tabs .tab-face-features { transition: transform 390ms cubic-bezier(0.22, 1.07, 0.34, 1); }
+.tabs button:focus-visible { outline: 2px solid #eaf4ff; outline-offset: -2px; }
 @media (hover: hover) {
-  .tabs button:not([aria-selected='true']):hover { color: #f2f3f9; }
+  .tabs button:not([data-active='true']):hover { color: #fff; }
 }
 @keyframes meridian-tab-bump {
   0%, 100% { transform: scale(1); }
-  32% { transform: scale(1.14) translateY(-1px); }
-  61% { transform: scale(0.94); }
+  30% { transform: scale(1.15) translateY(-1px); }
+  58% { transform: scale(0.93); }
   82% { transform: scale(1.04); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tabs button, .tabs .tab-smile-mouth { transition: none; }
-  .tabs button[aria-selected='true'] .tab-icon { animation: none; }
+  .tabs button, .tabs .tab-face-features, .tabs .tab-face-shell { transition: none; }
+  .tabs button[data-active='true'] .tab-icon { animation: none; }
 }
 
 /* Content scrolling under the floating pill fades out instead of colliding with it. */
