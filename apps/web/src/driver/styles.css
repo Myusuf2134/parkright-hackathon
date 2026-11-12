@@ -223,6 +223,7 @@ p, h1, h2, h3 { margin: 0; }
 .tabs .tab-you[data-active='true'] .tab-face-shell { fill: #24a1fd; }
 .tabs .tab-face-features { transition: transform 390ms cubic-bezier(0.22, 1.07, 0.34, 1); }
 .tabs button:focus-visible { outline: 2px solid #eaf4ff; outline-offset: -2px; }
+.alerts-anchor { scroll-margin-top: calc(var(--safe-top) + 20px); }
 @media (hover: hover) {
   .tabs button:not([data-active='true']):hover { color: #fff; }
 }
