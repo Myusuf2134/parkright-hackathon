@@ -125,7 +125,7 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
           </div>
         </div>
 
-        <div className="sec" ref={alertsRef}>Alerts</div>
+        <div className="sec alerts-anchor" ref={alertsRef}>Alerts</div>
         <div className="list">
           <div className="li">
             <span className="ic"><Bell /></span>
