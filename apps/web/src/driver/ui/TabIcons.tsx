@@ -1,4 +1,4 @@
-/** Original Meridian navigation icons. Designed for the compact floating bottom bar. */
+/** Original icon drawing inspired by the user's reference, with Meridian's own interactive face. */
 import type { SVGProps } from 'react';
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -19,8 +19,8 @@ function shared(props: IconProps) {
 export function PlanTabIcon(props: IconProps) {
   return (
     <svg {...shared(props)}>
-      <rect x="4" y="5" width="16" height="16" rx="3" />
-      <path d="M8 3.5v3M16 3.5v3M4 9.5h16M8 13h3M8 17h6" />
+      <path d="M3 10.5 12 3l9 7.5" strokeWidth="2.3" />
+      <path d="M5.5 10v10h5v-6h3v6h5V10" strokeWidth="2.1" />
     </svg>
   );
 }
@@ -28,19 +28,39 @@ export function PlanTabIcon(props: IconProps) {
 export function ExploreTabIcon(props: IconProps) {
   return (
     <svg {...shared(props)}>
-      <path d="m3 6 6-2.5 6 2.5 6-2.5v14L15 20l-6-2.5L3 20V6Z" />
-      <path d="M9 3.5v14M15 6v14" />
-      <circle cx="15" cy="10.5" r="1.5" fill="currentColor" stroke="none" />
+      <path d="M2.1 12.5c1.5 0 1.2-5.6 3-5.6 1.9 0 1.3 11 3.1 11 2.1 0 1.6-14 3.5-14 1.9 0 1.2 16.6 3.3 16.6 1.9 0 1.2-12 3.2-12 1.8 0 1.1 5 2.7 5" strokeWidth="2.1" />
     </svg>
   );
 }
 
-export function YouTabIcon(props: IconProps) {
+export function AlertTabIcon(props: IconProps) {
   return (
     <svg {...shared(props)}>
-      <rect x="3.8" y="3.8" width="16.4" height="16.4" rx="5.3" />
-      <path d="M8.5 10v1M15.5 10v1" strokeWidth="2.6" />
-      <path className="tab-smile-mouth" d="M8 14.1c1.1 1.4 2.4 2.1 4 2.1s2.9-.7 4-2.1" />
+      <path d="M7 17.5V10a5 5 0 0 1 10 0v7.5l2 1.5H5l2-1.5Z" strokeWidth="1.9" />
+      <path d="M10 21h4" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
+export function SearchTabIcon(props: IconProps) {
+  return (
+    <svg {...shared(props)}>
+      <circle cx="10.5" cy="10.5" r="6.8" strokeWidth="2" />
+      <path d="m16 16 5 5" strokeWidth="2.3" />
+    </svg>
+  );
+}
+
+/** Face shell remains in the middle; eyes and smile spring across toward the selected icon. */
+export function YouTabIcon({ gaze, ...props }: IconProps & { gaze: -2 | -1 | 0 | 1 | 2 }) {
+  return (
+    <svg {...shared(props)}>
+      <rect className="tab-face-shell" x="2.5" y="2.5" width="19" height="19" rx="5.4" stroke="none" />
+      <g className="tab-face-features" style={{ transform: `translateX(${gaze * 1.4}px)` }} stroke="none">
+        <rect x="7.9" y="8.4" width="2.2" height="4.3" rx="0.6" fill="#1F1B2C" />
+        <rect x="13.9" y="8.4" width="2.2" height="4.3" rx="0.6" fill="#1F1B2C" />
+        <path d="M7.7 15.25c2.3 2.6 6.3 2.6 8.6 0" stroke="#1F1B2C" strokeWidth="1.7" strokeLinecap="round" fill="none" />
+      </g>
     </svg>
   );
 }
