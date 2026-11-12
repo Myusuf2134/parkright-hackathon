@@ -1,5 +1,5 @@
 /** You: preferences stored on this phone. No account, nothing verified, nothing promised. */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Health } from '../net/api.ts';
 import type { ThemePref } from '../maps/mapStyle.ts';
 import type { Prefs } from '../lib/prefs.ts';
@@ -20,8 +20,9 @@ function Seg<T extends string>({ value, options, onChange, label }: { value: T; 
   );
 }
 
-export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntro, saved, entries, onOpenGarage, onToggleFavorite, onClearRecents }: {
+export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntro, saved, entries, onOpenGarage, onToggleFavorite, onClearRecents, focusSection = 'top' }: {
   saved: Saved;
+  focusSection?: 'top' | 'alerts';
   entries: GarageEntry[];
   onOpenGarage: (id: string) => void;
   onToggleFavorite: (id: string) => void;
@@ -34,10 +35,19 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
   onReplayIntro: () => void;
 }) {
   const [vehicleSheet, setVehicleSheet] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const alertsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      if (focusSection === 'alerts') alertsRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      else scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [focusSection]);
   const favs = saved.favorites.map((id) => entries.find((e) => e.id === id)).filter((e): e is GarageEntry => !!e);
   const eligible = ['Standard', prefs.accessiblePlacard && 'Accessible', prefs.vehicle === 'ev' && 'EV charging'].filter(Boolean).join(' · ');
   return (
-    <div className="screen" data-testid="you" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+    <div ref={scrollRef} className="screen" data-testid="you" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
       <div className="wash" />
       <div className="plan-col" style={{ gap: 12 }}>
         <div className="row" style={{ alignItems: 'flex-end' }}>
@@ -115,7 +125,7 @@ export function You({ prefs, update, health, demoSchedule, onAbout, onReplayIntr
           </div>
         </div>
 
-        <div className="sec">Alerts</div>
+        <div className="sec" ref={alertsRef}>Alerts</div>
         <div className="list">
           <div className="li">
             <span className="ic"><Bell /></span>

@@ -31,11 +31,12 @@ import { useJourney } from './maps/nav/useJourney.ts';
 import { useWalkTimes } from './maps/nav/useWalkTimes.ts';
 import { createProvider } from './maps/routing/index.ts';
 import { haptic, useFrameHeight, useSafeArea } from './ui/layout.ts';
+import { FloatingTabs, type FloatingAction } from './ui/FloatingTabs.tsx';
 import { useArrival, type LiveParking } from './arrival/useArrival.ts';
 
 type Tab = 'explore' | 'plan' | 'you';
-/** The tab bar's height from the bottom of the screen above the safe area (styles.css .tabs), plus a gap. */
-const TABS_H = 64;
+/** Floating tab bar, bottom offset and breathing room above the device safe area. */
+const TABS_H = 94;
 interface Toast { id: number; text: string; tone: 'warn' | 'good' }
 
 function initialSplash(): SplashVariant | null {
@@ -132,6 +133,7 @@ export function DriverApp() {
 
   // ---- navigation state
   const [tab, setTab] = useState<Tab>(() => initialView().tab);
+  const [youSection, setYouSection] = useState<'top' | 'alerts'>('top');
   const [mode, setMode] = useState<Mode>(() => initialView().mode);
   const modeRef = useRef(mode);
   modeRef.current = mode;
@@ -226,6 +228,7 @@ export function DriverApp() {
     setSelected(null);
     viewedGarage(id);
     setTab('explore');
+    setYouSection('top');
     setMode(to);
   }, [mode, viewedGarage]);
   const closeGarage = useCallback(() => {
@@ -238,6 +241,7 @@ export function DriverApp() {
     usedDestination(d);
     setChosen(null);
     setTab('explore');
+    setYouSection('top');
     setMode('place');
   }, [usedDestination]);
   // Hardware and browser back steps through the app's own views.
@@ -251,7 +255,7 @@ export function DriverApp() {
       if (!v?.tab) return;
       fromPop.current = true;
       if (v.mode !== 'route') closeJourneyRef.current();
-      setTab(v.tab); setMode(v.mode); setChosen(v.chosen); setTrip(v.trip);
+      setTab(v.tab); setYouSection('top'); setMode(v.mode); setChosen(v.chosen); setTrip(v.trip);
     };
     addEventListener('popstate', onPop);
     return () => removeEventListener('popstate', onPop);
@@ -567,11 +571,11 @@ export function DriverApp() {
                   routeFooter={<RouteStartBar j={j} geo={geo} gate={gate} />}
                   place={place} estimate={estimate} onToggleSavePlace={() => destination && togglePlace(destination)} onSharePlace={() => void sharePlace()}
                   mapLoad={mapLoad} onMapRetry={retryMap} tabsH={tabsH} onSheetHeight={setSheetH} bearing={bearing} geoActive={geo.status === 'on'} locating={geo.status === 'requesting'} onLocate={locate} onNorth={() => mapApi.current?.north()} onPitch={() => mapApi.current?.togglePitch()} mapNote={noteVisible ? mapNote : null}
-                  onProfile={() => setTab('you')} onRetry={retryFacilities}
+                  onProfile={() => { setYouSection('top'); setTab('you'); }} onRetry={retryFacilities}
                 />
               )}
               {tab === 'plan' && <Plan scenario={scenario} arrival={arrival} parking={parking} onFind={(d) => pickDestination(d)} />}
-              {tab === 'you' && <You prefs={prefs} update={updatePrefs} health={health} demoSchedule={!!scenario} saved={saved} entries={entries} onOpenGarage={openGarage} onToggleFavorite={toggleFavorite} onClearRecents={clearRecents} onAbout={() => setModal('about')} onReplayIntro={() => { flags.set('introSeen', false); setSplash('full'); }} />}
+              {tab === 'you' && <You focusSection={youSection} prefs={prefs} update={updatePrefs} health={health} demoSchedule={!!scenario} saved={saved} entries={entries} onOpenGarage={openGarage} onToggleFavorite={toggleFavorite} onClearRecents={clearRecents} onAbout={() => setModal('about')} onReplayIntro={() => { flags.set('introSeen', false); setSplash('full'); }} />}
             </motion.div>
           )}
         </AnimatePresence>
@@ -580,14 +584,18 @@ export function DriverApp() {
         {showTabs && (tab !== 'explore' || mode === 'half' || mode === 'place') && <div className="tabfade" aria-hidden />}
         <AnimatePresence>
           {showTabs && (
-            <motion.nav key="tabs" className="tabs" role="tablist" aria-label="Meridian" style={{ x: '-50%' }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 14 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
-              {(['explore', 'plan', 'you'] as Tab[]).map((t) => (
-                <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); if (t === 'explore' && tab === 'explore') { setMode('peek'); setChosen(null); } }} data-testid={`tab-${t}`}>
-                  {tab === t && <motion.span layoutId="tab-bg" className="tab-bg" initial={false} transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.12 }} />}
-                  <span>{t === 'explore' ? 'Explore' : t === 'plan' ? 'Plan' : 'You'}</span>
-                </button>
-              ))}
-            </motion.nav>
+            <FloatingTabs
+              key="tabs"
+              active={modal === 'search' ? 'search' : tab === 'you' && youSection === 'alerts' ? 'alerts' : tab}
+              onSelect={(action: FloatingAction) => {
+                if (action === 'search') { haptic(8); setModal('search'); return; }
+                if (action === 'alerts') { haptic(8); setYouSection('alerts'); setTab('you'); return; }
+                if (action !== tab || (tab === 'you' && youSection === 'alerts')) haptic(8);
+                setYouSection('top');
+                setTab(action);
+                if (action === 'explore' && tab === 'explore') { setMode('peek'); setChosen(null); }
+              }}
+            />
           )}
         </AnimatePresence>
 

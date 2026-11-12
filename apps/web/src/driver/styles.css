@@ -175,15 +175,70 @@ p, h1, h2, h3 { margin: 0; }
 .sheet .content.scroll { overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
 .panel { display: grid; gap: 16px; align-content: start; padding-bottom: 20px; }
 
-/* ---------- tabs ---------- */
-.tabs { position: absolute; left: 50%; bottom: calc(var(--safe-bottom) + 14px); z-index: 20; display: flex; gap: 2px; padding: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.86); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); box-shadow: var(--sh-float), inset 0 0 0 1px rgba(17, 19, 22, 0.05); }
-.tabs button { position: relative; height: 46px; padding: 0 22px; border-radius: 23px; font: 650 14px/1 var(--ui); color: var(--ink-2); transition: color var(--std) var(--ease-out); }
-.tabs button[aria-selected='true'] { color: #fff; }
-.tabs .tab-bg { position: absolute; inset: 0; border-radius: 23px; background: var(--ink); z-index: -1; }
-.tabs button span { position: relative; }
+/* ---------- five-position floating bar with centered, gaze-tracking smile ---------- */
+.tabs {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 13px);
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  place-items: center;
+  gap: 0;
+  width: min(360px, calc(100% - 30px));
+  height: 72px;
+  padding: 10px 13px;
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  background: linear-gradient(175deg, #332c49 0%, #252036 58%, #1f1b2c 100%);
+  color: #eaf4ff;
+  box-shadow: 0 18px 32px -10px rgba(21, 20, 38, 0.34), 0 5px 13px rgba(25, 22, 38, 0.15), inset 0 1px rgba(255, 255, 255, 0.1);
+}
+.tabs button {
+  --tab-accent: #24a1fd;
+  width: 100%;
+  min-width: 0;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  background: none;
+  color: #e9f2ff;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color 200ms ease;
+}
+.tabs .tab-plan { --tab-accent: #ffc600; }
+.tabs .tab-explore { --tab-accent: #23ee67; }
+.tabs .tab-you { --tab-accent: #24a1fd; }
+.tabs .tab-alerts { --tab-accent: #ff2757; }
+.tabs .tab-search { --tab-accent: #e546ff; }
+.tabs .tab-icon { width: 28px; height: 28px; display: grid; place-items: center; color: inherit; }
+.tabs .tab-icon svg { width: 28px; height: 28px; display: block; overflow: visible; }
+.tabs .tab-you .tab-icon svg { width: 30px; height: 30px; }
+.tabs button[data-active='true'] .tab-icon { color: var(--tab-accent); animation: meridian-tab-bump 285ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.tabs .tab-face-shell { fill: #eaf4ff; transition: fill 210ms ease; }
+.tabs .tab-you[data-active='true'] .tab-face-shell { fill: #24a1fd; }
+.tabs .tab-face-features { transition: transform 390ms cubic-bezier(0.22, 1.07, 0.34, 1); }
+.tabs button:focus-visible { outline: 2px solid #eaf4ff; outline-offset: -2px; }
+@media (hover: hover) {
+  .tabs button:not([data-active='true']):hover { color: #fff; }
+}
+@keyframes meridian-tab-bump {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.15) translateY(-1px); }
+  58% { transform: scale(0.93); }
+  82% { transform: scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tabs button, .tabs .tab-face-features, .tabs .tab-face-shell { transition: none; }
+  .tabs button[data-active='true'] .tab-icon { animation: none; }
+}
 
 /* Content scrolling under the floating pill fades out instead of colliding with it. */
-.tabfade { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--safe-bottom) + 96px); z-index: 15; pointer-events: none; background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.94) 55%, #fff); }
+.tabfade { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--safe-bottom) + 118px); z-index: 15; pointer-events: none; background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.94) 55%, #fff); }
 
 /* ---------- cards & lists ---------- */
 .card { background: var(--warm); border-radius: 26px; padding: 18px; display: grid; gap: 8px; }
